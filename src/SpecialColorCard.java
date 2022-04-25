@@ -1,3 +1,3 @@
-public class SpecialColorCard {
+public class SpecialColorCard extends ColorCard {
     
 }

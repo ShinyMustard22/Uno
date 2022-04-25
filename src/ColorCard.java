@@ -1,3 +1,3 @@
-public class ColorCard {
+public abstract class ColorCard extends Card {
     
 }

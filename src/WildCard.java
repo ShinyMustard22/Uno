@@ -1,3 +1,3 @@
-public class WildCard {
+public class WildCard extends Card {
     
 }
