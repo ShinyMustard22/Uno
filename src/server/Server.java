@@ -1,3 +1,4 @@
+package server;
 import java.io.*;
 import java.net.*;
 
@@ -18,9 +19,13 @@ public class Server {
                 new BufferedOutputStream(socket.getOutputStream()));
 
             while (true) {
-                input = ServerInfo.readInput(in);
-                // Do something with the input
+                break; // fix later
             }
+
+            serverSocket.close();
+            socket.close();
+            in.close();
+            out.close();
         } catch (IOException ex) {
             
         }
