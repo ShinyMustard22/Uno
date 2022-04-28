@@ -15,7 +15,7 @@ public class ClientHandler implements Runnable {
             this.socket = socket;
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-	    this.player = player;
+	        this.player = player;
             clientHandlers.add(this);
         } catch (IOException ex) {
             killEverything(socket, in, out);
@@ -24,11 +24,13 @@ public class ClientHandler implements Runnable {
 
     private void brodcastMessage(String message) {
         for (ClientHandler clientHandler : clientHandlers) {
-            try {
-                clientHandler.out.writeUTF(message);
-                clientHandler.out.flush();
-            } catch (IOException ex) {
-                killEverything(socket, in, out);
+            if (clientHandler != this) {
+                try {
+                    clientHandler.out.writeUTF(message);
+                    clientHandler.out.flush();
+                } catch (IOException ex) {
+                    killEverything(socket, in, out);
+                }
             }
         }
     }
