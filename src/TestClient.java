@@ -1,21 +1,17 @@
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class TestClient {
-
-    Socket socket;
-    DataInputStream in;
-    DataOutputStream out;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     public TestClient() {
         try {
             socket = new Socket(Server.IP_ADDRESS, Server.PORT_NUM);
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-        } catch (UnknownHostException ex) {
-
         } catch (IOException ex) {
             
         }
@@ -32,7 +28,7 @@ public class TestClient {
 
             scanner.close();
         } catch (IOException ex) {
-            System.out.println("got here");
+            
         }  
     }
 
