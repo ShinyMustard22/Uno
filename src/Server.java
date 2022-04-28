@@ -4,7 +4,6 @@ import java.net.Socket;
 
 public class Server {
     public static final int PORT_NUM = 9001;
-    public static final String IP_ADRESS = "192.168.2.7";
 
     private ServerSocket serverSocket;
     private Socket socket;
