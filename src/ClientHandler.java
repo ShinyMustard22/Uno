@@ -4,17 +4,27 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
+    private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
+    private static GameBoard board;
+
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private Player player;
 
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            player = new Player();
             clientHandlers.add(this);
+	    
+            if (clientHandlers.size() == 1) {
+                board = new GameBoard();
+                // Start game
+            }
+
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
@@ -34,7 +44,11 @@ public class ClientHandler implements Runnable {
     }
 
     private void playerLeft() {
-        // TODO
+        clientHandlers.remove(this);
+        if (clientHandlers.size() == 0) {
+            board = null;
+            // End game
+        }
     }
 
     private void killEverything(Socket socket, DataInputStream in, DataOutputStream out) {
