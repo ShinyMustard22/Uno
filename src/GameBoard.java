@@ -1,7 +1,5 @@
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import cards.Card;
+import java.util.*;
+import cards.*;
 
 public class GameBoard {
     

@@ -50,11 +50,7 @@ public class Deck extends LinkedList<Card> {
     }
 
     public Deck(Collection<Card> newDeck) {
-        Iterator<Card> iter = newDeck.iterator();
-        while (iter.hasNext()) {
-            addLast(iter.next());
-        }
-
+        addAll(newDeck);
         nextCardPos = (int) (Math.random() * size());
     }
 
