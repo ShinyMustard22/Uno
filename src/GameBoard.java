@@ -1,12 +1,8 @@
-import java.util.ArrayList;
-
 public class GameBoard {
-    private DeckOfCards deck = new DeckOfCards();
-    public GameBoard(){
-        
-    }
+    
+    private Deck deck;
 
-    public DeckOfCards getDeck(){
-        return deck;
+    public GameBoard() {
+        deck = new Deck();
     }
 }
