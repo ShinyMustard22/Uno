@@ -1,11 +1,10 @@
-public abstract class Card {
-    private Object color;
-    public Card(Object c){
-        color = c;
-    }
+package cards;
 
-    
-    public abstract String toString();
+public abstract class Card {
+
+    public String toString() {
+        return "card";
+    }
     
     public static Card decode(String cardAsString) {
         return null; // decode the string and turn into card
