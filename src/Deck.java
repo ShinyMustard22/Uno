@@ -9,37 +9,37 @@ public class Deck implements Queue<Card> {
     
     public Deck(){
         // Creating the "0" number cards
-        add(new NumberCard("red", 0));
-        add(new NumberCard("blue", 0));
-        add(new NumberCard("green", 0));
-        add(new NumberCard("yellow", 0));
+        add(new NumberCard(ColorCard.RED, 0));
+        add(new NumberCard(ColorCard.BLUE, 0));
+        add(new NumberCard(ColorCard.GREEN, 0));
+        add(new NumberCard(ColorCard.YELLOW, 0));
 
         // Creating the "1" through "9" number cards
         for (int num = 1; num <= 9; num++) {
             for (int count = 0; count < 2; count ++) {
-                add(new NumberCard("red", num));
-                add(new NumberCard("blue", num));
-                add(new NumberCard("green", num));
-                add(new NumberCard("yellow", num));
+                add(new NumberCard(ColorCard.RED, num));
+                add(new NumberCard(ColorCard.BLUE, num));
+                add(new NumberCard(ColorCard.GREEN, num));
+                add(new NumberCard(ColorCard.YELLOW, num));
             }
         }
 
         // Creating the "Plus 2", "Reverse", and "Skip" cards
         for (int count = 0; count < 2; count ++) {
-            add(new PlusTwoCard("red"));
-            add(new PlusTwoCard("blue"));
-            add(new PlusTwoCard("green"));
-            add(new PlusTwoCard("yellow"));
+            add(new PlusTwoCard(ColorCard.RED));
+            add(new PlusTwoCard(ColorCard.BLUE));
+            add(new PlusTwoCard(ColorCard.GREEN));
+            add(new PlusTwoCard(ColorCard.YELLOW));
 
-            add(new ReverseCard("red"));
-            add(new ReverseCard("blue"));
-            add(new ReverseCard("green"));
-            add(new ReverseCard("yellow"));
+            add(new ReverseCard(ColorCard.RED));
+            add(new ReverseCard(ColorCard.BLUE));
+            add(new ReverseCard(ColorCard.GREEN));
+            add(new ReverseCard(ColorCard.YELLOW));
 
-            add(new SkipCard("red"));
-            add(new SkipCard("blue"));
-            add(new SkipCard("green"));
-            add(new SkipCard("yellow"));
+            add(new SkipCard(ColorCard.RED));
+            add(new SkipCard(ColorCard.BLUE));
+            add(new SkipCard(ColorCard.GREEN));
+            add(new SkipCard(ColorCard.YELLOW));
         }
 
         // Creating the "Wild Cards" and the "Plus 4" cards

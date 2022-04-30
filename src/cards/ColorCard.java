@@ -2,6 +2,11 @@ package cards;
 
 public abstract class ColorCard extends Card {
 
+    public static final String RED = "red";
+    public static final String BLUE = "blue";
+    public static final String GREEN = "green";
+    public static final String YELLOW = "yellow";
+    
     private String color;
 
     public ColorCard(String c) {
