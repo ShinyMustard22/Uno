@@ -5,6 +5,9 @@ public abstract class ColorCard extends Card {
     private String color;
 
     public ColorCard(String c) {
+        if (!c.equals("blue") || !c.equals("green") || !c.equals("red") || !c.equals("yellow")) {
+            throw new IllegalArgumentException("Color must be blue, green, red or yellow, but was \"" + c + "\".");
+        }
         color = c;
     }
 

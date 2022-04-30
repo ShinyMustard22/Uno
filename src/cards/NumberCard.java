@@ -6,6 +6,9 @@ public class NumberCard extends ColorCard {
 
     public NumberCard(String color, int n) {
         super(color);
+        if (n < 0 || n > 9) {
+            throw new IllegalArgumentException("Number of the card must be between 0 and 9, but was " + n + ".");
+        }
         number = n;
     }
 
