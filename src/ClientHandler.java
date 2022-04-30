@@ -10,14 +10,12 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
-    private Player player;
 
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            player = new Player();
             clientHandlers.add(this);
 	    
             if (clientHandlers.size() == 1) {
