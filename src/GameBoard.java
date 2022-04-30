@@ -1,6 +1,9 @@
+import java.util.Queue;
+import cards.Card;
+
 public class GameBoard {
     
-    private Deck deck;
+    private Queue<Card> deck;
 
     public GameBoard() {
         deck = new Deck();
