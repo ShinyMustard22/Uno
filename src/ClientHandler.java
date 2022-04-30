@@ -17,11 +17,6 @@ public class ClientHandler implements Runnable {
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             clientHandlers.add(this);
-	    
-            if (clientHandlers.size() == 1) {
-                board = new GameBoard();
-                // Start game
-            }
 
         } catch (IOException ex) {
             killEverything(socket, in, out);
