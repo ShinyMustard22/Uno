@@ -1,11 +1,7 @@
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 import java.awt.*;
-
 import javax.swing.*;
-import javax.tools.Tool;
 
 public class Main extends JFrame {
 
@@ -19,8 +15,8 @@ public class Main extends JFrame {
     public Main() {
         super("Uno"); 
         setBounds(0, 0, width, height);
-        Image icon = Toolkit.getDefaultToolkit().getImage("Uno\\src\\unologo.png");  
-        setIconImage(icon);
+        /*Image icon = Toolkit.getDefaultToolkit().getImage("Uno\\src\\unologo.png");  
+        setIconImage(icon);*/
 
         try {
             socket = new Socket(Server.IP_ADDRESS, Server.PORT_NUM);
