@@ -1,179 +1,99 @@
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
+import java.util.*;
 import cards.*;
 
-public class Deck implements Queue<Card> {
+public class Deck extends LinkedList<Card> {
 
-    private int nextCard;
+    private int nextCardPos;
     
-    public Deck(){
+    public Deck() {
         // Creating the "0" number cards
-        add(new NumberCard(ColorCard.RED, 0));
-        add(new NumberCard(ColorCard.BLUE, 0));
-        add(new NumberCard(ColorCard.GREEN, 0));
-        add(new NumberCard(ColorCard.YELLOW, 0));
+        addLast(new NumberCard(ColorCard.RED, 0));
+        addLast(new NumberCard(ColorCard.BLUE, 0));
+        addLast(new NumberCard(ColorCard.GREEN, 0));
+        addLast(new NumberCard(ColorCard.YELLOW, 0));
 
         // Creating the "1" through "9" number cards
         for (int num = 1; num <= 9; num++) {
             for (int count = 0; count < 2; count ++) {
-                add(new NumberCard(ColorCard.RED, num));
-                add(new NumberCard(ColorCard.BLUE, num));
-                add(new NumberCard(ColorCard.GREEN, num));
-                add(new NumberCard(ColorCard.YELLOW, num));
+                addLast(new NumberCard(ColorCard.RED, num));
+                addLast(new NumberCard(ColorCard.BLUE, num));
+                addLast(new NumberCard(ColorCard.GREEN, num));
+                addLast(new NumberCard(ColorCard.YELLOW, num));
             }
         }
 
         // Creating the "Plus 2", "Reverse", and "Skip" cards
         for (int count = 0; count < 2; count ++) {
-            add(new PlusTwoCard(ColorCard.RED));
-            add(new PlusTwoCard(ColorCard.BLUE));
-            add(new PlusTwoCard(ColorCard.GREEN));
-            add(new PlusTwoCard(ColorCard.YELLOW));
+            addLast(new PlusTwoCard(ColorCard.RED));
+            addLast(new PlusTwoCard(ColorCard.BLUE));
+            addLast(new PlusTwoCard(ColorCard.GREEN));
+            addLast(new PlusTwoCard(ColorCard.YELLOW));
 
-            add(new ReverseCard(ColorCard.RED));
-            add(new ReverseCard(ColorCard.BLUE));
-            add(new ReverseCard(ColorCard.GREEN));
-            add(new ReverseCard(ColorCard.YELLOW));
+            addLast(new ReverseCard(ColorCard.RED));
+            addLast(new ReverseCard(ColorCard.BLUE));
+            addLast(new ReverseCard(ColorCard.GREEN));
+            addLast(new ReverseCard(ColorCard.YELLOW));
 
-            add(new SkipCard(ColorCard.RED));
-            add(new SkipCard(ColorCard.BLUE));
-            add(new SkipCard(ColorCard.GREEN));
-            add(new SkipCard(ColorCard.YELLOW));
+            addLast(new SkipCard(ColorCard.RED));
+            addLast(new SkipCard(ColorCard.BLUE));
+            addLast(new SkipCard(ColorCard.GREEN));
+            addLast(new SkipCard(ColorCard.YELLOW));
         }
 
         // Creating the "Wild Cards" and the "Plus 4" cards
         for (int count = 0; count < 4; count ++) {
-            add(new WildCard());
-            add(new PlusFourCard());
+            addLast(new WildCard());
+            addLast(new PlusFourCard());
         }
 
-        nextCard = (int) (Math.random() * size());
+        nextCardPos = (int) (Math.random() * size());
+    }
+
+    public Deck(Collection<Card> newDeck) {
+        Iterator<Card> iter = newDeck.iterator();
+        while (iter.hasNext()) {
+            addLast(iter.next());
+        }
+
+        nextCardPos = (int) (Math.random() * size());
     }
 
     @Override
-    public int size()
-    {
-        // TODO Auto-generated method stub
-        return 0;
+    public Card remove() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return poll();
     }
 
     @Override
-    public boolean isEmpty()
-    {
-        // TODO Auto-generated method stub
-        return false;
+    public Card poll() {
+        if (isEmpty()) {
+            return null;
+        }
+
+        Card shuffledCard = super.remove(nextCardPos);
+        nextCardPos = (int) (Math.random() * size());
+        return shuffledCard;
     }
 
     @Override
-    public boolean contains(Object o)
-    {
-        // TODO Auto-generated method stub
-        return false;
+    public Card element() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return peek();
     }
 
     @Override
-    public Iterator<Card> iterator()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public Card peek() {
+        if (isEmpty()) {
+            return null;
+        }
 
-    @Override
-    public Object[] toArray()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <T> T[] toArray(T[] a)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean remove(Object o)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends Card> c)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void clear()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public boolean add(Card e)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean offer(Card e)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public Card remove()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Card poll()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Card element()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Card peek()
-    {
-        // TODO Auto-generated method stub
-        return null;
+        Card shuffledCard = super.get(nextCardPos);
+        return shuffledCard;
     }
 }
