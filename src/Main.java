@@ -17,7 +17,8 @@ public class Main extends JFrame {
     public Main() {
         super("Uno"); 
         setBounds(0, 0, width, height);
-
+        add(new JButton("HI"));
+        
         taskbar = Taskbar.getTaskbar();
 
         // Create the Icon Image for this application
