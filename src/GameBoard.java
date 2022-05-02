@@ -30,5 +30,18 @@ public class GameBoard {
         if (players.size() >= 10) {
             gameStarted = true;
         }
+    
     }
+
+    // for (Player player : players){
+    //     if (player.getDeck().size() <= 1){
+    //         player.announceUno();
+    //         endGame();
+    //     }
+    // }
+    
+    // public void endGame(){
+    //     return;
+    // }
 }
+
