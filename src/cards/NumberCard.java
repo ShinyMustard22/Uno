@@ -12,14 +12,19 @@ public class NumberCard extends ColorCard {
         number = n;
     }
 
-    public int getNumber() {
-        return number;
+    public boolean playable(Card card) {
+        if (card instanceof NumberCard) {
+            NumberCard numberCard = (NumberCard) card;
+            return super.playable(card) || numberCard.number == number;
+        }
+
+        return super.playable(card);
     }
 
     public boolean equals(Object other) {
         NumberCard otherNumberCard = (NumberCard) other;
         return super.equals(other) && otherNumberCard.number == number;
-    } 
+    }
     
     public String toString() {
         return super.toString() + "_" + number;

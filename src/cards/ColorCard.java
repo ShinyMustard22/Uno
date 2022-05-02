@@ -10,14 +10,20 @@ public abstract class ColorCard extends Card {
     private String color;
 
     public ColorCard(String c) {
-        if (!c.equals("blue") || !c.equals("green") || !c.equals("red") || !c.equals("yellow")) {
+        if (!c.equals(RED) || !c.equals(BLUE) || !c.equals(GREEN) || !c.equals(YELLOW)) {
             throw new IllegalArgumentException("Color must be blue, green, red or yellow, but was \"" + c + "\".");
         }
         color = c;
     }
 
-    public String getColor() {
-        return color;
+    public boolean playable(Card card) {
+        if (card instanceof ColorCard) {
+            ColorCard colorCard = (ColorCard) card;
+            return colorCard.color.equals(color);
+        }
+
+        WildCard wildCard = (WildCard) card;
+        return wildCard.getColor().equals(color);
     }
 
     public boolean equals(Object other) {
