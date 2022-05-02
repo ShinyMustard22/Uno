@@ -2,13 +2,18 @@ import java.io.*;
 import java.net.Socket;
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class Main extends JFrame {
+public class Main extends JFrame implements ActionListener {
 
     private static final int width = 800;
     private static final int height = 600;
 
     private Taskbar taskbar;
+    private JPanel panel;
+    private JButton button1, button2;
+    private JTextField textbox;
+    private JLabel label; 
 
     private Socket socket;
     private DataInputStream in;
@@ -17,9 +22,18 @@ public class Main extends JFrame {
     public Main() {
         super("Uno"); 
         setBounds(0, 0, width, height);
-        add(new JButton("HI"));
-        
+
         taskbar = Taskbar.getTaskbar();
+        panel = new JPanel(new FlowLayout());
+
+        button1 = new JButton("cringe");
+        button2 = new JButton("very cringe");
+
+        button1.addActionListener(this);
+        button2.addActionListener(this);
+
+        panel.add(button1);
+        panel.add(button2);
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/unologo.png"));
@@ -32,6 +46,8 @@ public class Main extends JFrame {
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
+
+        add(panel);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false); 
@@ -70,5 +86,16 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
         new Main();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == button1) {
+            System.out.println("something dumb");
+        }
+
+        else if (e.getSource() == button2) {
+            System.out.println("something very dumb");
+        }
     }
 }
