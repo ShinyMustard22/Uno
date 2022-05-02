@@ -24,10 +24,10 @@ public class Deck extends LinkedList<Card> {
 
         // Creating the "Plus 2", "Reverse", and "Skip" cards
         for (int count = 0; count < 2; count ++) {
-            addLast(new PlusTwoCard(ColorCard.RED));
-            addLast(new PlusTwoCard(ColorCard.BLUE));
-            addLast(new PlusTwoCard(ColorCard.GREEN));
-            addLast(new PlusTwoCard(ColorCard.YELLOW));
+            addLast(new DrawTwo(ColorCard.RED));
+            addLast(new DrawTwo(ColorCard.BLUE));
+            addLast(new DrawTwo(ColorCard.GREEN));
+            addLast(new DrawTwo(ColorCard.YELLOW));
 
             addLast(new ReverseCard(ColorCard.RED));
             addLast(new ReverseCard(ColorCard.BLUE));
@@ -43,7 +43,7 @@ public class Deck extends LinkedList<Card> {
         // Creating the "Wild Cards" and the "Plus 4" cards
         for (int count = 0; count < 4; count ++) {
             addLast(new WildCard());
-            addLast(new PlusFourCard());
+            addLast(new DrawFourCard());
         }
 
         nextCardPos = (int) (Math.random() * size());
