@@ -10,10 +10,12 @@ public class Main extends JFrame implements ActionListener {
     private static final int height = 600;
 
     private Taskbar taskbar;
-    private JPanel panel;
-    private JButton button1, button2;
-    private JTextField textbox;
-    private JLabel label; 
+
+    private JMenuBar menuBar;
+    private JMenu help;
+    private JMenuItem rules;
+      
+    private JPanel mainPanel, playerInfo, board, playerHand;
 
     private Socket socket;
     private DataInputStream in;
@@ -24,16 +26,27 @@ public class Main extends JFrame implements ActionListener {
         setBounds(0, 0, width, height);
 
         taskbar = Taskbar.getTaskbar();
-        panel = new JPanel(new FlowLayout());
 
-        button1 = new JButton("cringe");
-        button2 = new JButton("very cringe");
+        menuBar = new JMenuBar();
+        help = new JMenu("Help");
+        rules = new JMenuItem("Rules");
+        
+        help.add(rules);
+        menuBar.add(help);
 
-        button1.addActionListener(this);
-        button2.addActionListener(this);
+        mainPanel = new JPanel(new BorderLayout());
+        playerInfo = new JPanel(new FlowLayout());
+        board = new JPanel(new FlowLayout());
+        playerHand = new JPanel(new FlowLayout());
 
-        panel.add(button1);
-        panel.add(button2);
+        playerInfo.add(new JLabel("this works"));
+        board.add(new JLabel("deck")); 
+        board.add(new JLabel("discard"));
+        playerHand.add(new JLabel("cringe"));
+
+        mainPanel.add(playerInfo, BorderLayout.NORTH);
+        mainPanel.add(board, BorderLayout.CENTER);
+        mainPanel.add(playerHand, BorderLayout.SOUTH);
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/unologo.png"));
@@ -47,7 +60,8 @@ public class Main extends JFrame implements ActionListener {
             killEverything(socket, in, out);
         }
 
-        add(panel);
+        setJMenuBar(menuBar);
+        add(mainPanel);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false); 
@@ -85,17 +99,33 @@ public class Main extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        new Main();
+        Main client = new Main();
+        client.listenForMessages();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == button1) {
-            System.out.println("something dumb");
-        }
+        
+    }
 
-        else if (e.getSource() == button2) {
-            System.out.println("something very dumb");
-        }
+    private void listenForMessages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String message;
+
+                while(socket.isConnected()) {
+                    try {
+                        message = in.readUTF();
+                        while (message.isEmpty()) {
+                            message = in.readUTF();
+                        }
+                        System.out.println(message);
+                    } catch (IOException ex) {
+
+                    }
+                }
+            }     
+        }).start();
     }
 }
