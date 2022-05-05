@@ -14,6 +14,8 @@ public class Main extends JFrame implements ActionListener {
     private JMenuBar menuBar;
     private JMenu help;
     private JMenuItem rules;
+    private JTextField nameField;
+    private JTextArea errorMessage;
       
     private JPanel mainPanel, playerInfo, board, playerHand;
 
@@ -27,6 +29,31 @@ public class Main extends JFrame implements ActionListener {
 
         taskbar = Taskbar.getTaskbar();
 
+        // Create the Icon Image for this application
+        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/unologo.png"));
+        setIconImage(unoLogo.getImage());
+
+        try {
+            socket = new Socket(Server.IP_ADDRESS, Server.PORT_NUM);
+            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+
+            mainPanel = new JPanel(new GridBagLayout());
+            mainPanel.add(new JLabel("Please enter your name: "));
+            nameField = new JTextField(10);
+            nameField.addActionListener(this);
+            mainPanel.add(nameField);
+            add(mainPanel);
+        } catch (IOException ex) {
+            killEverything(socket, in, out);
+        }
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false); 
+        setVisible(true); 
+    }
+
+    private void createBoard() {
         menuBar = new JMenuBar();
         help = new JMenu("Help");
         rules = new JMenuItem("Rules");
@@ -34,7 +61,7 @@ public class Main extends JFrame implements ActionListener {
         help.add(rules);
         menuBar.add(help);
 
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setLayout(new BorderLayout());
         playerInfo = new JPanel(new FlowLayout());
         board = new JPanel(new FlowLayout());
         playerHand = new JPanel(new FlowLayout());
@@ -48,24 +75,8 @@ public class Main extends JFrame implements ActionListener {
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
 
-        // Create the Icon Image for this application
-        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/unologo.png"));
-        setIconImage(unoLogo.getImage());
-
-        try {
-            socket = new Socket(Server.IP_ADDRESS, Server.PORT_NUM);
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-        } catch (IOException ex) {
-            killEverything(socket, in, out);
-        }
-
         setJMenuBar(menuBar);
         add(mainPanel);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false); 
-        setVisible(true); 
     }
 
     public void setIconImage(Image image) {
@@ -94,38 +105,49 @@ public class Main extends JFrame implements ActionListener {
                 socket.close();
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+
         }
+
+        if (mainPanel == null) {
+            mainPanel = new JPanel();
+        }
+
+        else {
+            removeAll();
+        }
+
+        mainPanel.setLayout(new GridBagLayout());
+        errorMessage = new JTextArea("Error");
+        errorMessage.setEditable(false);
+        errorMessage.setOpaque(false);
+        mainPanel.add(errorMessage);
+        add(mainPanel);
+        validate();
     }
 
     public static void main(String[] args) {
         Main client = new Main();
-        client.listenForMessages();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        if (e.getSource() == nameField) {
+            String name = nameField.getText();
+            write(name);
+            nameField.removeActionListener(this);
+            mainPanel.removeAll();
+            remove(mainPanel);
+            createBoard();
+            validate();
+        }
     }
 
-    private void listenForMessages() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String message;
-
-                while(socket.isConnected()) {
-                    try {
-                        message = in.readUTF();
-                        while (message.isEmpty()) {
-                            message = in.readUTF();
-                        }
-                        System.out.println(message);
-                    } catch (IOException ex) {
-
-                    }
-                }
-            }     
-        }).start();
+    private void write(String data) {
+        try {
+            out.writeUTF(data);
+            out.flush();
+        } catch (IOException ex) {
+            killEverything(socket, in, out);
+        }
     }
 }
