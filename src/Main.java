@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.*; 
 
 public class Main extends JFrame implements ActionListener {
 
@@ -53,7 +54,7 @@ public class Main extends JFrame implements ActionListener {
         setVisible(true); 
     }
 
-    private void createBoard() {
+    private void createBoard(java.util.List<Player> list) {
         menuBar = new JMenuBar();
         help = new JMenu("Help");
         rules = new JMenuItem("Rules");
@@ -63,7 +64,7 @@ public class Main extends JFrame implements ActionListener {
 
         mainPanel.setLayout(new BorderLayout());
         playerInfo = new JPanel(new FlowLayout());
-        board = new JPanel(new FlowLayout());
+        board = new JPanel(new GridBagLayout());
         playerHand = new JPanel(new FlowLayout());
 
         playerInfo.add(new JLabel("this works"));
@@ -78,6 +79,8 @@ public class Main extends JFrame implements ActionListener {
         setJMenuBar(menuBar);
         add(mainPanel);
     }
+
+    
 
     public void setIconImage(Image image) {
         super.setIconImage(image);
@@ -148,7 +151,7 @@ public class Main extends JFrame implements ActionListener {
             nameField.removeActionListener(this);
             mainPanel.removeAll();
             remove(mainPanel);
-            createBoard();
+            createBoard(new LinkedList<Player>());
             validate();
         }
     }
