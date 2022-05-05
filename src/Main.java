@@ -67,10 +67,7 @@ public class Main extends JFrame implements ActionListener {
         board = new JPanel(new GridBagLayout());
         playerHand = new JPanel(new FlowLayout());
 
-        playerInfo.add(new JLabel("this works"));
-        board.add(new JLabel("deck")); 
-        board.add(new JLabel("discard"));
-        playerHand.add(new JLabel("cringe"));
+        
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
