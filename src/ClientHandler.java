@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ClientHandler implements Runnable {
 
     private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
-    private static GameBoard board;
+    private static GameState board = new GameState();
 
     private Socket socket;
     private DataInputStream in;
@@ -16,6 +16,10 @@ public class ClientHandler implements Runnable {
             this.socket = socket;
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+
+            String name = read();
+            board.addPlayer(name);
+            
             clientHandlers.add(this);
 
         } catch (IOException ex) {
@@ -24,16 +28,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void brodcastMessage(String message) {
-        for (ClientHandler clientHandler : clientHandlers) {
-            if (clientHandler != this) {
-                try {
-                    clientHandler.out.writeUTF(message);
-                    clientHandler.out.flush();
-                } catch (IOException ex) {
-                    killEverything(socket, in, out);
-                }
-            }
-        }
+        
     }
 
     private void playerLeft() {
@@ -41,6 +36,20 @@ public class ClientHandler implements Runnable {
         if (clientHandlers.size() == 0) {
             board = null;
             // End game
+        }
+    }
+
+    private String read() {
+        try {
+            String message = in.readUTF();
+            while (message.isEmpty()) {
+                message = in.readUTF();
+            }
+
+            return message;
+        } catch (IOException ex) {
+            killEverything(socket, in, out);
+            return null;
         }
     }
 
@@ -69,16 +78,7 @@ public class ClientHandler implements Runnable {
         String input;
 
         while (socket.isConnected()) {
-            try {
-                input = in.readUTF();
-                while(input.isEmpty()) {
-                    input = in.readUTF();
-                }
-                brodcastMessage(input);
-            } catch (IOException ex) {
-                killEverything(socket, in, out);
-                break;
-            }
+            input = read();
         } 
     }
 }
