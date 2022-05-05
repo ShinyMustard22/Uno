@@ -2,6 +2,11 @@ import java.io.*;
 import java.net.Socket;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.text.Element;
+import javax.swing.text.TableView.TableRow;
+
 import java.awt.event.*;
 import java.util.*; 
 
@@ -54,7 +59,9 @@ public class Main extends JFrame implements ActionListener {
         setVisible(true); 
     }
 
-    private void createBoard(java.util.List<Player> list) {
+    private void createBoard(String[] list) {
+        String[] nlist = {"bob", "joe", "not bob", "not joe"};
+        list = nlist; 
         menuBar = new JMenuBar();
         help = new JMenu("Help");
         rules = new JMenuItem("Rules");
@@ -67,7 +74,15 @@ public class Main extends JFrame implements ActionListener {
         board = new JPanel(new GridBagLayout());
         playerHand = new JPanel(new FlowLayout());
 
-        
+        JTable table = new JTable(); 
+        int i = 0;
+       TableColumn c = new TableColumn(i, list.length);
+        for (String s : list) {
+            table.addColumn(c);
+            table.add(new JLabel(s));
+            i++;
+            
+        }
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
@@ -108,36 +123,31 @@ public class Main extends JFrame implements ActionListener {
 
         }
 
-        if (mainPanel == null) {
-            mainPanel = new JPanel();
-        }
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                if (mainPanel == null) {
+                    mainPanel = new JPanel();
+                }
 
-        else {
-            removeAll();
-        }
+                else {
+                    removeAll();
+                }
 
-        mainPanel.setLayout(new GridBagLayout());
-        errorMessage = new JTextArea("Error");
-        errorMessage.setEditable(false);
-        errorMessage.setOpaque(false);
-        mainPanel.add(errorMessage);
-        add(mainPanel);
-        validate();
+                mainPanel.setLayout(new GridBagLayout());
+                errorMessage = new JTextArea("Error");
+                errorMessage.setEditable(false);
+                errorMessage.setOpaque(false);
+                mainPanel.add(errorMessage);
+                add(mainPanel);
+                validate();
+                return null;
+            }
+        };
     }
 
     public static void main(String[] args) {
         Main client = new Main();
-        SwingWorker<Void, Void> worker = new SwingWorker<Void,Void>() {
-
-            @Override
-            protected Void doInBackground()
-                throws Exception
-            {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-        };
     }
 
     @Override
@@ -148,7 +158,7 @@ public class Main extends JFrame implements ActionListener {
             nameField.removeActionListener(this);
             mainPanel.removeAll();
             remove(mainPanel);
-            createBoard(new LinkedList<Player>());
+            createBoard(new String[4]);
             validate();
         }
     }
