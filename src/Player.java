@@ -18,4 +18,12 @@ public class Player {
         return null;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public int getHandSize() {
+        return hand.size();
+    }
+
 }
