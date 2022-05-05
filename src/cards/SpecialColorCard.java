@@ -6,7 +6,7 @@ public abstract class SpecialColorCard extends ColorCard {
 
     public SpecialColorCard(String color, String effect) {
         super(color);
-        if (!effect.equals(DrawTwo.EFFECT) || !effect.equals(ReverseCard.EFFECT) || !effect.equals(SkipCard.EFFECT)) {
+        if (!effect.equals(DrawTwo.EFFECT) && !effect.equals(ReverseCard.EFFECT) && !effect.equals(SkipCard.EFFECT)) {
             throw new IllegalArgumentException("\"" + effect + "\" is not a valid effect.");
         }
         this.effect = effect;
