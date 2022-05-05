@@ -1,14 +1,10 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.text.Element;
-import javax.swing.text.TableView.TableRow;
-
 import java.awt.event.*;
-import java.util.*; 
 
 public class Main extends JFrame implements ActionListener {
 
@@ -59,9 +55,12 @@ public class Main extends JFrame implements ActionListener {
         setVisible(true); 
     }
 
-    private void createBoard(String[] list) {
-        String[] nlist = {"bob", "joe", "not bob", "not joe"};
-        list = nlist; 
+    private void createBoard(java.util.List<Player> players) {
+        // TESTING
+        players = new LinkedList<Player>();
+        players.add(new Player("bruh", new LinkedList<>()));
+        players.add(new Player("cringe", new LinkedList<>()));
+
         menuBar = new JMenuBar();
         help = new JMenu("Help");
         rules = new JMenuItem("Rules");
@@ -74,15 +73,17 @@ public class Main extends JFrame implements ActionListener {
         board = new JPanel(new GridBagLayout());
         playerHand = new JPanel(new FlowLayout());
 
-        JTable table = new JTable(); 
-        int i = 0;
-       TableColumn c = new TableColumn(i, list.length);
-        for (String s : list) {
-            table.addColumn(c);
-            table.add(new JLabel(s));
-            i++;
-            
+        String[] columnNames = {"Names", "Number of Cards"};
+        String[][] data = new String[players.size()][columnNames.length];
+        for (int row = 0; row < data.length; row++) {
+            data[row][0] = players.get(row).getUsername();
+            data[row][1] = players.get(row).getHandSize() + "";
         }
+
+        JTable playerTable = new JTable(data, columnNames);
+        playerTable.setOpaque(false);
+        playerTable.setEnabled(false);
+        playerInfo.add(playerTable);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
@@ -123,27 +124,21 @@ public class Main extends JFrame implements ActionListener {
 
         }
 
-        new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                if (mainPanel == null) {
-                    mainPanel = new JPanel();
-                }
+        if (mainPanel == null) {
+            mainPanel = new JPanel();
+        }
 
-                else {
-                    removeAll();
-                }
+        else {
+            removeAll();
+        }
 
-                mainPanel.setLayout(new GridBagLayout());
-                errorMessage = new JTextArea("Error");
-                errorMessage.setEditable(false);
-                errorMessage.setOpaque(false);
-                mainPanel.add(errorMessage);
-                add(mainPanel);
-                validate();
-                return null;
-            }
-        };
+        mainPanel.setLayout(new GridBagLayout());
+        errorMessage = new JTextArea("Error");
+        errorMessage.setEditable(false);
+        errorMessage.setOpaque(false);
+        mainPanel.add(errorMessage);
+        add(mainPanel);
+        validate();
     }
 
     public static void main(String[] args) {
@@ -155,10 +150,9 @@ public class Main extends JFrame implements ActionListener {
         if (e.getSource() == nameField) {
             String name = nameField.getText();
             write(name);
-            nameField.removeActionListener(this);
             mainPanel.removeAll();
             remove(mainPanel);
-            createBoard(new String[4]);
+            createBoard(null);
             validate();
         }
     }
