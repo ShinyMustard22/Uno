@@ -127,6 +127,17 @@ public class Main extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         Main client = new Main();
+        SwingWorker<Void, Void> worker = new SwingWorker<Void,Void>() {
+
+            @Override
+            protected Void doInBackground()
+                throws Exception
+            {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            
+        };
     }
 
     @Override
