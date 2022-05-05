@@ -6,4 +6,9 @@ public class ReverseCard extends SpecialColorCard {
     public ReverseCard(String c) {
         super(c, EFFECT);
     }
+
+    @Override
+    public Type getType(){
+        return Type.reverse;
+    }
 }

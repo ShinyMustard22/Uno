@@ -12,4 +12,11 @@ public class Player {
         this.hand = hand;
     }
 
+    public Card play(Card prev, int index){
+        if (hand.get(index).playable(prev)){
+            return hand.remove(index);
+        }
+        return null;
+    }
+
 }

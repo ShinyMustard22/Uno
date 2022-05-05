@@ -7,4 +7,9 @@ public class SkipCard extends SpecialColorCard {
     public SkipCard(String c){
         super(c, EFFECT);
     }
+
+    @Override
+    public Type getType(){
+        return Type.skip;
+    }
 }
