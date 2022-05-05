@@ -1,31 +1,31 @@
 import java.util.*;
 import cards.*;
 
-public class GameBoard {
+public class GameState {
     
     private Queue<Card> deck;
     private Stack<Card> discardPile;
-    private ArrayList<Player> players;
+    private LinkedHashMap<String, Player> players;
     private boolean gameStarted;
 
-    public GameBoard() {
+    public GameState() {
         deck = new Deck();
         discardPile = new Stack<Card>();
-        players = new ArrayList<Player>();
+        players = new LinkedHashMap<String, Player>();
         gameStarted = false;
     }
 
     public void addPlayer(String username) {
-        if (gameStarted) {
+        if (gameStarted || username == null) {
             return;
         }
         
         List<Card> hand = new LinkedList<Card>();
         for (int count = 0; count < 7; count++) {
-            hand.add(deck.poll());
+            hand.add(deck.remove());
         }
 
-        players.add(new Player(username, hand));
+        players.put(username, new Player(username, hand));
 
         if (players.size() >= 10) {
             gameStarted = true;
