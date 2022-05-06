@@ -26,4 +26,9 @@ public class Player {
         return hand.size();
     }
 
+    public boolean equals(Object other) {
+        Player player = (Player) other;
+        return player.username.equals(username);
+    }
+
 }
