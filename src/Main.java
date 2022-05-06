@@ -18,6 +18,8 @@ public class Main extends JFrame implements ActionListener {
     private JMenuItem rules;
     private JTextField nameField;
     private JTextArea errorMessage;
+    private JLabel waiting;
+    private JButton startGame;
       
     private JPanel mainPanel, playerInfo, board, playerHand;
     private JTable playerTable;
@@ -25,6 +27,8 @@ public class Main extends JFrame implements ActionListener {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+
+    private LinkedList<Player> players;
 
     public Main() {
         super("Uno"); 
@@ -47,6 +51,7 @@ public class Main extends JFrame implements ActionListener {
             nameField.addActionListener(this);
             mainPanel.add(nameField);
             add(mainPanel);
+            players = new LinkedList<Player>();
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
@@ -56,9 +61,8 @@ public class Main extends JFrame implements ActionListener {
         setVisible(true); 
     }
 
-    private void createBoard(java.util.List<Player> players) {
+    private void createBoard() {
         // TESTING
-        players = new LinkedList<Player>();
         players.add(new Player("bruh", new LinkedList<>()));
         players.add(new Player("cringe", new LinkedList<>()));
         players.add(new Player("bruh", new LinkedList<>()));
@@ -101,6 +105,18 @@ public class Main extends JFrame implements ActionListener {
             (int) playerTable.getMinimumSize().getHeight()));
         playerTable.setFillsViewportHeight(true);
         playerInfo.add(new JScrollPane(playerTable));
+
+        if (players.size() > 1) {
+            waiting = new JLabel("Waiting for the game to start...");
+            waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
+            board.add(waiting);
+        }
+
+        else {
+            startGame  = new JButton("Start the game...");
+            startGame.addActionListener(this);
+            board.add(startGame);
+        }
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
@@ -167,7 +183,7 @@ public class Main extends JFrame implements ActionListener {
             write(name);
             mainPanel.removeAll();
             remove(mainPanel);
-            createBoard(null);
+            createBoard();
             validate();
         }
     }
