@@ -6,11 +6,14 @@ public class GameState {
     private Queue<Card> deck;
     private Stack<Card> discardPile;
     private LinkedList<Player> players;
+    private ListIterator<Player> turn;
+    private Player currentPlayer;
     private boolean gameStarted;
 
     public GameState() {
         deck = new Deck();
         discardPile = new Stack<Card>();
+        discardPile.push(deck.remove());
         players = new LinkedList<Player>();
         gameStarted = false;
     }
@@ -29,9 +32,31 @@ public class GameState {
         players.add(player);
 
         if (players.size() >= 10) {
-            gameStarted = true;
+            startGame();
         }
 
         return player;
+    }
+
+    public boolean startGame() {
+        if (players.size() >= 2 && !gameStarted) {
+            gameStarted = true;
+            turn = players.listIterator();
+            currentPlayer = turn.next();
+        }
+
+        return gameStarted;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public boolean gameHasStarted() {
+        return gameStarted;
+    }
+
+    public void play(String input) {
+        // decode the message & update the game state
     }
 }
