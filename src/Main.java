@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -10,6 +9,7 @@ public class Main extends JFrame implements ActionListener {
 
     private static final int width = 800;
     private static final int height = 600;
+    private static final int margin = 20;
 
     private Taskbar taskbar;
 
@@ -20,6 +20,7 @@ public class Main extends JFrame implements ActionListener {
     private JTextArea errorMessage;
       
     private JPanel mainPanel, playerInfo, board, playerHand;
+    private JTable playerTable;
 
     private Socket socket;
     private DataInputStream in;
@@ -60,6 +61,14 @@ public class Main extends JFrame implements ActionListener {
         players = new LinkedList<Player>();
         players.add(new Player("bruh", new LinkedList<>()));
         players.add(new Player("cringe", new LinkedList<>()));
+        players.add(new Player("bruh", new LinkedList<>()));
+        players.add(new Player("cringe", new LinkedList<>()));
+        players.add(new Player("bruh", new LinkedList<>()));
+        players.add(new Player("cringe", new LinkedList<>()));
+        players.add(new Player("bruh", new LinkedList<>()));
+        players.add(new Player("cringe", new LinkedList<>()));
+        players.add(new Player("bruh", new LinkedList<>()));
+        players.add(new Player("cringe", new LinkedList<>()));
 
         menuBar = new JMenuBar();
         help = new JMenu("Help");
@@ -73,17 +82,25 @@ public class Main extends JFrame implements ActionListener {
         board = new JPanel(new GridBagLayout());
         playerHand = new JPanel(new FlowLayout());
 
-        String[] columnNames = {"Names", "Number of Cards"};
-        String[][] data = new String[players.size()][columnNames.length];
-        for (int row = 0; row < data.length; row++) {
-            data[row][0] = players.get(row).getUsername();
-            data[row][1] = players.get(row).getHandSize() + "";
+        String[] columnNames = new String[players.size()];
+        String[][] data = new String[1][columnNames.length];
+        for (int i = 0; i < columnNames.length; i++) {
+            Player player = players.get(i);
+            columnNames[i] = player.getUsername();
+            data[0][i] = player.getHandSize() + "";
         }
 
-        JTable playerTable = new JTable(data, columnNames);
-        playerTable.setOpaque(false);
+        playerTable = new JTable(data, columnNames);
         playerTable.setEnabled(false);
-        playerInfo.add(playerTable);
+
+        playerTable.setGridColor(Color.BLACK);
+        playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
+        playerTable.getTableHeader().setReorderingAllowed(false);
+
+        playerTable.setPreferredScrollableViewportSize(new Dimension(width - margin, 
+            (int) playerTable.getMinimumSize().getHeight()));
+        playerTable.setFillsViewportHeight(true);
+        playerInfo.add(new JScrollPane(playerTable));
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
@@ -91,9 +108,7 @@ public class Main extends JFrame implements ActionListener {
 
         setJMenuBar(menuBar);
         add(mainPanel);
-    }
-
-    
+    }  
 
     public void setIconImage(Image image) {
         super.setIconImage(image);
