@@ -10,6 +10,8 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    
+    private Player player;
 
     public ClientHandler(Socket socket) {
         try {
@@ -18,24 +20,12 @@ public class ClientHandler implements Runnable {
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
             String name = read();
-            board.addPlayer(name);
+            player = board.addPlayer(name);
             
             clientHandlers.add(this);
 
         } catch (IOException ex) {
             killEverything(socket, in, out);
-        }
-    }
-
-    private void brodcastMessage(String message) {
-        
-    }
-
-    private void playerLeft() {
-        clientHandlers.remove(this);
-        if (clientHandlers.size() == 0) {
-            board = null;
-            // End game
         }
     }
 
@@ -54,8 +44,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void killEverything(Socket socket, DataInputStream in, DataOutputStream out) {
-        playerLeft();
-
         try {
             if (in != null) {
                 in.close();
