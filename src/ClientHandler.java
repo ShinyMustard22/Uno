@@ -3,8 +3,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
-
-    private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
     private static GameState board = new GameState();
 
     private Socket socket;
@@ -21,9 +19,6 @@ public class ClientHandler implements Runnable {
 
             String name = read();
             player = board.addPlayer(name);
-            
-            clientHandlers.add(this);
-
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
@@ -66,7 +61,10 @@ public class ClientHandler implements Runnable {
         String input;
 
         while (socket.isConnected()) {
-            input = read();
+            while (board.gameHasStarted() && board.getCurrentPlayer().equals(player)) {
+                input = read();
+                // do something
+            }
         } 
     }
 }
