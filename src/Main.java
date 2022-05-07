@@ -7,10 +7,11 @@ import java.awt.event.*;
 
 public class Main extends JFrame implements ActionListener {
 
-    private static final int width = 800;
+    private static final int width  = 800;
     private static final int height = 600;
     private static final int margin = 20;
 
+    private static Main client;
     private Taskbar taskbar;
 
     private JMenuBar menuBar;
@@ -18,9 +19,9 @@ public class Main extends JFrame implements ActionListener {
     private JMenuItem rules;
     private JTextField nameField;
     private JTextArea errorMessage;
-    private JLabel waiting;
+    private JLabel enterNamePrompt, waiting;
     private JButton startGame;
-      
+
     private JPanel mainPanel, playerInfo, board, playerHand;
     private JTable playerTable;
 
@@ -28,10 +29,10 @@ public class Main extends JFrame implements ActionListener {
     private DataInputStream in;
     private DataOutputStream out;
 
-    private LinkedList<Player> players;
+    private LinkedHashMap<String, Integer> players;
 
     public Main() {
-        super("Uno"); 
+        super("Uno");
         setBounds(0, 0, width, height);
 
         taskbar = Taskbar.getTaskbar();
@@ -46,85 +47,91 @@ public class Main extends JFrame implements ActionListener {
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
             mainPanel = new JPanel(new GridBagLayout());
-            mainPanel.add(new JLabel("Please enter your name: "));
+            enterNamePrompt = new JLabel("Please enter your name:");
             nameField = new JTextField(10);
             nameField.addActionListener(this);
+            mainPanel.add(enterNamePrompt);
             mainPanel.add(nameField);
             add(mainPanel);
-            players = new LinkedList<Player>();
+            players = new LinkedHashMap<String, Integer>();
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false); 
-        setVisible(true); 
+        setResizable(false);
+        setVisible(true);
     }
 
+
     private void createBoard() {
-        // TESTING
-        players.add(new Player("bruh", new LinkedList<>()));
-        players.add(new Player("cringe", new LinkedList<>()));
-        players.add(new Player("bruh", new LinkedList<>()));
-        players.add(new Player("cringe", new LinkedList<>()));
-        players.add(new Player("bruh", new LinkedList<>()));
-        players.add(new Player("cringe", new LinkedList<>()));
-        players.add(new Player("bruh", new LinkedList<>()));
-        players.add(new Player("cringe", new LinkedList<>()));
-        players.add(new Player("bruh", new LinkedList<>()));
-        players.add(new Player("cringe", new LinkedList<>()));
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                menuBar = new JMenuBar();
+                help = new JMenu("Help");
+                rules = new JMenuItem("Rules");
 
-        menuBar = new JMenuBar();
-        help = new JMenu("Help");
-        rules = new JMenuItem("Rules");
-        
-        help.add(rules);
-        menuBar.add(help);
+                help.add(rules);
+                menuBar.add(help);
 
-        mainPanel.setLayout(new BorderLayout());
-        playerInfo = new JPanel(new FlowLayout());
-        board = new JPanel(new GridBagLayout());
-        playerHand = new JPanel(new FlowLayout());
+                mainPanel.setLayout(new BorderLayout());
+                playerInfo = new JPanel(new FlowLayout());
+                board = new JPanel(new GridBagLayout());
+                playerHand = new JPanel(new FlowLayout());
 
-        String[] columnNames = new String[players.size()];
-        String[][] data = new String[1][columnNames.length];
-        for (int i = 0; i < columnNames.length; i++) {
-            Player player = players.get(i);
-            columnNames[i] = player.getUsername();
-            data[0][i] = player.getHandSize() + "";
-        }
+                String[] columnNames = new String[players.size()];
+                String[][] data = new String[1][columnNames.length];
+                Iterator<String> playerNames = players.keySet().iterator();
+                int i = 0;
+                while(playerNames.hasNext()) {
+                    String playerName = playerNames.next();
+                    columnNames[i] = playerName;
+                    data[0][i] = players.get(playerName) + "";
+                    i++;
+                }
 
-        playerTable = new JTable(data, columnNames);
-        playerTable.setEnabled(false);
+                playerTable = new JTable(data, columnNames);
+                playerTable.setEnabled(false);
 
-        playerTable.setGridColor(Color.BLACK);
-        playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
-        playerTable.getTableHeader().setReorderingAllowed(false);
+                playerTable.setGridColor(Color.BLACK);
+                playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
+                playerTable.getTableHeader().setReorderingAllowed(false);
 
-        playerTable.setPreferredScrollableViewportSize(new Dimension(width - margin, 
-            (int) playerTable.getMinimumSize().getHeight()));
-        playerTable.setFillsViewportHeight(true);
-        playerInfo.add(new JScrollPane(playerTable));
+                playerTable.setPreferredScrollableViewportSize(
+                    new Dimension(width - margin, (int)playerTable.getMinimumSize().getHeight()));
+                playerTable.setFillsViewportHeight(true);
+                playerInfo.add(new JScrollPane(playerTable));
 
-        if (players.size() > 1) {
-            waiting = new JLabel("Waiting for the game to start...");
-            waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
-            board.add(waiting);
-        }
+                if (players.size() > 1) {
+                    waiting = new JLabel("Waiting for the game to start...");
+                    waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
+                    board.add(waiting);
+                }
 
-        else {
-            startGame  = new JButton("Start the game...");
-            startGame.addActionListener(this);
-            board.add(startGame);
-        }
+                else {
+                    startGame = new JButton("Start the game...");
+                    startGame.setFont(new Font(startGame.getFont().getName(), Font.PLAIN, 32));
+                    startGame.addActionListener(client);
+                    board.add(startGame);
+                }
 
-        mainPanel.add(playerInfo, BorderLayout.NORTH);
-        mainPanel.add(board, BorderLayout.CENTER);
-        mainPanel.add(playerHand, BorderLayout.SOUTH);
+                mainPanel.add(playerInfo, BorderLayout.NORTH);
+                mainPanel.add(board, BorderLayout.CENTER);
+                mainPanel.add(playerHand, BorderLayout.SOUTH);
+                mainPanel.revalidate();
+                mainPanel.repaint();
 
-        setJMenuBar(menuBar);
-        add(mainPanel);
-    }  
+                setJMenuBar(menuBar);
+                add(mainPanel);
+                validate();
+                repaint();
+                return null;
+            }
+            
+        }.execute();
+    }
+
 
     public void setIconImage(Image image) {
         super.setIconImage(image);
@@ -160,7 +167,7 @@ public class Main extends JFrame implements ActionListener {
         }
 
         else {
-            removeAll();
+            remove(mainPanel);
         }
 
         mainPanel.setLayout(new GridBagLayout());
@@ -173,7 +180,8 @@ public class Main extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        Main client = new Main();
+        client = new Main();
+        client.listenForMessages();
     }
 
     @Override
@@ -182,9 +190,28 @@ public class Main extends JFrame implements ActionListener {
             String name = nameField.getText();
             write(name);
             mainPanel.removeAll();
-            remove(mainPanel);
-            createBoard();
-            validate();
+            mainPanel.revalidate();
+            mainPanel.repaint();
+            revalidate();
+            repaint();
+        }
+
+        else if (e.getSource() == startGame) {
+            // Do something
+        }
+    }
+
+    private String read() {
+        try {
+            String message = in.readUTF();
+            while (message.isEmpty()) {
+                message = in.readUTF();
+            }
+
+            return message;
+        } catch (IOException ex) {
+            killEverything(socket, in, out);
+            return null;
         }
     }
 
@@ -195,5 +222,30 @@ public class Main extends JFrame implements ActionListener {
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
+    }
+
+    private void decode(String data) {
+        if (data.contains("-playerList: ")) {
+            String strPlayers = data.substring(13);
+            String[] arrPlayers = strPlayers.split(" ");
+            for (int i = 0; i < arrPlayers.length; i++) {
+                players.put(arrPlayers[i], Player.STARTING_HAND_SIZE);
+            }
+            createBoard();
+        }
+    }
+
+    private void listenForMessages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String data;
+
+                while(socket.isConnected()) {
+                    data = read();
+                    decode(data);
+                }
+            }     
+        }).start();
     }
 }

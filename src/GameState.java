@@ -24,7 +24,7 @@ public class GameState {
         }
         
         List<Card> hand = new LinkedList<Card>();
-        for (int count = 0; count < 7; count++) {
+        for (int count = 0; count < Player.STARTING_HAND_SIZE; count++) {
             hand.add(deck.remove());
         }
 
@@ -54,6 +54,15 @@ public class GameState {
 
     public boolean gameHasStarted() {
         return gameStarted;
+    }
+
+    public String getPlayerList() {
+        ListIterator<Player> iter = players.listIterator();
+        String playerList = "-playerList:";
+        while(iter.hasNext()) {
+            playerList += " " + iter.next().getUsername();
+        }
+        return playerList;
     }
 
     public void play(String input) {

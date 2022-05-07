@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
+    private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
     private static GameState board = new GameState();
 
     private Socket socket;
@@ -17,8 +18,10 @@ public class ClientHandler implements Runnable {
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
+            clientHandlers.add(this);
             String name = read();
             player = board.addPlayer(name);
+            write(board.getPlayerList());
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
@@ -35,6 +38,15 @@ public class ClientHandler implements Runnable {
         } catch (IOException ex) {
             killEverything(socket, in, out);
             return null;
+        }
+    }
+
+    private void write(String message) {
+        try {
+            out.writeUTF(message);
+            out.flush();
+        } catch (IOException ex) {
+            killEverything(socket, in, out);
         }
     }
 
