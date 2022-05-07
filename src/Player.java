@@ -2,6 +2,7 @@ import java.util.List;
 import cards.Card;
 
 public class Player {
+    public static final int STARTING_HAND_SIZE = 7;
 
     private String username;
     private List<Card> hand;
