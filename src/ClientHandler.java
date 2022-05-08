@@ -18,10 +18,14 @@ public class ClientHandler implements Runnable {
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
-            clientHandlers.add(this);
             String name = read();
             player = board.addPlayer(name);
-            write(board.getPlayerList());
+            write("-playerList:" + board.getPlayerList());
+
+            for (ClientHandler clientHandler : clientHandlers) {
+                clientHandler.write("-addPlayer: " + name);
+            }
+            clientHandlers.add(this);
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
@@ -51,6 +55,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void killEverything(Socket socket, DataInputStream in, DataOutputStream out) {
+        board.removePlayer(player);
         try {
             if (in != null) {
                 in.close();
