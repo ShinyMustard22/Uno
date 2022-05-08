@@ -38,6 +38,10 @@ public class GameState {
         return player;
     }
 
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
     public boolean startGame() {
         if (players.size() >= 2 && !gameStarted) {
             gameStarted = true;
@@ -58,7 +62,7 @@ public class GameState {
 
     public String getPlayerList() {
         ListIterator<Player> iter = players.listIterator();
-        String playerList = "-playerList:";
+        String playerList = "";
         while(iter.hasNext()) {
             playerList += " " + iter.next().getUsername();
         }
