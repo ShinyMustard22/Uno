@@ -19,7 +19,7 @@ public class GameState {
     }
 
     public Player addPlayer(String username) {
-        if (gameStarted || username == null) {
+        if (gameStarted) {
             return null;
         }
         
@@ -64,7 +64,10 @@ public class GameState {
         ListIterator<Player> iter = players.listIterator();
         String playerList = "";
         while(iter.hasNext()) {
-            playerList += " " + iter.next().getUsername();
+            playerList += iter.next().getUsername();
+            if (iter.hasNext()) {
+                playerList += " ";
+            }
         }
         return playerList;
     }
