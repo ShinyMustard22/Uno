@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.ListIterator;
 import cards.Card;
 
 public class Player {
@@ -30,6 +31,19 @@ public class Player {
     public boolean equals(Object other) {
         Player player = (Player) other;
         return player.username.equals(username);
+    }
+
+    public String getCardList() {
+        String cardList = "";
+        ListIterator<Card> iter = hand.listIterator();
+        while (iter.hasNext()) {
+            cardList += iter.next().toString();
+            if (iter.hasNext()) {
+                cardList += " ";
+            }
+        }
+
+        return cardList;
     }
 
 }

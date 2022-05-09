@@ -167,6 +167,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
+        
+        write(Server.PLAYER_HAND);
     }
     
     private void createHand()  {
@@ -209,6 +211,16 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                 else if (data.contains(Server.GAME_STARTED)) {
                     createBoard();
+                }
+
+                else if (data.contains(Server.PLAYER_HAND)) {
+                    String[] strPlayerHand = data.substring(Server.PLAYER_HAND.length()).split(" ");
+                    for (String card : strPlayerHand) {
+                        // Replace path with "/images/card.toString()" + ".png"
+                        ImageIcon icon = new ImageIcon(getClass().getResource("/images/back.png"));
+                        hand.add(new JButton(icon));
+                    }
+                    createHand();
                 }
 
                 return null;

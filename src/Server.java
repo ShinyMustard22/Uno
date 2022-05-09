@@ -14,6 +14,7 @@ public class Server {
     public static final String TAKEN_USERNAME = "takenName: ";
     public static final String SET_LEADER = "setLeader: ";
     public static final String GAME_STARTED = "startGame: ";
+    public static final String PLAYER_HAND = "hand: ";
     
 
     private ServerSocket serverSocket;
