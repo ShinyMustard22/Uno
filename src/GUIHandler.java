@@ -19,12 +19,15 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JTextArea errorMessage;
     private JLabel invalidName, enterNamePrompt, waiting;
     private JButton startGame;
+    private JButton deck;
+    private JLabel discardPile;
 
     private JPanel mainPanel, playerInfo, board, playerHand;
     private JTable playerTable;
+    private LinkedList<JButton> hand;
 
     private LinkedHashMap<String, Integer> players;
-
+    
     private DataOutputStream out;
 
     public GUIHandler(DataOutputStream out) {
@@ -36,7 +39,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         taskbar = Taskbar.getTaskbar();
 
         // Create the Icon Image for this application
-        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/unologo.png"));
+        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/logo.png"));
         setIconImage(unoLogo.getImage());
 
         mainPanel = new JPanel(new BorderLayout());
@@ -64,9 +67,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         players = new LinkedHashMap<String, Integer>();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
         setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void setIconImage(Image image) {
@@ -81,7 +83,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
-    private void createBoard() {
+    private void waitingScreen() {
         board.removeAll();
         playerHand.removeAll();
 
@@ -94,9 +96,16 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         updateTable();
 
-        waiting = new JLabel("Waiting for the game to start...");
-        waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
-        board.add(waiting);
+        // waiting = new JLabel("Waiting for the game to start...");
+        // waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
+        // board.add(waiting);
+
+        startGame = new JButton("Start Game");
+        startGame.addActionListener(this);
+        board.add(startGame);
+
+        // ImageIcon redOne = new ImageIcon(getClass().getResource("/images/logo.png"));
+        // board.add(new JLabel(redOne));
 
         board.revalidate();
         board.repaint();
@@ -141,6 +150,33 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
+    private void createBoard() {
+        board.removeAll();
+
+        ImageIcon back = new ImageIcon(getClass().getResource("/images/back.png"));
+        deck = new JButton(back);
+        board.add(deck);  
+        deck.addActionListener(this);
+        
+        ImageIcon lastCard = new ImageIcon(getClass().getResource("/images/back.png"));
+        discardPile = new JLabel(lastCard);
+        board.add(discardPile);
+
+        board.revalidate();
+        board.repaint();
+
+        revalidate();
+        repaint();
+    }
+    
+    private void createHand()  {
+        playerHand.revalidate();
+        playerHand.repaint();
+
+        revalidate();
+        repaint();
+    }
+
     public void decode(String data) {
         new SwingWorker<Void, Void>() {
             @Override
@@ -150,7 +186,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                     for (String player : playerList) {
                         players.put(player, Player.STARTING_HAND_SIZE);
                     }
-                    createBoard();
+                    waitingScreen();
                 }
         
                 else if (data.contains(Server.ADD_PLAYER)) {
@@ -171,6 +207,10 @@ public class GUIHandler extends JFrame implements ActionListener {
                     invalidName.setText("This username has been taken...");
                 }
 
+                else if (data.contains(Server.GAME_STARTED)) {
+                    createBoard();
+                }
+
                 return null;
             }
         }.execute();
@@ -179,11 +219,12 @@ public class GUIHandler extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nameField) {
-            write(nameField.getText());
+            write(Server.NAME + nameField.getText());
         }
+        
 
         else if (e.getSource() == startGame) {
-            // Do something
+            write(Server.GAME_STARTED);
         }
     }
 
