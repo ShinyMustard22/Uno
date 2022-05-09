@@ -19,16 +19,39 @@ public class ClientHandler implements Runnable {
             out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
             String name = read();
+
+            while (name.contains(" ") || alreadyUsedName(name)) {
+                if (name.contains(" ")) {
+                    write(Server.INVALID_USERNAME);
+                }
+                
+                else {
+                    write(Server.TAKEN_USERNAME);
+                }
+                
+                name = read();
+            }
+
             player = board.addPlayer(name);
-            write("-playerList:" + board.getPlayerList());
+            write(Server.INIT_PLAYER_LIST + board.getPlayerList());
 
             for (ClientHandler clientHandler : clientHandlers) {
-                clientHandler.write("-addPlayer: " + name);
+                clientHandler.write(Server.ADD_PLAYER + name);
             }
             clientHandlers.add(this);
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
+    }
+
+    private boolean alreadyUsedName(String name) {
+        for (ClientHandler clientHandler : clientHandlers) {
+            if (name.equals(clientHandler.player.getUsername())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private String read() {
