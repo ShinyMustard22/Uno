@@ -17,19 +17,15 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JMenuItem rules;
     private JTextField nameField;
     private JTextArea errorMessage;
-    private JLabel enterNamePrompt, waiting;
+    private JLabel invalidName, enterNamePrompt, waiting;
     private JButton startGame;
 
-    private JPanel playerInfo, board, playerHand;
+    private JPanel mainPanel, playerInfo, board, playerHand;
     private JTable playerTable;
 
     private LinkedHashMap<String, Integer> players;
 
     private DataOutputStream out;
-
-    public GUIHandler() {
-
-    }
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -43,13 +39,28 @@ public class GUIHandler extends JFrame implements ActionListener {
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/unologo.png"));
         setIconImage(unoLogo.getImage());
 
+        mainPanel = new JPanel(new BorderLayout());
+
         board = new JPanel(new GridBagLayout());
         enterNamePrompt = new JLabel("Please enter your name:");
         nameField = new JTextField(10);
+        invalidName = new JLabel();
+        invalidName.setForeground(Color.RED);
+        invalidName.setFont(new Font(invalidName.getFont().getName(), Font.PLAIN, 24));
+
         nameField.addActionListener(this);
         board.add(enterNamePrompt);
         board.add(nameField);
-        add(board);
+
+        playerInfo = new JPanel(new FlowLayout());
+        playerHand = new JPanel(new FlowLayout());
+
+        playerHand.add(invalidName);
+
+        mainPanel.add(playerInfo, BorderLayout.NORTH);
+        mainPanel.add(board, BorderLayout.CENTER);
+        mainPanel.add(playerHand, BorderLayout.SOUTH);
+        add(mainPanel);
 
         players = new LinkedHashMap<String, Integer>();
 
@@ -72,6 +83,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void createBoard() {
         board.removeAll();
+        playerHand.removeAll();
 
         menuBar = new JMenuBar();
         help = new JMenu("Help");
@@ -80,24 +92,17 @@ public class GUIHandler extends JFrame implements ActionListener {
         help.add(rules);
         menuBar.add(help);
 
-        playerInfo = new JPanel(new FlowLayout());
-        playerHand = new JPanel(new FlowLayout());
+        updateTable();
 
-        if (players.size() > 1) {
-            waiting = new JLabel("Waiting for the game to start...");
-            waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
-            board.add(waiting);
-        }
-
-        else {
-            startGame = new JButton("Start the game...");
-            startGame.setFont(new Font(startGame.getFont().getName(), Font.PLAIN, 32));
-            startGame.addActionListener(this);
-            board.add(startGame);
-        }
+        waiting = new JLabel("Waiting for the game to start...");
+        waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
+        board.add(waiting);
 
         board.revalidate();
         board.repaint();
+
+        playerHand.revalidate();
+        playerHand.repaint();
 
         revalidate();
         repaint();
@@ -105,21 +110,67 @@ public class GUIHandler extends JFrame implements ActionListener {
         setJMenuBar(menuBar);
     }
 
-    private void addPlayer(String name) {
+    private void updateTable() {
+        playerInfo.removeAll();
 
+        String[] columnNames = new String[players.size()];
+        Object[][] data = new Object[1][players.size()];
+        Iterator<String> iter = players.keySet().iterator();
+        int index = 0;
+
+        while (iter.hasNext()) {
+            String playerName = iter.next();
+            columnNames[index] = playerName;
+            data[0][index] = players.get(playerName);
+            index++;
+        }
+        
+        playerTable = new JTable(data, columnNames);
+        playerTable.setPreferredScrollableViewportSize(new Dimension(width - 10 * 2, playerTable.getMinimumSize().height));
+        playerTable.setFillsViewportHeight(true);
+        playerTable.setOpaque(false);
+        playerTable.setEnabled(false);
+        playerTable.setGridColor(Color.BLACK);
+        playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
+
+        playerInfo.add(new JScrollPane(playerTable));
+        playerInfo.revalidate();
+        playerInfo.repaint();
+
+        revalidate();
+        repaint();
     }
 
     public void decode(String data) {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                if (data.contains("-playerList: ")) {
+                if (data.contains(Server.INIT_PLAYER_LIST)) {
+                    String[] playerList = data.substring(Server.INIT_PLAYER_LIST.length()).split(" ");
+                    for (String player : playerList) {
+                        players.put(player, Player.STARTING_HAND_SIZE);
+                    }
                     createBoard();
                 }
         
-                else if (data.contains("-addPlayer: ")) {
-                    addPlayer(data);
+                else if (data.contains(Server.ADD_PLAYER)) {
+                    players.put(data.substring(Server.ADD_PLAYER.length()), Player.STARTING_HAND_SIZE);
+                    updateTable();
                 }
+
+                else if (data.contains(Server.REMOVE_PLAYER)) {
+                    players.remove(data.substring(Server.REMOVE_PLAYER.length()));
+                    updateTable();
+                }
+
+                else if (data.contains(Server.INVALID_USERNAME)) {
+                    invalidName.setText("This username is invalid...");
+                }
+
+                else if (data.contains(Server.TAKEN_USERNAME)) {
+                    invalidName.setText("This username has been taken...");
+                }
+
                 return null;
             }
         }.execute();
