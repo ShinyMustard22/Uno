@@ -6,6 +6,12 @@ public class Server {
     public static final int PORT_NUM = 6969;
     public static final String IP_ADDRESS = "localhost";
 
+    public static final String INIT_PLAYER_LIST = "playerList: ";
+    public static final String ADD_PLAYER = "addPlayer: ";
+    public static final String REMOVE_PLAYER = "removePlayer: ";
+    public static final String INVALID_USERNAME = "invalidName: ";
+    public static final String TAKEN_USERNAME = "takenName: ";
+
     private ServerSocket serverSocket;
     private Socket socket;
 
