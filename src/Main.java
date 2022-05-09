@@ -2,8 +2,6 @@ import java.io.*;
 import java.net.Socket;
 
 public class Main {
-
-    private static Main client;
     private GUIHandler gui;
 
     private Socket socket;
@@ -38,11 +36,11 @@ public class Main {
             
         }
 
-        System.out.println("ERROR: Cannot connect to server...");
+        System.out.println("ERROR: Communication with the server was interrupted...");
         System.exit(1);
     }
     public static void main(String[] args) {
-        client = new Main();
+        Main client = new Main();
         client.listenForMessages();
     }
 
