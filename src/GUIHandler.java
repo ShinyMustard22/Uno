@@ -2,6 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -175,13 +176,18 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         board.revalidate();
         board.repaint();
-
-        revalidate();
-        repaint();
     }
     
     private void createHand()  {
-        
+        for (JButton card : hand) {
+            playerHand.add(card);
+        }
+
+        playerHand.revalidate();
+        playerHand.repaint();
+
+        revalidate();
+        repaint();
     }
 
     public void decode(String data) {
