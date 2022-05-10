@@ -175,25 +175,30 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void createHand()  {
         String[] cards = new String[108];
         
-        try {
-            File file = new File("allCards.txt"); 
-            Scanner scanner = new Scanner(file);
+    //     try {
+    //         File file = new File("allCardsFilePaths.txt"); 
+    //         Scanner scanner = new Scanner(file);
             
-            for (String c: cards) {
-                c = scanner.nextLine(); 
-            }
-        } catch (Exception e) {
-            System.out.println("could not find"); 
-        }
+    //         for (String c: cards) {
+    //             c = scanner.nextLine(); 
+    //         }
+    //     } catch (Exception e) {
+    //         System.out.println("could not find"); 
+    //     }
         
-        System.out.println("hi");
-        playerHand.revalidate();
-        playerHand.repaint();
+    //    //System.out.println("hi");
+    //     playerHand.revalidate();
+    //     playerHand.repaint();
 
-        for (int i = 0; i < 7; i++) {
-            hand.set(i, new JButton(new ImageIcon(cards[i])));
-            playerHand.add(hand.get(i)); 
-        }
+    //     for (int i = 0; i < 7; i++) {
+    //         hand.set(i, new JButton(new ImageIcon(cards[i])));
+    //         playerHand.add(hand.get(i)); 
+    //         hand.get(i).addActionListener(this);
+    //     }
+        ImageIcon test = new ImageIcon(getClass().getResource("/images/uno_card_blue0.png"));
+        JButton b = new JButton(test);
+        playerHand.add(b);  
+        b.addActionListener(this);
 
         revalidate();
         repaint();
