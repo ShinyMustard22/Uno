@@ -2,6 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -172,9 +173,17 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
     
     private void createHand()  {
+        String[] cards = new String[108];
+        File file = new File("allCards.txt"); 
+        
         System.out.println("hi");
         playerHand.revalidate();
         playerHand.repaint();
+
+        for (int i = 0; i < 7; i++) {
+            hand.set(i, new JButton(new ImageIcon(" ")));
+            playerHand.add(hand.get(i)); 
+        }
 
         revalidate();
         repaint();
