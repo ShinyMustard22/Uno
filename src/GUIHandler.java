@@ -2,14 +2,13 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 public class GUIHandler extends JFrame implements ActionListener {
 
     private static final int width  = 800;
-    private static final int height = 600;
+    private static final int height = 400;
 
     private Taskbar taskbar;
 
@@ -70,6 +69,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
     }
 
     public void setIconImage(Image image) {
@@ -229,7 +229,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                     String[] strPlayerHand = data.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
                     for (String card : strPlayerHand) {
                         // Replace path with "/images/card.toString()" + ".png"
-                        ImageIcon icon = new ImageIcon(getClass().getResource("/images/back.png"));
+                        ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + card.toString() + ".png"));
                         hand.add(new JButton(icon));
                     }
                     createHand();

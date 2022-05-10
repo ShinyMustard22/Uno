@@ -17,7 +17,7 @@ public class WildCard extends Card {
     }
 
     public String toString() {
-        return super.toString() + ":wild";
+        return super.toString() + "_wild";
     }
     
     @Override
