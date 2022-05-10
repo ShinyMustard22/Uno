@@ -104,7 +104,7 @@ public class ClientHandler implements Runnable {
         }
 
         else if (data.contains(Server.PLAYER_HAND)) {
-            write(Server.PLAYER_HAND);
+            write(Server.PLAYER_HAND + player.getCardList());
         }
     }
 

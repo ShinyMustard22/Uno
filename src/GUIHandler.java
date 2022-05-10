@@ -172,6 +172,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
     
     private void createHand()  {
+        System.out.println("hi");
         playerHand.revalidate();
         playerHand.repaint();
 
@@ -214,6 +215,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                 }
 
                 else if (data.contains(Server.PLAYER_HAND)) {
+                    hand = new LinkedList<JButton>();
                     String[] strPlayerHand = data.substring(Server.PLAYER_HAND.length()).split(" ");
                     for (String card : strPlayerHand) {
                         // Replace path with "/images/card.toString()" + ".png"
