@@ -46,17 +46,28 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void write(String message) {
+    private void write(String data) {
         try {
-            out.writeUTF(message);
+            out.writeUTF(data);
             out.flush();
         } catch (IOException ex) {
             killEverything(socket, in, out);
         }
     }
 
+    private void broadcastMessage(String data) {
+        for (ClientHandler clientHandler : clientHandlers) {
+            if (clientHandler != this) {
+                clientHandler.write(data);
+            }
+        }
+    }
+
     private void killEverything(Socket socket, DataInputStream in, DataOutputStream out) {
         board.removePlayer(player);
+        clientHandlers.remove(this);
+        broadcastMessage(Server.REMOVE_PLAYER + player.getUsername());
+
         try {
             if (in != null) {
                 in.close();
@@ -93,9 +104,7 @@ public class ClientHandler implements Runnable {
             player = board.addPlayer(name);
             write(Server.INIT_PLAYER_LIST + board.getPlayerList());
 
-            for (ClientHandler clientHandler : clientHandlers) {
-                clientHandler.write(Server.ADD_PLAYER + name);
-            }
+            broadcastMessage(Server.ADD_PLAYER + name);
             clientHandlers.add(this);
         }
 
@@ -103,8 +112,18 @@ public class ClientHandler implements Runnable {
             write(Server.GAME_STARTED);
         }
 
-        else if (data.contains(Server.PLAYER_HAND)) {
-            write(Server.PLAYER_HAND + player.getCardList());
+        else if (data.contains(Server.INIT_PLAYER_HAND)) {
+            write(Server.INIT_PLAYER_HAND + player.getCardList());
+        }
+
+        else if (data.contains(Server.AM_LEADER)) {
+            if (clientHandlers.size() > 1) {
+                write(Server.AM_LEADER + "false");
+            }
+
+            else {
+                write(Server.AM_LEADER + "true");
+            }
         }
     }
 

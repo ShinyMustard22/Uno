@@ -96,16 +96,9 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         updateTable();
 
-        // waiting = new JLabel("Waiting for the game to start...");
-        // waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
-        // board.add(waiting);
-
-        startGame = new JButton("Start Game");
-        startGame.addActionListener(this);
-        board.add(startGame);
-
-        // ImageIcon redOne = new ImageIcon(getClass().getResource("/images/logo.png"));
-        // board.add(new JLabel(redOne));
+        waiting = new JLabel("Waiting for the game to start...");
+        waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
+        board.add(waiting);
 
         board.revalidate();
         board.repaint();
@@ -117,6 +110,8 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
 
         setJMenuBar(menuBar);
+
+        write(Server.AM_LEADER);
     }
 
     private void updateTable() {
@@ -168,16 +163,25 @@ public class GUIHandler extends JFrame implements ActionListener {
         revalidate();
         repaint();
         
-        write(Server.PLAYER_HAND);
+        write(Server.INIT_PLAYER_HAND);
     }
-    
-    private void createHand()  {
-        System.out.println("hi");
-        playerHand.revalidate();
-        playerHand.repaint();
+
+    private void makeLeader() {
+        board.removeAll();
+
+        startGame = new JButton("Start Game");
+        startGame.addActionListener(this);
+        board.add(startGame);
+
+        board.revalidate();
+        board.repaint();
 
         revalidate();
         repaint();
+    }
+    
+    private void createHand()  {
+        
     }
 
     public void decode(String data) {
@@ -214,15 +218,21 @@ public class GUIHandler extends JFrame implements ActionListener {
                     createBoard();
                 }
 
-                else if (data.contains(Server.PLAYER_HAND)) {
+                else if (data.contains(Server.INIT_PLAYER_HAND)) {
                     hand = new LinkedList<JButton>();
-                    String[] strPlayerHand = data.substring(Server.PLAYER_HAND.length()).split(" ");
+                    String[] strPlayerHand = data.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
                     for (String card : strPlayerHand) {
                         // Replace path with "/images/card.toString()" + ".png"
                         ImageIcon icon = new ImageIcon(getClass().getResource("/images/back.png"));
                         hand.add(new JButton(icon));
                     }
                     createHand();
+                }
+
+                else if (data.contains(Server.AM_LEADER)) {
+                    if (data.contains("true")) {
+                        makeLeader();
+                    }
                 }
 
                 return null;
