@@ -111,8 +111,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
 
         setJMenuBar(menuBar);
-
-        write(Server.AM_LEADER);
     }
 
     private void updateTable() {
@@ -146,15 +144,15 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private void createBoard() {
+    private void createBoard(String firstCard) {
         board.removeAll();
 
-        ImageIcon back = new ImageIcon(getClass().getResource("/images/back.png"));
-        deck = new JButton(back);
+        ImageIcon faceDown = new ImageIcon(getClass().getResource("/images/card_face_down.png"));
+        deck = new JButton(faceDown);
         board.add(deck);  
         deck.addActionListener(this);
         
-        ImageIcon lastCard = new ImageIcon(getClass().getResource("/images/back.png"));
+        ImageIcon lastCard = new ImageIcon(getClass().getResource("/images/" + firstCard + ".png"));
         discardPile = new JLabel(lastCard);
         board.add(discardPile);
 
@@ -163,8 +161,6 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
-        
-        write(Server.INIT_PLAYER_HAND);
     }
 
     private void makeLeader() {
@@ -190,57 +186,63 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    public void decode(String data) {
+    public void decode(String allStrData) {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                if (data.contains(Server.INIT_PLAYER_LIST)) {
-                    String[] playerList = data.substring(Server.INIT_PLAYER_LIST.length()).split(" ");
-                    for (String player : playerList) {
-                        players.put(player, Player.STARTING_HAND_SIZE);
+                String[] data = allStrData.split("\n");
+
+                for (String strData : data) {
+                    if (strData.contains(Server.INIT_PLAYER_LIST)) {
+                        String[] playerList = strData.substring(Server.INIT_PLAYER_LIST.length()).split(" ");
+                        for (String player : playerList) {
+                            players.put(player, Player.STARTING_HAND_SIZE);
+                        }
+                        waitingScreen();
                     }
-                    waitingScreen();
-                }
-        
-                else if (data.contains(Server.ADD_PLAYER)) {
-                    players.put(data.substring(Server.ADD_PLAYER.length()), Player.STARTING_HAND_SIZE);
-                    updateTable();
-                }
-
-                else if (data.contains(Server.REMOVE_PLAYER)) {
-                    players.remove(data.substring(Server.REMOVE_PLAYER.length()));
-                    updateTable();
-                }
-
-                else if (data.contains(Server.INVALID_USERNAME)) {
-                    invalidName.setText("This username is invalid...");
-                }
-
-                else if (data.contains(Server.TAKEN_USERNAME)) {
-                    invalidName.setText("This username has been taken...");
-                }
-
-                else if (data.contains(Server.GAME_STARTED)) {
-                    createBoard();
-                }
-
-                else if (data.contains(Server.INIT_PLAYER_HAND)) {
-                    hand = new LinkedList<JButton>();
-                    String[] strPlayerHand = data.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
-                    for (String card : strPlayerHand) {
-                        // Replace path with "/images/card.toString()" + ".png"
-                        ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + card.toString() + ".png"));
-                        hand.add(new JButton(icon));
+            
+                    else if (strData.contains(Server.ADD_PLAYER)) {
+                        players.put(strData.substring(Server.ADD_PLAYER.length()), Player.STARTING_HAND_SIZE);
+                        updateTable();
                     }
-                    createHand();
-                }
+    
+                    else if (strData.contains(Server.REMOVE_PLAYER)) {
+                        players.remove(strData.substring(Server.REMOVE_PLAYER.length()));
+                        updateTable();
+                    }
+    
+                    else if (strData.contains(Server.INVALID_USERNAME)) {
+                        invalidName.setText("This username contains illegal characters...");
+                    }
+    
+                    else if (strData.contains(Server.TAKEN_USERNAME)) {
+                        invalidName.setText("This username has been taken...");
+                    }
 
-                else if (data.contains(Server.AM_LEADER)) {
-                    if (data.contains("true")) {
+                    else if (strData.contains(Server.FIRST_CARD)) {
+                        createBoard(strData.substring(Server.FIRST_CARD.length()));
+                    }
+    
+                    else if (strData.contains(Server.INIT_PLAYER_HAND)) {
+                        hand = new LinkedList<JButton>();
+                        String[] strPlayerHand = strData.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
+                        for (String card : strPlayerHand) {
+                            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + card.toString() + ".png"));
+                            hand.add(new JButton(icon));
+                        }
+                        createHand();
+                    }
+    
+                    else if (strData.contains(Server.AM_LEADER)) {
+                        if (strData.contains("true")) {
+                            makeLeader();
+                        }
+                    }
+
+                    else if (strData.contains(Server.SET_LEADER)) {
                         makeLeader();
                     }
                 }
-
                 return null;
             }
         }.execute();
