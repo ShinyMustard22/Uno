@@ -25,6 +25,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JPanel mainPanel, playerInfo, board, playerHand;
     private JTable playerTable;
     private LinkedList<JButton> hand;
+    private LinkedList<String> strHand;
 
     private LinkedHashMap<String, Integer> players;
     
@@ -185,6 +186,31 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
+    } 
+
+    private void updateDiscardPile(String card) {
+        discardPile.setIcon(new ImageIcon(getClass().getResource("/images/" + card + ".png")));
+
+        board.revalidate();
+        board.repaint();
+
+        revalidate();
+        repaint();
+    }
+
+    private void removeCard(String card) {
+        int i = strHand.indexOf(card);
+        playerHand.remove(hand.get(i)); 
+
+        strHand.remove(i); 
+        hand.remove(i);
+
+        playerHand.revalidate();
+        playerHand.repaint();
+
+        revalidate();
+        repaint(); 
+
     }
 
     public void decode(String allStrData) {
@@ -226,10 +252,12 @@ public class GUIHandler extends JFrame implements ActionListener {
     
                     else if (strData.contains(Server.INIT_PLAYER_HAND)) {
                         hand = new LinkedList<JButton>();
+                        strHand = new LinkedList<String>();
                         String[] strPlayerHand = strData.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
                         for (String card : strPlayerHand) {
                             ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + card.toString() + ".png"));
                             hand.add(new JButton(icon));
+                            strHand.add(card.toString()); 
                         }
                         createHand();
                     }
@@ -242,7 +270,18 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.SET_LEADER)) {
                         makeLeader();
-                    }
+                    } 
+
+                    else if (strData.contains(Server.PLAY_CARD)) {
+                        String card = Server.PLAY_CARD.substring(Server.PLAY_CARD.length());
+                        removeCard(card);
+                    } 
+
+                    else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
+                        String card = Server.SOMEBODY_PLAYED_CARD.substring(Server.SOMEBODY_PLAYED_CARD.length());
+                        updateDiscardPile(card);
+
+                    } 
                 }
                 return null;
             }
@@ -261,7 +300,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (hand.contains(e.getSource())) {
-            System.out.println("hi there");
+            int i = hand.indexOf(e.getSource());
+            write(Server.PLAY_CARD + strHand.get(i));
+
         }
     }
 
