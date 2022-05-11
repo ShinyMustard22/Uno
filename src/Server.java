@@ -16,6 +16,7 @@ public class Server {
     public static final String GAME_STARTED = "startGame: ";
     public static final String INIT_PLAYER_HAND = "hand: ";
     public static final String AM_LEADER = "amLeader?: ";
+    public static final String FIRST_CARD = "firstCard: ";
     
 
     private ServerSocket serverSocket;
@@ -27,7 +28,6 @@ public class Server {
 
             while (!serverSocket.isClosed()) {
                 socket = serverSocket.accept();
-                System.out.println("A player has joined!");
                 ClientHandler clientHandler = new ClientHandler(socket);
                 Thread thread = new Thread(clientHandler);
                 thread.start();
