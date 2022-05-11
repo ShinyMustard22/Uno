@@ -39,7 +39,7 @@ public class GameState {
     }
 
     public boolean startGame() {
-        if (players.size() >= 2 && !gameStarted) {
+        if (players.size() >= 2) {
             gameStarted = true;
             turn = players.listIterator();
             currentPlayer = turn.next();
@@ -72,7 +72,7 @@ public class GameState {
         return discardPile.peek();
     }
 
-    public void play(String input) {
+    public void play(Card card) {
         // decode the message & update the game state
     }
 }

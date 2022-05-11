@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import cards.Card;
 
 public class ClientHandler implements Runnable {
     private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
@@ -122,8 +123,13 @@ public class ClientHandler implements Runnable {
             }
         }
 
+        if (!board.getCurrentPlayer().equals(player)) {
+            return;
+        }
+
         else if (data.contains(Server.PLAY_CARD)) {
-            
+            Card card = Card.decode(data.substring(Server.PLAY_CARD.length()));
+            board.play(card);
         }
     }
 

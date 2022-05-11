@@ -18,6 +18,7 @@ public class Server {
     public static final String AM_LEADER = "amLeader?: ";
     public static final String FIRST_CARD = "firstCard: ";
     public static final String PLAY_CARD = "playCard: ";
+    public static final String SOMEBODY_PLAYED_CARD = "playerPlayedCard: ";
     
 
     private ServerSocket serverSocket;
