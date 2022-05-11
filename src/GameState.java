@@ -18,11 +18,7 @@ public class GameState {
         gameStarted = false;
     }
 
-    public Player addPlayer(String username) {
-        if (gameStarted) {
-            return null;
-        }
-        
+    public Player addPlayer(String username) {  
         List<Card> hand = new LinkedList<Card>();
         for (int count = 0; count < Player.STARTING_HAND_SIZE; count++) {
             hand.add(deck.remove());
@@ -70,6 +66,10 @@ public class GameState {
             }
         }
         return playerList;
+    }
+
+    public Card getLastPlayedCard() {
+        return discardPile.peek();
     }
 
     public void play(String input) {
