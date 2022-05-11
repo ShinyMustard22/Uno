@@ -39,7 +39,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         taskbar = Taskbar.getTaskbar();
 
         // Create the Icon Image for this application
-        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/logo.png"));
+        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/uno_logo.png"));
         setIconImage(unoLogo.getImage());
 
         mainPanel = new JPanel(new BorderLayout());
@@ -177,6 +177,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void createHand()  {
         for (JButton card : hand) {
             playerHand.add(card);
+            card.addActionListener(this);
         }
 
         playerHand.revalidate();
@@ -257,6 +258,10 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
+        }
+
+        else if (hand.contains(e.getSource())) {
+            System.out.println("hi there");
         }
     }
 
