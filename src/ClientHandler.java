@@ -90,6 +90,11 @@ public class ClientHandler implements Runnable {
     }
 
     private void decode(String data) {
+        if (data == null) {
+            killEverything(socket, in, out);
+            return;
+        }
+
         if (data.contains(Server.NAME)) {
             String name = data.substring(Server.NAME.length());
             while (name.contains(" ") || alreadyUsedName(name)) {
@@ -123,13 +128,20 @@ public class ClientHandler implements Runnable {
             }
         }
 
-        if (!board.getCurrentPlayer().equals(player)) {
+        /*
+        if (!board.gameHasStarted() || !board.getCurrentPlayer().equals(player)) {
             return;
         }
+        */
 
         else if (data.contains(Server.PLAY_CARD)) {
-            Card card = Card.decode(data.substring(Server.PLAY_CARD.length()));
-            board.play(card);
+            String strCard = data.substring(Server.PLAY_CARD.length());
+            Card card = Card.decode(strCard);
+            if (board.play(card)) {
+                write(Server.PLAY_CARD + strCard + "\n" +
+                    Server.SOMEBODY_PLAYED_CARD + strCard);
+                broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
+            }
         }
     }
 

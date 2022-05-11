@@ -72,7 +72,7 @@ public class GameState {
         return discardPile.peek();
     }
 
-    public void play(Card card) {
-        // decode the message & update the game state
+    public boolean play(Card card) {
+        return true;
     }
 }

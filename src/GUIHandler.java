@@ -210,7 +210,6 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint(); 
-
     }
 
     public void decode(String allStrData) {
@@ -273,12 +272,12 @@ public class GUIHandler extends JFrame implements ActionListener {
                     } 
 
                     else if (strData.contains(Server.PLAY_CARD)) {
-                        String card = Server.PLAY_CARD.substring(Server.PLAY_CARD.length());
+                        String card = strData.substring(Server.PLAY_CARD.length());
                         removeCard(card);
                     } 
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
-                        String card = Server.SOMEBODY_PLAYED_CARD.substring(Server.SOMEBODY_PLAYED_CARD.length());
+                        String card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length());
                         updateDiscardPile(card);
 
                     } 
