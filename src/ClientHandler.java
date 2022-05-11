@@ -121,6 +121,10 @@ public class ClientHandler implements Runnable {
                 Server.INIT_PLAYER_HAND + clientHandler.player.getCardList());
             }
         }
+
+        else if (data.contains(Server.PLAY_CARD)) {
+            
+        }
     }
 
     @Override
