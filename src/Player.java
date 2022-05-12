@@ -7,6 +7,7 @@ public class Player {
 
     private String username;
     private List<Card> hand;
+    private boolean canPlay = true;
 
     public Player(String username, List<Card> hand) {
         this.username = username;
@@ -15,8 +16,12 @@ public class Player {
 
     public void play(Card card){
         hand.remove(card);
+        canPlay = false;
     }
 
+    public boolean canPlay(){
+        return canPlay;
+    }
     public String getUsername() {
         return username;
     }

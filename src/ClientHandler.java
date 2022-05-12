@@ -136,7 +136,7 @@ public class ClientHandler implements Runnable {
                 String color = read().substring(Server.CHOOSE_COLOR.length());
             }
 
-            if (board.play(username, card)) {
+            if (board.play(card)) {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);

@@ -86,11 +86,15 @@ public class GameState {
         return card.playable(discardPile.peek());
     }
 
-    public boolean play(String username, Card card) {
-        if (playable(username, card))  {
-            players.get(username).play(card);
-            discardPile.push(card);
-            return true;
+    public boolean play(Card card) {
+        if (playable(currentPlayer.getUsername(), card))  {
+            if (currentPlayer.canPlay()){
+                currentPlayer.play(card);
+                discardPile.push(card);
+                currentPlayer = turn.next();
+                return true;
+            }
+   
         }
 
         return false;
