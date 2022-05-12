@@ -136,6 +136,14 @@ public class ClientHandler implements Runnable {
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
             }
         }
+
+        else if (data.contains(Server.ASK_TO_DRAW)) {
+            Card card = board.draw(username);
+
+            if (card != null) {
+                write(Server.DRAW_CARDS + card.toString());
+            }
+        }
     }
 
     @Override
@@ -145,7 +153,7 @@ public class ClientHandler implements Runnable {
         data = read();
         decode(data);
 
-        while (socket.isConnected()) {
+        while (!socket.isClosed()) {
             data = read();
             decode(data);
         } 

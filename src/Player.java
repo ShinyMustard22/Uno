@@ -13,21 +13,16 @@ public class Player {
         this.hand = hand;
     }
 
-    public boolean play(Card prev, int index){
-        if (hand.get(index).playable(prev)){
-            hand.remove(index);
-            return true;
-        }
-
-        return false;
+    public void play(Card card){
+        hand.remove(card);
     }
 
     public String getUsername() {
         return username;
     }
 
-    public int getHandSize() {
-        return hand.size();
+    public List<Card> getHand() {
+        return hand;
     }
 
     public boolean equals(Object other) {
@@ -47,5 +42,4 @@ public class Player {
 
         return cardList;
     }
-
 }

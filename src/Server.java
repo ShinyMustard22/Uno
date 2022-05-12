@@ -4,7 +4,7 @@ import java.net.Socket;
 
 public class Server {
     public static final int PORT_NUM = 6969;
-    public static final String IP_ADDRESS = "localhost"; /*10.18.94.21*/
+    public static final String IP_ADDRESS = "localhost"; /*10.18.94.21 will be final ip address*/
 
     public static final String NAME = "username: ";
     public static final String INIT_PLAYER_LIST = "playerList: ";
@@ -19,7 +19,8 @@ public class Server {
     public static final String FIRST_CARD = "firstCard: ";
     public static final String PLAY_CARD = "playCard: ";
     public static final String SOMEBODY_PLAYED_CARD = "playerPlayedCard: ";
-    
+    public static final String ASK_TO_DRAW = "askToDraw: ";
+    public static final String DRAW_CARDS = "drawCards: ";
 
     private ServerSocket serverSocket;
     private Socket socket;

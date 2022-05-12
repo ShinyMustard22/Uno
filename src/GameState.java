@@ -82,7 +82,30 @@ public class GameState {
         return discardPile.peek();
     }
 
+    public boolean playable(String username, Card card) {
+        return card.playable(discardPile.peek());
+    }
+
     public boolean play(String username, Card card) {
+        if (playable(username, card))  {
+            players.get(username).play(card);
+            discardPile.push(card);
+            return true;
+        }
+
         return false;
+    }
+
+    public Card draw(String username) {
+        List<Card> hand = players.get(username).getHand();
+        for (Card card : hand) {
+            if (playable(username, card)) {
+                return null;
+            }
+        }
+
+        Card card = deck.remove();
+        players.get(username).getHand().add(card);
+        return card;
     }
 }

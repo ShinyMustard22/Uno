@@ -175,7 +175,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         board.repaint();
     }
     
-    private void createHand()  {
+    private void createHand() {
+        playerHand.removeAll();
+
         for (JButton card : hand) {
             playerHand.add(card);
             card.addActionListener(this);
@@ -281,6 +283,17 @@ public class GUIHandler extends JFrame implements ActionListener {
                         updateDiscardPile(card);
 
                     } 
+
+                    else if (strData.contains(Server.DRAW_CARDS)) {
+                        String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
+                        for (String strCard : cardsToAdd) {
+                            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
+                            hand.add(new JButton(icon));
+                            strHand.add(strCard.toString()); 
+                        }
+
+                        createHand();
+                    }
                 }
                 return null;
             }
@@ -298,10 +311,13 @@ public class GUIHandler extends JFrame implements ActionListener {
             write(Server.GAME_STARTED);
         }
 
+        else if (e.getSource() == deck) {
+            write(Server.ASK_TO_DRAW);
+        }
+
         else if (hand.contains(e.getSource())) {
             int i = hand.indexOf(e.getSource());
             write(Server.PLAY_CARD + strHand.get(i));
-
         }
     }
 
