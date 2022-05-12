@@ -84,6 +84,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             System.out.println("There was a security exception for: 'taskbar.setIconImage'");
         }
     }
+    
 
     private void waitingScreen() {
         board.removeAll();
@@ -92,6 +93,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         menuBar = new JMenuBar();
         help = new JMenu("Help");
         rules = new JMenuItem("Rules");
+        rules.addActionListener(this);
 
         help.add(rules);
         menuBar.add(help);
@@ -101,7 +103,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         waiting = new JLabel("Waiting for the game to start...");
         waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
         board.add(waiting);
-
+        
         board.revalidate();
         board.repaint();
 
@@ -306,7 +308,6 @@ public class GUIHandler extends JFrame implements ActionListener {
             write(Server.NAME + nameField.getText());
         }
         
-
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
         }
@@ -315,9 +316,13 @@ public class GUIHandler extends JFrame implements ActionListener {
             write(Server.ASK_TO_DRAW);
         }
 
-        else if (hand.contains(e.getSource())) {
+        else if (hand != null && hand.contains(e.getSource())) {
             int i = hand.indexOf(e.getSource());
             write(Server.PLAY_CARD + strHand.get(i));
+        }
+
+        else if (e.getSource() == rules) {
+            JOptionPane.showMessageDialog(this, "message", "title", JOptionPane.PLAIN_MESSAGE);
         }
     }
 
