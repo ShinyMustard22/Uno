@@ -21,6 +21,7 @@ public class Server {
     public static final String SOMEBODY_PLAYED_CARD = "playerPlayedCard: ";
     public static final String ASK_TO_DRAW = "askToDraw: ";
     public static final String DRAW_CARDS = "drawCards: ";
+    public static final String CHOOSE_COLOR = "chooseColor: ";
 
     private ServerSocket serverSocket;
     private Socket socket;
