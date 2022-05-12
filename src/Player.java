@@ -13,11 +13,13 @@ public class Player {
         this.hand = hand;
     }
 
-    public Card play(Card prev, int index){
+    public boolean play(Card prev, int index){
         if (hand.get(index).playable(prev)){
-            return hand.remove(index);
+            hand.remove(index);
+            return true;
         }
-        return null;
+
+        return false;
     }
 
     public String getUsername() {
