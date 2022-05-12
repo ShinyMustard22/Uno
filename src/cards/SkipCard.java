@@ -9,7 +9,7 @@ public class SkipCard extends SpecialColorCard {
     }
 
     @Override
-    public Type getType(){
+    public Type getType () {
         return Type.skip;
     }
 }

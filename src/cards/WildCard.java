@@ -21,7 +21,7 @@ public class WildCard extends Card {
     }
     
     @Override
-    public Type getType(){
+    public Type getType() {
         return Type.wild;
     }
 }

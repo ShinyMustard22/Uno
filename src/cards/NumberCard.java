@@ -1,16 +1,13 @@
 package cards;
 
-public class NumberCard
-    extends ColorCard
-{
+public class NumberCard extends ColorCard {
 
     private int number;
 
-    public NumberCard(String color, int n)
-    {
+    public NumberCard(String color, int n) {
         super(color);
-        if (n < 0 || n > 9)
-        {
+
+        if (n < 0 || n > 9) {
             throw new IllegalArgumentException(
                 "Number of the card must be between 0 and 9, but was " + n + ".");
         }
@@ -18,16 +15,13 @@ public class NumberCard
     }
 
 
-    public boolean playable(Card card)
-    {
-        if (card instanceof NumberCard)
-        {
-            NumberCard numberCard = (NumberCard)card;
+    public boolean playable(Card card) {
+        if (card instanceof NumberCard) {
+            NumberCard numberCard = (NumberCard) card;
             return super.playable(card) || numberCard.number == number;
         }
 
-        else if (card.getType() == Type.drawTwo)
-        {
+        else if (card.getType() == Type.drawTwo) {
             
         }
 
@@ -35,28 +29,24 @@ public class NumberCard
     }
 
 
-    public boolean equals(Object other)
-    {
+    public boolean equals(Object other) {
         NumberCard otherNumberCard = (NumberCard)other;
         return super.equals(other) && otherNumberCard.number == number;
     }
 
 
-    public String toString()
-    {
+    public String toString() {
         return super.toString() + "_" + number;
     }
 
 
-    public int getNum()
-    {
+    public int getNumber() {
         return number;
     }
 
 
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.number;
     }
 }

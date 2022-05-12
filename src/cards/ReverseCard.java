@@ -8,7 +8,7 @@ public class ReverseCard extends SpecialColorCard {
     }
 
     @Override
-    public Type getType(){
+    public Type getType() {
         return Type.reverse;
     }
 }
