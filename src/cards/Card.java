@@ -10,11 +10,6 @@ public abstract class Card {
         return "card";
     }
 
-    /**
-     * 
-     * @param card
-     * @return
-     */
     public abstract boolean playable(Card card);
     
     public static Card decode(String cardAsString) {
