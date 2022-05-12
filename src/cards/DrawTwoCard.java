@@ -1,15 +1,15 @@
 package cards;
 
-public class DrawTwo extends SpecialColorCard {
+public class DrawTwoCard extends SpecialColorCard {
 
     static final String EFFECT = "draw2";
 
     @Override
-    public Type getType(){
+    public Type getType() {
         return Type.drawTwo;
     }
 
-    public DrawTwo(String c) {
+    public DrawTwoCard(String c) {
         super(c, EFFECT);
     }
 }
