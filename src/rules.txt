@@ -1,0 +1,30 @@
+UNO
+Players: 2-10
+
+Objective: To be the first player to play all cards
+The player to discard all of their cards first wins, the game continues with 
+the remaining people competing for second place, and so on. 
+
+Setup: Dealer deals out 7 cards for each player to start with 
+
+Rules: 
+On your turn you can play a card only if it meets the following conditions: 
+1. It has the same number of the card last played
+2. It has the same color of the card last played
+3. It is the same special type of the card last played (+2, Skip, or Reverse) 
+4. It is a Wild or +4 
+
+If a player has one card left, they must call uno. They will recieve 7 new cards if another
+player in the game calls uno before them. 
+
+A player cannot pass their turn if they have a playable card. If they cannot play, 
+they will have to draw from the draw pile. 
+
+Special Cards: 
++2 > When played, the player whos turn is next will recieve two cards from the drawpile.
+Reverse > When played, the order of the players is reversed. 
+Skip > When played, the player who's turn it is next will be skipped, and it will be the player after's turn
+
+Wildcard > When played, a player can change the current color to any of the other three colors (besides the current color)
++4 > This behaves like a wildcard, with the addition of the next player recieving 4 cards from the draw pile. 
+
