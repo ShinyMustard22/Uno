@@ -1,47 +1,57 @@
 import java.util.*;
 import cards.*;
+import cards.Card.Type;
 
 public class GameState {
     
     private Queue<Card> deck;
     private Stack<Card> discardPile;
-    private LinkedList<Player> players;
-    private ListIterator<Player> turn;
+    private LinkedHashMap<String, Player> players;
+    private Iterator<Player> turn;
     private Player currentPlayer;
     private boolean gameStarted;
 
     public GameState() {
         deck = new Deck();
         discardPile = new Stack<Card>();
+
+        while (deck.peek().getType() == Type.wild) {
+            deck.add(deck.remove());
+        }
         discardPile.push(deck.remove());
-        players = new LinkedList<Player>();
+        
+        players = new LinkedHashMap<String, Player>();
         gameStarted = false;
     }
 
-    public Player addPlayer(String username) {  
+    public boolean addPlayer(String username) {  
         List<Card> hand = new LinkedList<Card>();
         for (int count = 0; count < Player.STARTING_HAND_SIZE; count++) {
             hand.add(deck.remove());
         }
 
         Player player = new Player(username, hand);
-        players.add(player);
+        players.put(username, player);
 
         if (players.size() >= 10) {
             startGame();
         }
 
-        return player;
+        return true;
     }
 
-    public void removePlayer(Player player) {
-        players.remove(player);
+    public Player getPlayer(String username) {
+        return players.get(username);
+    }
+
+    public void removePlayer(String username) {
+        players.remove(username);
     }
 
     public boolean startGame() {
         if (players.size() >= 2) {
             gameStarted = true;
-            turn = players.listIterator();
+            turn = players.values().iterator();
             currentPlayer = turn.next();
         }
 
@@ -57,10 +67,10 @@ public class GameState {
     }
 
     public String getPlayerList() {
-        ListIterator<Player> iter = players.listIterator();
+        Iterator<String> iter = players.keySet().iterator();
         String playerList = "";
         while(iter.hasNext()) {
-            playerList += iter.next().getUsername();
+            playerList += iter.next();
             if (iter.hasNext()) {
                 playerList += " ";
             }
@@ -72,7 +82,7 @@ public class GameState {
         return discardPile.peek();
     }
 
-    public boolean play(Card card) {
-        return true;
+    public boolean play(String username, Card card) {
+        return false;
     }
 }
