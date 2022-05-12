@@ -26,6 +26,10 @@ public abstract class SpecialColorCard extends ColorCard {
     }
 
     public boolean equals(Object other) {
+        if (!(other instanceof SpecialColorCard)) {
+            return false;
+        }
+        
         SpecialColorCard otherSpecialColorCard = (SpecialColorCard) other;
         return super.equals(other) && effect.equals(otherSpecialColorCard.effect);
     }

@@ -21,16 +21,16 @@ public class NumberCard extends ColorCard {
             return super.playable(card) || numberCard.number == number;
         }
 
-        else if (card.getType() == Type.drawTwo) {
-            
-        }
-
         return super.playable(card);
     }
 
 
     public boolean equals(Object other) {
-        NumberCard otherNumberCard = (NumberCard)other;
+        if (!(other instanceof NumberCard)) {
+            return false;
+        }
+        
+        NumberCard otherNumberCard = (NumberCard) other;
         return super.equals(other) && otherNumberCard.number == number;
     }
 
