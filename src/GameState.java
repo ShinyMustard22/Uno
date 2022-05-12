@@ -87,7 +87,7 @@ public class GameState {
     }
 
     public boolean play(String username, Card card) {
-        if (playable(username, card))  {
+        if (playable(username, card) && players.get(username).canPlay())  {
             players.get(username).play(card);
             discardPile.push(card);
             return true;
