@@ -24,10 +24,10 @@ public class Deck extends LinkedList<Card> {
 
         // Creating the "Plus 2", "Reverse", and "Skip" cards
         for (int count = 0; count < 2; count ++) {
-            addLast(new DrawTwo(ColorCard.RED));
-            addLast(new DrawTwo(ColorCard.BLUE));
-            addLast(new DrawTwo(ColorCard.GREEN));
-            addLast(new DrawTwo(ColorCard.YELLOW));
+            addLast(new DrawTwoCard(ColorCard.RED));
+            addLast(new DrawTwoCard(ColorCard.BLUE));
+            addLast(new DrawTwoCard(ColorCard.GREEN));
+            addLast(new DrawTwoCard(ColorCard.YELLOW));
 
             addLast(new ReverseCard(ColorCard.RED));
             addLast(new ReverseCard(ColorCard.BLUE));
