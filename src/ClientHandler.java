@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import cards.Card;
+import cards.WildCard;
 
 public class ClientHandler implements Runnable {
     private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
@@ -130,6 +131,11 @@ public class ClientHandler implements Runnable {
         else if (data.contains(Server.PLAY_CARD)) {
             String strCard = data.substring(Server.PLAY_CARD.length());
             Card card = Card.decode(strCard);
+
+            if (card instanceof WildCard) {
+                String color = read().substring(Server.CHOOSE_COLOR.length());
+            }
+
             if (board.play(username, card)) {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
