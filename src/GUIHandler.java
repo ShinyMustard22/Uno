@@ -2,6 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -375,7 +376,20 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (e.getSource() == rules) {
-            JOptionPane.showMessageDialog(this, "message", "title", JOptionPane.PLAIN_MESSAGE);
+            String ruleString = "[]"; 
+            try {
+                File rulesFile = new File("rules.txt");
+                Scanner sc = new Scanner(rulesFile);
+                // while (sc.hasNextLine()) {
+                //     ruleString += sc.nextLine(); 
+                // }
+                ruleString += sc.nextLine(); 
+                
+            } catch (Exception ex) {
+                System.out.println("File not found");
+            }
+
+            JOptionPane.showMessageDialog(this, ruleString, "Uno Rules", JOptionPane.PLAIN_MESSAGE);
         }
     }
 
