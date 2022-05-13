@@ -133,6 +133,7 @@ public class ClientHandler implements Runnable {
             Card card = Card.decode(strCard);
 
             if (card instanceof WildCard) {
+                write(Server.CHOOSE_COLOR);
                 String color = read().substring(Server.CHOOSE_COLOR.length());
             }
 

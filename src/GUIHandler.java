@@ -7,8 +7,9 @@ import java.util.*;
 
 public class GUIHandler extends JFrame implements ActionListener {
 
-    private static final int width  = 800;
-    private static final int height = 400;
+    private static final int startingWidth  = 800;
+    private static final int startingHeight = 400;
+    private static int margin = 10;
 
     private Taskbar taskbar;
 
@@ -23,9 +24,12 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JLabel discardPile;
 
     private JPanel mainPanel, playerInfo, board, playerHand;
+    private GridBagConstraints gbc;
     private JTable playerTable;
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
+
+    private JButton red, blue, green, yellow;
 
     private LinkedHashMap<String, Integer> players;
     
@@ -33,7 +37,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
-        setBounds(0, 0, width, height);
+        setBounds(0, 0, startingWidth, startingHeight);
 
         this.out = out;
 
@@ -46,6 +50,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         mainPanel = new JPanel(new BorderLayout());
 
         board = new JPanel(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.insets = new Insets(margin, margin, margin, margin);
+
         enterNamePrompt = new JLabel("Please enter your name:");
         nameField = new JTextField(10);
         invalidName = new JLabel();
@@ -102,7 +109,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         waiting = new JLabel("Waiting for the game to start...");
         waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
-        board.add(waiting);
+        board.add(waiting, gbc);
         
         board.revalidate();
         board.repaint();
@@ -132,7 +139,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
         
         playerTable = new JTable(data, columnNames);
-        playerTable.setPreferredScrollableViewportSize(new Dimension(width - 10 * 2, playerTable.getMinimumSize().height));
+        playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - 10 * 2, playerTable.getMinimumSize().height));
         playerTable.setFillsViewportHeight(true);
         playerTable.setOpaque(false);
         playerTable.setEnabled(false);
@@ -152,12 +159,12 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         ImageIcon faceDown = new ImageIcon(getClass().getResource("/images/card_face_down.png"));
         deck = new JButton(faceDown);
-        board.add(deck);  
+        board.add(deck, gbc);  
         deck.addActionListener(this);
         
         ImageIcon lastCard = new ImageIcon(getClass().getResource("/images/" + firstCard + ".png"));
         discardPile = new JLabel(lastCard);
-        board.add(discardPile);
+        board.add(discardPile, gbc);
 
         board.revalidate();
         board.repaint();
@@ -171,7 +178,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         startGame = new JButton("Start Game");
         startGame.addActionListener(this);
-        board.add(startGame);
+        board.add(startGame, gbc);
 
         board.revalidate();
         board.repaint();
@@ -214,6 +221,48 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint(); 
+    }
+
+    private void chooseColorScreen() {
+        board.removeAll();
+
+        try{
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch(Exception e){
+           e.printStackTrace(); 
+        }
+
+        red = new JButton("Red");
+        red.setPreferredSize(red.getMaximumSize());
+        red.setBackground(Color.RED);
+        red.setOpaque(true);
+        red.addActionListener(this);
+
+        blue = new JButton("Blue");
+        blue.setBackground(Color.BLUE);
+        blue.setOpaque(true);
+        blue.addActionListener(this);
+
+        green = new JButton("Green");
+        green.setBackground(Color.GREEN);
+        green.setOpaque(true);
+        green.addActionListener(this);
+
+        yellow = new JButton("Yellow");
+        yellow.setBackground(Color.YELLOW);
+        yellow.setOpaque(true);
+        yellow.addActionListener(this);
+
+        board.add(red, gbc);
+        board.add(blue, gbc);
+        board.add(green, gbc);
+        board.add(yellow, gbc);
+
+        board.revalidate();
+        board.repaint();
+
+        revalidate();
+        repaint();
     }
 
     public void decode(String allStrData) {
@@ -295,6 +344,10 @@ public class GUIHandler extends JFrame implements ActionListener {
                         }
 
                         createHand();
+                    }
+
+                    else if (strData.contains(Server.CHOOSE_COLOR)) {
+                        chooseColorScreen();
                     }
                 }
                 return null;
