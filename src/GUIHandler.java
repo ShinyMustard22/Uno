@@ -4,6 +4,10 @@ import java.awt.event.*;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class GUIHandler extends JFrame implements ActionListener {
@@ -33,6 +37,8 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JButton red, blue, green, yellow;
 
     private LinkedHashMap<String, Integer> players;
+
+    private StringBuffer rulesString;
     
     private DataOutputStream out;
 
@@ -102,6 +108,19 @@ public class GUIHandler extends JFrame implements ActionListener {
         help = new JMenu("Help");
         rules = new JMenuItem("Rules");
         rules.addActionListener(this);
+
+        rulesString = new StringBuffer();
+        Path rulesPath = Paths.get("src/rules.txt");
+
+        try {
+            java.util.List<String> lines = Files.readAllLines(rulesPath, StandardCharsets.UTF_8);
+            for (String line : lines) {
+                rulesString.append(line);
+                rulesString.append("\n");
+            }
+        } catch (IOException ex) {
+            System.out.println("rules.txt cannot be located.");
+        }
 
         help.add(rules);
         menuBar.add(help);
@@ -376,20 +395,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (e.getSource() == rules) {
-            String ruleString = "[]"; 
-            try {
-                File rulesFile = new File("rules.txt");
-                Scanner sc = new Scanner(rulesFile);
-                // while (sc.hasNextLine()) {
-                //     ruleString += sc.nextLine(); 
-                // }
-                ruleString += sc.nextLine(); 
-                
-            } catch (Exception ex) {
-                System.out.println("File not found");
-            }
-
-            JOptionPane.showMessageDialog(this, ruleString, "Uno Rules", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
         }
     }
 

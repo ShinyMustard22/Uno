@@ -4,7 +4,7 @@ import java.net.Socket;
 
 public class Server {
     public static final int PORT_NUM = 6969;
-    public static final String IP_ADDRESS = "10.18.88.138"; /*10.18.94.21 will be final ip address*/
+    public static final String IP_ADDRESS = "localhost"; /*10.18.94.21 will be final ip address*/
 
     public static final String NAME = "username: ";
     public static final String INIT_PLAYER_LIST = "playerList: ";
