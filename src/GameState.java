@@ -6,8 +6,8 @@ public class GameState {
     
     private Queue<Card> deck;
     private Stack<Card> discardPile;
-    private LinkedHashMap<String, Player> players;
-    private Iterator<Player> turn;
+    private List<Player> players;
+    private ListIterator<Player> turn;
     private Player currentPlayer;
     private boolean gameStarted;
 
@@ -20,40 +20,71 @@ public class GameState {
         }
         discardPile.push(deck.remove());
         
-        players = new LinkedHashMap<String, Player>();
+        players = new LinkedList<Player>();
         gameStarted = false;
     }
 
-    public boolean addPlayer(String username) {  
+    public boolean addPlayer(String username) {
+        if (gameStarted) {
+            return false;
+        }  
+
         List<Card> hand = new LinkedList<Card>();
         for (int count = 0; count < Player.STARTING_HAND_SIZE; count++) {
             hand.add(deck.remove());
         }
 
         Player player = new Player(username, hand);
-        players.put(username, player);
-
-        if (players.size() >= 10) {
-            startGame();
-        }
+        players.add(player);
 
         return true;
     }
 
     public Player getPlayer(String username) {
-        return players.get(username);
+        for (Player player : players) {
+            if (player.getUsername().equals(username)) {
+                return player;
+            }
+        }
+
+        return null;
     }
 
     public void removePlayer(String username) {
-        players.remove(username);
+        for (Player player : players) {
+            if (player.getUsername().equals(username)) {
+                players.remove(getPlayer(username));
+                break;
+            }
+        }
+
+        fixIterator();
+    }
+
+    private void fixIterator() {
+        if (turn == null) {
+            return;
+        }
+
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            if (!player.equals(currentPlayer)) {
+                players.add(players.remove(i));
+                i--;
+            }
+
+            else {
+                turn = players.listIterator();
+                turn.next();
+                return;
+            }
+        }
     }
 
     public boolean startGame() {
-        if (players.size() >= 2) {
-            gameStarted = true;
-            turn = players.values().iterator();
-            currentPlayer = turn.next();
-        }
+        gameStarted = true;
+        turn = players.listIterator();
+        currentPlayer = turn.next();
 
         return gameStarted;
     }
@@ -67,14 +98,15 @@ public class GameState {
     }
 
     public String getPlayerList() {
-        Iterator<String> iter = players.keySet().iterator();
+        ListIterator<Player> iter = players.listIterator();
         String playerList = "";
         while(iter.hasNext()) {
-            playerList += iter.next();
+            playerList += iter.next().getUsername();
             if (iter.hasNext()) {
                 playerList += " ";
             }
         }
+
         return playerList;
     }
 
@@ -86,22 +118,29 @@ public class GameState {
         return card.playable(discardPile.peek());
     }
 
-    public boolean play(Card card) {
+    public boolean play(Card card, int index) {
         if (playable(currentPlayer.getUsername(), card))  {
-            if (currentPlayer.canPlay()){
-                currentPlayer.play(card);
-                discardPile.push(card);
+            System.out.println(currentPlayer.getHand().size());
+            currentPlayer.play(index);
+            discardPile.push(card);
+
+            if (turn.hasNext()) {
                 currentPlayer = turn.next();
-                return true;
             }
-   
+
+            else {
+                turn = players.listIterator();
+                currentPlayer = turn.next();
+            }
+
+            return true;
         }
 
         return false;
     }
 
     public Card draw(String username) {
-        List<Card> hand = players.get(username).getHand();
+        List<Card> hand = getPlayer(username).getHand();
         for (Card card : hand) {
             if (playable(username, card)) {
                 return null;
@@ -109,7 +148,7 @@ public class GameState {
         }
 
         Card card = deck.remove();
-        players.get(username).getHand().add(card);
+        getPlayer(username).addCard(card);
         return card;
     }
 }

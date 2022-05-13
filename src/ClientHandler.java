@@ -129,7 +129,10 @@ public class ClientHandler implements Runnable {
         }
 
         else if (data.contains(Server.PLAY_CARD)) {
-            String strCard = data.substring(Server.PLAY_CARD.length());
+            String[] cardData = data.substring(Server.PLAY_CARD.length()).split(" ");
+            String strCard = cardData[0];
+            int index = Integer.valueOf(cardData[1]);
+
             Card card = Card.decode(strCard);
 
             if (card instanceof WildCard) {
@@ -137,7 +140,7 @@ public class ClientHandler implements Runnable {
                 String color = read().substring(Server.CHOOSE_COLOR.length());
             }
 
-            if (board.play(card)) {
+            if (board.play(card, index)) {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);

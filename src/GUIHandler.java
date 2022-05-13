@@ -2,7 +2,6 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -391,7 +390,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         else if (hand != null && hand.contains(e.getSource())) {
             int i = hand.indexOf(e.getSource());
-            write(Server.PLAY_CARD + strHand.get(i));
+            write(Server.PLAY_CARD + strHand.get(i) + " " + i);
         }
 
         else if (e.getSource() == rules) {
@@ -402,6 +401,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void write(String data) {
         try {
             out.writeUTF(data);
+            out.flush();
             out.flush();
         } catch (IOException ex) {
             killOutput();

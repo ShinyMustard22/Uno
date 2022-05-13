@@ -67,7 +67,6 @@ public class Main {
             @Override
             public void run() {
                 String data;
-
                 while(socket.isConnected()) {
                     data = read();
                     decode(data);

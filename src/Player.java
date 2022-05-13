@@ -7,21 +7,20 @@ public class Player {
 
     private String username;
     private List<Card> hand;
-    private boolean canPlay = true;
 
     public Player(String username, List<Card> hand) {
         this.username = username;
         this.hand = hand;
     }
 
-    public void play(Card card){
-        hand.remove(card);
-        canPlay = false;
+    public void addCard(Card card) {
+        hand.add(card);
     }
 
-    public boolean canPlay(){
-        return canPlay;
+    public void play(int index){
+        hand.remove(index);
     }
+
     public String getUsername() {
         return username;
     }
