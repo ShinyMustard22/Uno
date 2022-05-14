@@ -58,10 +58,6 @@ public class Main {
         }
     }
 
-    private void decode(String data) {
-        gui.decode(data);
-    }
-
     private void listenForMessages() {
         new Thread(new Runnable() {
             @Override
@@ -69,7 +65,7 @@ public class Main {
                 String data;
                 while(socket.isConnected()) {
                     data = read();
-                    decode(data);
+                    gui.decode(data);
                 }
             }     
         }).start();
