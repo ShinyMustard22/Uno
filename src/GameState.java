@@ -120,7 +120,6 @@ public class GameState {
 
     public boolean play(Card card, int index) {
         if (playable(currentPlayer.getUsername(), card))  {
-            System.out.println(currentPlayer.getHand().size());
             currentPlayer.play(index);
             discardPile.push(card);
 

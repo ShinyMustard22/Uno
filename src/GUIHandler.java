@@ -203,10 +203,8 @@ public class GUIHandler extends JFrame implements ActionListener {
         board.repaint();
     }
     
-    private void createHand() {
-        playerHand.removeAll();
-
-        for (JButton card : hand) {
+    private void createHand(java.util.List<JButton> newCards) {
+        for (JButton card : newCards) {
             playerHand.add(card);
             card.addActionListener(this);
         }
@@ -285,9 +283,9 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     public void decode(String allStrData) {
-        new SwingWorker<Void, Void>() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            protected Void doInBackground() throws Exception {
+            public void run() {
                 String[] data = allStrData.split("\n");
 
                 for (String strData : data) {
@@ -324,13 +322,16 @@ public class GUIHandler extends JFrame implements ActionListener {
                     else if (strData.contains(Server.INIT_PLAYER_HAND)) {
                         hand = new LinkedList<JButton>();
                         strHand = new LinkedList<String>();
+                        java.util.List<JButton> newCards = new LinkedList<JButton>();
                         String[] strPlayerHand = strData.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
                         for (String card : strPlayerHand) {
                             ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + card.toString() + ".png"));
-                            hand.add(new JButton(icon));
+                            newCards.add(new JButton(icon));
                             strHand.add(card.toString()); 
                         }
-                        createHand();
+
+                        hand.addAll(newCards);
+                        createHand(newCards);
                     }
     
                     else if (strData.contains(Server.AM_LEADER)) {
@@ -356,22 +357,23 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.DRAW_CARDS)) {
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
+                        java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
                             ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
-                            hand.add(new JButton(icon));
+                            newCards.add(new JButton(icon));
                             strHand.add(strCard.toString()); 
                         }
 
-                        createHand();
+                        hand.addAll(newCards);
+                        createHand(newCards);
                     }
 
                     else if (strData.contains(Server.CHOOSE_COLOR)) {
                         chooseColorScreen();
                     }
                 }
-                return null;
             }
-        }.execute();
+        });
     }
 
     @Override
@@ -399,13 +401,19 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void write(String data) {
-        try {
-            out.writeUTF(data);
-            out.flush();
-            out.flush();
-        } catch (IOException ex) {
-            killOutput();
-        }
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    out.writeUTF(data);
+                    out.flush();
+                } catch (IOException ex) {
+                    killOutput();
+                }
+
+                return null;
+            }  
+        }.execute();
     }
 
     private void killOutput() {
