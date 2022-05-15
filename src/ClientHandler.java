@@ -98,11 +98,11 @@ public class ClientHandler implements Runnable {
             username = data.substring(Server.NAME.length());
             while (username.contains(" ") || alreadyUsedName(username)) {
                 if (username.contains(" ")) {
-                    write(Server.INVALID_USERNAME);
+                    write(Server.INVALID_USERNAME + "\n" + Server.ERROR);
                 }
                 
                 else {
-                    write(Server.TAKEN_USERNAME);
+                    write(Server.TAKEN_USERNAME + "\n" + Server.ERROR);
                 }
                 
                 username = read();
@@ -123,8 +123,13 @@ public class ClientHandler implements Runnable {
             board.startGame();
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.write(Server.FIRST_CARD + board.getLastPlayedCard().toString() + "\n" +
-                Server.INIT_PLAYER_HAND + board.getPlayer(username).getCardList());
+                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList());
             }
+        }
+
+        else if (!board.getPlayer(username).equals(board.getCurrentPlayer())) {
+            write(Server.ERROR);
+            return;
         }
 
         else if (data.contains(Server.PLAY_CARD)) {
@@ -139,6 +144,10 @@ public class ClientHandler implements Runnable {
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
             }
+
+            else {
+                write(Server.ERROR);
+            }
         }
 
         else if (data.contains(Server.ASK_TO_DRAW)) {
@@ -146,6 +155,10 @@ public class ClientHandler implements Runnable {
 
             if (card != null) {
                 write(Server.DRAW_CARDS + card.toString());
+            }
+
+            else {
+                write(Server.ERROR);
             }
         }
     }
