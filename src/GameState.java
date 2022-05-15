@@ -81,6 +81,17 @@ public class GameState {
         }
     }
 
+    private void advanceTurn() {
+        if (turn.hasNext()) {
+            currentPlayer = turn.next();
+        }
+
+        else {
+            turn = players.listIterator();
+            currentPlayer = turn.next();
+        }
+    }
+
     public boolean startGame() {
         gameStarted = true;
         turn = players.listIterator();
@@ -123,15 +134,7 @@ public class GameState {
             currentPlayer.play(index);
             discardPile.push(card);
 
-            if (turn.hasNext()) {
-                currentPlayer = turn.next();
-            }
-
-            else {
-                turn = players.listIterator();
-                currentPlayer = turn.next();
-            }
-
+            advanceTurn();
             return true;
         }
 
@@ -148,6 +151,7 @@ public class GameState {
 
         Card card = deck.remove();
         getPlayer(username).addCard(card);
+        advanceTurn();
         return card;
     }
 }
