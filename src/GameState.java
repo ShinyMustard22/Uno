@@ -141,6 +141,12 @@ public class GameState {
         return false;
     }
 
+    public void update() {
+        for (Card c : discardPile){
+            deck.add(discardPile.pop());
+        }
+    }
+
     public Card draw(String username) {
         List<Card> hand = getPlayer(username).getHand();
         for (Card card : hand) {

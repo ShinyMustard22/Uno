@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
+
 import cards.Card;
 
 public class ClientHandler implements Runnable {
@@ -151,16 +153,39 @@ public class ClientHandler implements Runnable {
         }
 
         else if (data.contains(Server.ASK_TO_DRAW)) {
-            Card card = board.draw(username);
+//            drawCards(1, username);
+//            if (card != null) {
+//                write(Server.DRAW_CARD + card.toString());
+//            } else {
+//                board.update();
+//            }
+            write(Server.DRAW_CARDS + drawCards(1, username));
+        }
 
-            if (card != null) {
-                write(Server.DRAW_CARDS + card.toString());
+        else if (data.contains(Server.ASK_TO_DRAW_TWO)){
+            write(Server.DRAW_CARDS + drawCards(2, username));
+        }
+
+        else if (data.contains(Server.ASK_TO_DRAW_FOUR)){
+            write(Server.DRAW_CARDS + drawCards(4, username));
+        }
+
+    }
+
+    private List<Card> drawCards(int n, String username) {
+        List<Card> cards = new ArrayList<Card>();
+        for (int i = 0; i < n; i ++ ) {
+            Card c = board.draw(username);
+            if (c!= null) {
+                cards.add(c);
             }
-
-            else {
-                write(Server.ERROR);
+            else{
+                board.update();
+                c = board.draw(username);
+                cards.add(c);
             }
         }
+        return cards;
     }
 
     @Override

@@ -20,7 +20,11 @@ public class Server {
     public static final String PLAY_CARD = "playCard: ";
     public static final String SOMEBODY_PLAYED_CARD = "playerPlayedCard: ";
     public static final String ASK_TO_DRAW = "askToDraw: ";
-    public static final String DRAW_CARDS = "drawCards: ";
+    public static final String ASK_TO_DRAW_TWO = "askToDrawTwo: ";
+    public static final String ASK_TO_DRAW_FOUR = "askToDrawFour: ";
+    public static final String DRAW_CARDS = "drawCard:";
+    //public static final String DRAW_TWO_CARDS = "drawTwoCards: ";
+    //public static final String DRAW_FOUR_CARDS = "drawFourCards: ";
     public static final String CHOOSE_COLOR = "chooseColor: ";
     public static final String ERROR = "error: ";
 
@@ -53,6 +57,11 @@ public class Server {
     }
 
     public static void main(String[] args) {
+//        if (args.length <= 1) {
+//            new Server();
+//        } else if (args.length == 3) {
+//
+//        }
         new Server();
     }
 }
