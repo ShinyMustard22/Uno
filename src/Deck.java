@@ -42,8 +42,8 @@ public class Deck extends LinkedList<Card> {
 
         // Creating the "Wild Cards" and the "Plus 4" cards
         for (int count = 0; count < 4; count ++) {
-            // addLast(new WildCard());
-            // addLast(new DrawFourCard());
+            addLast(new WildCard());
+            addLast(new DrawFourCard());
         }
 
         nextCardPos = (int) (Math.random() * size());
