@@ -11,9 +11,9 @@ import java.util.*;
 
 public class GUIHandler extends JFrame implements ActionListener {
 
-    private static final int startingWidth  = 800;
+    private static final int startingWidth  = 1000;
     private static final int startingHeight = 400;
-    private static int margin = 10;
+    private static int margin = 5;
 
     private Taskbar taskbar;
 
@@ -50,7 +50,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         taskbar = Taskbar.getTaskbar();
 
         // Create the Icon Image for this application
-        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/uno_logo.png"));
+        ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
         setIconImage(unoLogo.getImage());
 
         mainPanel = new JPanel(new BorderLayout());
@@ -69,7 +69,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         board.add(enterNamePrompt);
         board.add(nameField);
 
-        playerInfo = new JPanel(new FlowLayout());
+        playerInfo = new JPanel(new BorderLayout());
+        playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
+
         playerHand = new JPanel(new FlowLayout());
 
         playerHand.add(invalidName);
@@ -109,7 +111,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         rules.addActionListener(this);
 
         rulesString = new StringBuffer();
-        Path rulesPath = Paths.get("src/rules.txt");
+        Path rulesPath = Paths.get("src/assets/rules.txt");
 
         try {
             java.util.List<String> lines = Files.readAllLines(rulesPath, StandardCharsets.UTF_8);
@@ -161,11 +163,12 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - 10 * 2, playerTable.getMinimumSize().height));
         playerTable.setFillsViewportHeight(true);
         playerTable.setOpaque(false);
+        playerTable.getTableHeader().setReorderingAllowed(false);
         playerTable.setEnabled(false);
         playerTable.setGridColor(Color.BLACK);
         playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
 
-        playerInfo.add(new JScrollPane(playerTable));
+        playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
         playerInfo.repaint();
 
@@ -176,12 +179,12 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void createBoard(String firstCard) {
         board.removeAll();
 
-        ImageIcon faceDown = new ImageIcon(getClass().getResource("/images/card_face_down.png"));
+        ImageIcon faceDown = new ImageIcon(getClass().getResource("/assets/images/card_face_down.png"));
         deck = new JButton(faceDown);
         board.add(deck, gbc);  
         deck.addActionListener(this);
         
-        ImageIcon lastCard = new ImageIcon(getClass().getResource("/images/" + firstCard + ".png"));
+        ImageIcon lastCard = new ImageIcon(getClass().getResource("/assets/images/" + firstCard + ".png"));
         discardPile = new JLabel(lastCard);
         board.add(discardPile, gbc);
 
@@ -217,7 +220,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     } 
 
     private void updateDiscardPile(String card) {
-        discardPile.setIcon(new ImageIcon(getClass().getResource("/images/" + card + ".png")));
+        discardPile.setIcon(new ImageIcon(getClass().getResource("/assets/images/" + card + ".png")));
 
         board.revalidate();
         board.repaint();
@@ -325,7 +328,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         String[] strPlayerHand = strData.substring(Server.INIT_PLAYER_HAND.length()).split(" ");
                         for (String card : strPlayerHand) {
-                            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + card.toString() + ".png"));
+                            ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + card.toString() + ".png"));
                             newCards.add(new JButton(icon));
                             strHand.add(card.toString()); 
                         }
@@ -359,7 +362,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
-                            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
+                            ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard.toString() + ".png"));
                             newCards.add(new JButton(icon));
                             strHand.add(strCard.toString()); 
                         }
@@ -370,6 +373,10 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.CHOOSE_COLOR)) {
                         chooseColorScreen();
+                    }
+
+                    else if (strData.contains(Server.ERROR)) {
+                        // Play error sound effect here...
                     }
                 }
             }
