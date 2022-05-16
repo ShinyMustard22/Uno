@@ -97,7 +97,10 @@ public class ClientHandler implements Runnable {
         if (data == null) {
             return;
         }
-
+        System.out.println("Server: " + data);
+        if (board.getCurrentPlayer() != null) {
+            System.out.println("1001010  " +  board.getCurrentPlayer().getUsername());
+        }
         if (data.contains(Server.NAME)) {
             username = data.substring(Server.NAME.length());
             while (username.contains(" ") || alreadyUsedName(username)) {
@@ -145,9 +148,44 @@ public class ClientHandler implements Runnable {
 
             if (board.play(card, index)) {
                 write(Server.PLAY_CARD + strCard + "\n" +
-                    Server.SOMEBODY_PLAYED_CARD + strCard);
+                        Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
+
+                if (strCard.contains("draw2")){
+//                    System.out.println("99999  " + board.getCurrentPlayer().getUsername());
+                    String listOfCards = "";
+                    String currentUserName = board.getCurrentPlayer().getUsername();
+                    for
+                    (Card c : drawCards(2, currentUserName)){
+                        listOfCards += " " + c.toString();
+                    }
+//                    System.out.println("777777  " + board.getCurrentPlayer().getUsername());
+
+                    for (ClientHandler c : clientHandlers) {
+                        if (c.getUsername().equals(board.getCurrentPlayer().getUsername())) {
+                            c.write(Server.DRAW_CARDS + listOfCards);
+                        }
+                    }
+
+//                    System.out.println("66666  " + board.getCurrentPlayer().getUsername());
+
+                }
+
+                else if (strCard.contains("draw4")){
+                    String listOfCards = "";
+                    for (Card c : drawCards(4, board.getCurrentPlayer().getUsername())){
+                        listOfCards += " " + c.toString();
+                    }
+                    for (ClientHandler c : clientHandlers) {
+                        if (c.getUsername().equals(board.getCurrentPlayer().getUsername())) {
+                            c.write(Server.DRAW_CARDS + listOfCards);
+                        }
+                    }
+
+                }
             }
+
+
 
             else {
                 write(Server.ERROR);
@@ -172,16 +210,29 @@ public class ClientHandler implements Runnable {
 
         }
 
-        else if (data.contains(Server.ASK_TO_DRAW_TWO)){
-            write(Server.DRAW_CARDS + drawCards(2, username));
-        }
-
-        else if (data.contains(Server.ASK_TO_DRAW_FOUR)){
-            write(Server.DRAW_CARDS + drawCards(4, username));
-        }
+//        else if (data.contains(Server.ASK_TO_DRAW_TWO)){
+//            board.advanceTurn();
+//            String listOfCards = "";
+//            for (Card c : drawCards(2, board.getCurrentPlayer().getUsername())){
+//                listOfCards += " " + c.toString();
+//            }
+//            write(Server.DRAW_CARDS + listOfCards);
+//        }
+//
+//        else if (data.contains(Server.ASK_TO_DRAW_FOUR)){
+//            board.advanceTurn();
+//            String listOfCards = "";
+//            for (Card c : drawCards(4, board.getCurrentPlayer().getUsername())){
+//                listOfCards += " " + c.toString();
+//            }
+//            write(Server.DRAW_CARDS + listOfCards);
+//        }
 
     }
 
+    public String getUsername(){
+        return username;
+    }
     private List<Card> drawCards(int n, String username) {
         List<Card> cards = new ArrayList<Card>();
         if (n == 0){

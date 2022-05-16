@@ -159,6 +159,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             data[0][index] = players.get(playerName);
             if (columnNames[index].equals(myName)) {
                 myIndex = index;
+                columnNames[index] = "===== " + myName + " =====";
             }
             index++;
         }
@@ -368,9 +369,11 @@ public class GUIHandler extends JFrame implements ActionListener {
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
                             System.out.println(strCard);
-                            ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
-                            newCards.add(new JButton(icon));
-                            strHand.add(strCard);
+                            if (!strCard.trim().isEmpty()){
+                                ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
+                                newCards.add(new JButton(icon));
+                                strHand.add(strCard);
+                            }
                         }
 
                         hand.addAll(newCards);

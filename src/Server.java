@@ -20,8 +20,8 @@ public class Server {
     public static final String PLAY_CARD = "playCard: ";
     public static final String SOMEBODY_PLAYED_CARD = "playerPlayedCard: ";
     public static final String ASK_TO_DRAW = "askToDraw: ";
-    public static final String ASK_TO_DRAW_TWO = "askToDrawTwo: ";
-    public static final String ASK_TO_DRAW_FOUR = "askToDrawFour: ";
+    public static final String ASK_TO_DRAW_TWO = "draw2";
+    public static final String ASK_TO_DRAW_FOUR = "draw4";
     public static final String DRAW_CARDS = "drawCard:";
     //public static final String DRAW_TWO_CARDS = "drawTwoCards: ";
     //public static final String DRAW_FOUR_CARDS = "drawFourCards: ";

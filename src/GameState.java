@@ -81,7 +81,8 @@ public class GameState {
         }
     }
 
-    private void advanceTurn() {
+    public void advanceTurn() {
+        System.out.println("advanceTurn currentPlayer: " + currentPlayer.getUsername());
         if (turn.hasNext()) {
             currentPlayer = turn.next();
         }
@@ -90,6 +91,7 @@ public class GameState {
             turn = players.listIterator();
             currentPlayer = turn.next();
         }
+        System.out.println("advanceTurn newCurrentPlayer: " + currentPlayer.getUsername());
     }
 
     public boolean startGame() {
@@ -130,7 +132,10 @@ public class GameState {
     }
 
     public boolean playable(String username, Card card) {
-        return card.playable(discardPile.peek());
+        if (username.equals(currentPlayer.getUsername())){
+            return card.playable(discardPile.peek());
+        }
+        return false;
     }
 
     public boolean play(Card card, int index) {
@@ -161,7 +166,7 @@ public class GameState {
 
         Card card = deck.remove();
         getPlayer(username).addCard(card);
-        advanceTurn();
+        //advanceTurn();
         return card;
     }
 }
