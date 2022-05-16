@@ -23,6 +23,7 @@ public class Server {
     public static final String DRAW_CARDS = "drawCards: ";
     public static final String CHOOSE_COLOR = "chooseColor: ";
     public static final String ERROR = "error: ";
+    public static final String UNO_TIME = "unoTime: ";
 
     private ServerSocket serverSocket;
     private Socket socket;

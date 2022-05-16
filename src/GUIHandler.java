@@ -40,6 +40,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JDialog optionWindow; 
 
+    private final JButton unoButton = new JButton("UNO!");
+
     private static boolean soundOn = true; 
     private static final String cardFlippedSound = "cardFlipping"; 
     private static final String playerJoinsOrLeaves = "playerInOrOut";
@@ -325,6 +327,19 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     }
 
+    private void spawnUno() {
+        // int x = (int)(Math.random() * getWidth()); 
+        // int y = (int)(Math.random() * getHeight());
+        
+        add(unoButton);
+        unoButton.setVisible(false);
+        unoButton.setBounds(100, 100, 10, 10);
+        unoButton.setVisible(true);
+        unoButton.addActionListener(this);
+        revalidate();
+        repaint();
+
+    }
     private void toggleSound() {
         if (soundOn) {
             soundOn = false; 
@@ -442,7 +457,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
 
                         for (String strCard : cardsToAdd) {
-                            // playSound(CARD_FLIPPED_SOUND);
+                            playSound(cardFlippedSound);
                             
                             ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
                             newCards.add(new JButton(icon));
@@ -460,7 +475,12 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.ERROR)) {
-                        
+                        playSound(errorSound);
+                    }
+
+                    else if (strData.contains(Server.UNO_TIME)) {
+                        spawnUno();
+                        System.out.println("got here");
                     }
                 }
             }
@@ -470,7 +490,6 @@ public class GUIHandler extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nameField) {
-            String myName =  nameField.getText();
             write(Server.NAME + nameField.getText());
         }
         
