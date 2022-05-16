@@ -454,6 +454,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
+                            
                             ImageIcon cardIcon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
                             JButton addCard = new JButton(cardIcon);
                             addCard.setSize(cardIcon.getIconWidth(), cardIcon.getIconHeight());
@@ -461,7 +462,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                             newCards.add(addCard);
                             strHand.add(strCard.toString()); 
                             playSound(CARD_FLIPPED_SOUND);
-                            //righthere
+                            
                             System.out.println(strCard);
                             if (!strCard.trim().isEmpty()){
                                 ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
