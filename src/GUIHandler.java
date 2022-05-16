@@ -4,7 +4,6 @@ import java.awt.event.*;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +39,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JDialog optionWindow; 
 
-    private final JButton unoButton = new JButton("UNO!");
+    private JPanel overLayPanel; 
+    private JButton unoButton;
 
     private static boolean soundOn = true; 
     private static final String cardFlippedSound = "cardFlipping"; 
@@ -82,6 +82,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
         soundIcon.addActionListener(this); 
         optionWindow.add(soundIcon); 
+
+        // overLayPanel = new JPanel(new OverlayLayout(this));
+        // overLayPanel.setVisible(false);
 
         mainPanel = new JPanel(new BorderLayout());
 
@@ -331,14 +334,10 @@ public class GUIHandler extends JFrame implements ActionListener {
         // int x = (int)(Math.random() * getWidth()); 
         // int y = (int)(Math.random() * getHeight());
         
-        add(unoButton);
-        unoButton.setVisible(false);
-        unoButton.setBounds(100, 100, 10, 10);
-        unoButton.setVisible(true);
-        unoButton.addActionListener(this);
-        revalidate();
-        repaint();
+        
 
+        // revalidate();
+        // repaint();
     }
     private void toggleSound() {
         if (soundOn) {
@@ -364,7 +363,6 @@ public class GUIHandler extends JFrame implements ActionListener {
                 soundFile = new File ("src/assets/audio/"+ soundType +".wav"); 
                 try {
                     input = AudioSystem.getAudioInputStream(soundFile.getAbsoluteFile());
-                    
                     sound = AudioSystem.getClip(); 
                     sound.open(input);
                     sound.start();

@@ -140,10 +140,14 @@ public class GameState {
         return false;
     }
 
-    public void update() {
-        for (Card c : discardPile){
-            deck.add(c);
+    public void resetDeck() {
+        deck.addAll(discardPile);
+        discardPile.clear();
+        
+        while (deck.peek().getType() == Type.wild) {
+            deck.add(deck.remove());
         }
+        discardPile.push(deck.remove());
     }
 
     public Card draw(String username) {

@@ -113,7 +113,7 @@ public class ClientHandler implements Runnable {
             boolean isLeader = clientHandlers.size() == 0;
 
             write(Server.INIT_PLAYER_LIST + board.getPlayerList() + "\n" +
-                Server.AM_LEADER + isLeader);
+                Server.AM_LEADER + isLeader + "\n" + Server.UNO_TIME);
 
             broadcastMessage(Server.ADD_PLAYER + username);
             clientHandlers.add(this);
