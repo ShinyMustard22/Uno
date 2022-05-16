@@ -132,15 +132,11 @@ public class GameState {
     }
 
     public boolean playable(String username, Card card) {
-<<<<<<< HEAD
-        if ((card.playable(discardPile.peek())) == false) GUIHandler.playSound(GUIHandler.WRONG_SOUND);
-        return card.playable(discardPile.peek());
-=======
         if (username.equals(currentPlayer.getUsername())){
+            if ((card.playable(discardPile.peek())) == false) GUIHandler.playSound(GUIHandler.WRONG_SOUND);
             return card.playable(discardPile.peek());
         }
         return false;
->>>>>>> d2a64a12d75e4961156081539467f3d4fca4793f
     }
 
     public boolean play(Card card, int index) {

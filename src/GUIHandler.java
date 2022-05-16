@@ -270,12 +270,8 @@ public class GUIHandler extends JFrame implements ActionListener {
     } 
 
     private void updateDiscardPile(String card) {
-<<<<<<< HEAD
-        discardPile.setIcon(new ImageIcon(getClass().getResource("/images/" + card + ".png")));
-        playSound(CARD_FLIPPED_SOUND);
-=======
         discardPile.setIcon(new ImageIcon(getClass().getResource("/assets/images/" + card + ".png")));
->>>>>>> d2a64a12d75e4961156081539467f3d4fca4793f
+        playSound(CARD_FLIPPED_SOUND);
 
         board.revalidate();
         board.repaint();
@@ -458,23 +454,20 @@ public class GUIHandler extends JFrame implements ActionListener {
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
-<<<<<<< HEAD
-                            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
-                            JButton addCard = new JButton(icon);
-                            addCard.setSize(icon.getIconWidth(), icon.getIconHeight());
+                            ImageIcon cardIcon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
+                            JButton addCard = new JButton(cardIcon);
+                            addCard.setSize(cardIcon.getIconWidth(), cardIcon.getIconHeight());
 
                             newCards.add(addCard);
                             strHand.add(strCard.toString()); 
                             playSound(CARD_FLIPPED_SOUND);
                             //righthere
-=======
                             System.out.println(strCard);
                             if (!strCard.trim().isEmpty()){
                                 ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
                                 newCards.add(new JButton(icon));
                                 strHand.add(strCard);
                             }
->>>>>>> d2a64a12d75e4961156081539467f3d4fca4793f
                         }
 
                         hand.addAll(newCards);
