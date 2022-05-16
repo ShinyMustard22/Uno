@@ -81,6 +81,19 @@ public class GameState {
         }
     }
 
+    public void advanceTurn() {
+        System.out.println("advanceTurn currentPlayer: " + currentPlayer.getUsername());
+        if (turn.hasNext()) {
+            currentPlayer = turn.next();
+        }
+
+        else {
+            turn = players.listIterator();
+            currentPlayer = turn.next();
+        }
+        System.out.println("advanceTurn newCurrentPlayer: " + currentPlayer.getUsername());
+    }
+
     public boolean startGame() {
         gameStarted = true;
         turn = players.listIterator();
@@ -91,6 +104,10 @@ public class GameState {
 
     public Player getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    public Queue<Card> getDeck(){
+        return deck;
     }
 
     public boolean gameHasStarted() {
@@ -115,8 +132,15 @@ public class GameState {
     }
 
     public boolean playable(String username, Card card) {
+<<<<<<< HEAD
         if ((card.playable(discardPile.peek())) == false) GUIHandler.playSound(GUIHandler.WRONG_SOUND);
         return card.playable(discardPile.peek());
+=======
+        if (username.equals(currentPlayer.getUsername())){
+            return card.playable(discardPile.peek());
+        }
+        return false;
+>>>>>>> d2a64a12d75e4961156081539467f3d4fca4793f
     }
 
     public boolean play(Card card, int index) {
@@ -124,18 +148,16 @@ public class GameState {
             currentPlayer.play(index);
             discardPile.push(card);
 
-            if (turn.hasNext()) {
-                currentPlayer = turn.next();
-            }
-
-            else {
-                turn = players.listIterator();
-                currentPlayer = turn.next();
-            }
-
+            advanceTurn();
             return true;
         }
         return false;
+    }
+
+    public void update() {
+        for (Card c : discardPile){
+            deck.add(c);
+        }
     }
 
     public Card draw(String username) {
@@ -148,6 +170,7 @@ public class GameState {
 
         Card card = deck.remove();
         getPlayer(username).addCard(card);
+        //advanceTurn();
         return card;
     }
 }
