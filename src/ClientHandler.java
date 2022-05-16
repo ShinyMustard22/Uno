@@ -127,6 +127,11 @@ public class ClientHandler implements Runnable {
             }
         }
 
+        else if (!board.getPlayer(username).equals(board.getCurrentPlayer())) {
+            write(Server.ERROR);
+            return;
+        }
+
         else if (data.contains(Server.PLAY_CARD)) {
             String[] cardData = data.substring(Server.PLAY_CARD.length()).split(" ");
             String strCard = cardData[0];

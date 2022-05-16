@@ -1,23 +1,16 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.IconUIResource;
-
 import java.awt.event.*;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
-import javax.sound.sampled.*;
- 
+import javax.sound.sampled.*; 
 
 public class GUIHandler extends JFrame implements ActionListener {
 
@@ -45,14 +38,14 @@ public class GUIHandler extends JFrame implements ActionListener {
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JDialog rulesWindow, optionWindow; 
+    private JDialog optionWindow; 
 
     private static boolean soundOn = true; 
-    public static final String CARD_FLIPPED_SOUND = "cardFlipping"; 
-    public static final String PLAYER_IN_OR_OUT_SOUND = "playerInOrOut";
-    public static final String UNO_SOUND = "unoVerbal"; 
-    public static final String WRONG_SOUND = "wrong"; 
-    public static final String GAME_START_SOUND = "gameStart"; 
+    private static final String cardFlippedSound = "cardFlipping"; 
+    private static final String playerJoinsOrLeaves = "playerInOrOut";
+    private static final String unoSound = "unoVerbal"; 
+    private static final String errorSound = "wrong"; 
+    public static final String gameStartedSound = "gameStart"; 
 
     private JButton red, blue, green, yellow;
 
@@ -82,7 +75,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         optionWindow.setVisible(false);
         optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/images/Icons/soundOnIcon.png"));
+        ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
         soundIcon = new JButton(soundImageIcon);
         soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
         soundIcon.addActionListener(this); 
@@ -192,15 +185,10 @@ public class GUIHandler extends JFrame implements ActionListener {
         Iterator<String> iter = players.keySet().iterator();
         int index = 0;
 
-        int myIndex = 0;
         while (iter.hasNext()) {
             String playerName = iter.next();
             columnNames[index] = playerName;
             data[0][index] = players.get(playerName);
-            if (columnNames[index].equals(myName)) {
-                myIndex = index;
-                columnNames[index] = "===== " + myName + " =====";
-            }
             index++;
         }
         
@@ -211,7 +199,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerTable.getTableHeader().setReorderingAllowed(false);
         playerTable.setEnabled(false);
         playerTable.setGridColor(Color.BLACK);
-        playerTable.getTableHeader().setBackground(Color.RED);
+        playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -271,7 +259,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void updateDiscardPile(String card) {
         discardPile.setIcon(new ImageIcon(getClass().getResource("/assets/images/" + card + ".png")));
-        playSound(CARD_FLIPPED_SOUND);
+        playSound(cardFlippedSound);
 
         board.revalidate();
         board.repaint();
@@ -340,12 +328,12 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void toggleSound() {
         if (soundOn) {
             soundOn = false; 
-            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/images/Icons/soundOffIcon.png"));
+            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOffIcon.png"));
             soundIcon.setIcon(soundImageIcon);
             soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
         } else {
             soundOn = true; 
-            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/images/Icons/soundOnIcon.png"));
+            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
             soundIcon.setIcon(soundImageIcon);
             soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
         }
@@ -354,13 +342,13 @@ public class GUIHandler extends JFrame implements ActionListener {
     public static void playSound(String soundType) {
         if (soundOn) { 
             File soundFile;
-        
+            AudioInputStream input; 
             Clip sound; 
         
             try {
-                soundFile = new File ("src/audio/"+ soundType +".wav"); 
+                soundFile = new File ("src/assets/audio/"+ soundType +".wav"); 
                 try {
-                AudioInputStream input = AudioSystem.getAudioInputStream(soundFile.getAbsoluteFile());
+                    input = AudioSystem.getAudioInputStream(soundFile.getAbsoluteFile());
                     
                     sound = AudioSystem.getClip(); 
                     sound.open(input);
@@ -393,7 +381,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             
                     else if (strData.contains(Server.ADD_PLAYER)) {
                         players.put(strData.substring(Server.ADD_PLAYER.length()), Player.STARTING_HAND_SIZE);
-                        playSound(PLAYER_IN_OR_OUT_SOUND);
+                        playSound(playerJoinsOrLeaves);
                         updateTable();
                     }
     
@@ -450,25 +438,17 @@ public class GUIHandler extends JFrame implements ActionListener {
                     } 
 
                     else if (strData.contains(Server.DRAW_CARDS)) {
-                        System.out.println(strData);
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
-                        for (String strCard : cardsToAdd) {
-                            
-                            ImageIcon cardIcon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
-                            JButton addCard = new JButton(cardIcon);
-                            addCard.setSize(cardIcon.getIconWidth(), cardIcon.getIconHeight());
 
-                            newCards.add(addCard);
-                            strHand.add(strCard.toString()); 
-                            playSound(CARD_FLIPPED_SOUND);
+                        for (String strCard : cardsToAdd) {
+                            // playSound(CARD_FLIPPED_SOUND);
                             
-                            System.out.println(strCard);
-                            if (!strCard.trim().isEmpty()){
-                                ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
-                                newCards.add(new JButton(icon));
-                                strHand.add(strCard);
-                            }
+                            ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
+                            newCards.add(new JButton(icon));
+                            strHand.add(strCard);
+
+                            
                         }
 
                         hand.addAll(newCards);
@@ -480,24 +460,23 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.ERROR)) {
-                        // Play error sound effect here...
+                        
                     }
                 }
             }
         });
     }
 
-    private String myName;
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nameField) {
-            myName =  nameField.getText();
+            String myName =  nameField.getText();
             write(Server.NAME + nameField.getText());
         }
         
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
-            playSound(GAME_START_SOUND);
+            playSound(gameStartedSound);
         }
 
         else if (e.getSource() == deck) {
