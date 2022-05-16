@@ -115,6 +115,7 @@ public class GameState {
     }
 
     public boolean playable(String username, Card card) {
+        if ((card.playable(discardPile.peek())) == false) GUIHandler.playSound(GUIHandler.WRONG_SOUND);
         return card.playable(discardPile.peek());
     }
 
@@ -134,7 +135,6 @@ public class GameState {
 
             return true;
         }
-
         return false;
     }
 

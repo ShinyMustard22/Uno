@@ -1,13 +1,23 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.IconUIResource;
+
 import java.awt.event.*;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import javax.sound.sampled.*;
+ 
 
 public class GUIHandler extends JFrame implements ActionListener {
 
@@ -20,6 +30,8 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JMenuBar menuBar;
     private JMenu help;
     private JMenuItem rules;
+    private JMenuItem options; 
+    private JButton soundIcon; 
     private JTextField nameField;
     private JTextArea errorMessage;
     private JLabel invalidName, enterNamePrompt, waiting;
@@ -32,6 +44,15 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JTable playerTable;
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
+
+    private JDialog rulesWindow, optionWindow; 
+
+    private static boolean soundOn = true; 
+    public static final String CARD_FLIPPED_SOUND = "cardFlipping"; 
+    public static final String PLAYER_IN_OR_OUT_SOUND = "playerInOrOut";
+    public static final String UNO_SOUND = "unoVerbal"; 
+    public static final String WRONG_SOUND = "wrong"; 
+    public static final String GAME_START_SOUND = "gameStart"; 
 
     private JButton red, blue, green, yellow;
 
@@ -49,9 +70,22 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         taskbar = Taskbar.getTaskbar();
 
-        // Create the Icon Image for this application
+        //Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/images/uno_logo.png"));
         setIconImage(unoLogo.getImage());
+
+        optionWindow = new JDialog(this); 
+        optionWindow.setLayout(new FlowLayout());
+        optionWindow.setResizable(false);
+        optionWindow.setBounds(0, 0, startingWidth, startingHeight);
+        optionWindow.setVisible(false);
+        optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/images/Icons/soundOnIcon.png"));
+        soundIcon = new JButton(soundImageIcon);
+        soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+        soundIcon.addActionListener(this); 
+        optionWindow.add(soundIcon); 
 
         mainPanel = new JPanel(new BorderLayout());
 
@@ -97,7 +131,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             System.out.println("There was a security exception for: 'taskbar.setIconImage'");
         }
     }
-    
+
 
     private void waitingScreen() {
         board.removeAll();
@@ -122,6 +156,11 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         help.add(rules);
+
+        options = new JMenuItem("Options"); 
+        options.addActionListener(this); 
+        help.add(options);
+
         menuBar.add(help);
 
         updateTable();
@@ -179,6 +218,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         ImageIcon faceDown = new ImageIcon(getClass().getResource("/images/card_face_down.png"));
         deck = new JButton(faceDown);
         board.add(deck, gbc);  
+        deck.setSize(faceDown.getIconWidth(), faceDown.getIconHeight());
         deck.addActionListener(this);
         
         ImageIcon lastCard = new ImageIcon(getClass().getResource("/images/" + firstCard + ".png"));
@@ -201,11 +241,15 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         board.revalidate();
         board.repaint();
+        
+        revalidate();
+        repaint(); 
     }
     
     private void createHand(java.util.List<JButton> newCards) {
         for (JButton card : newCards) {
             playerHand.add(card);
+            card.setSize(card.getIcon().getIconWidth(), card.getIcon().getIconHeight());
             card.addActionListener(this);
         }
 
@@ -218,6 +262,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void updateDiscardPile(String card) {
         discardPile.setIcon(new ImageIcon(getClass().getResource("/images/" + card + ".png")));
+        playSound(CARD_FLIPPED_SOUND);
 
         board.revalidate();
         board.repaint();
@@ -280,6 +325,46 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
+
+    }
+
+    private void toggleSound() {
+        if (soundOn) {
+            soundOn = false; 
+            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/images/Icons/soundOffIcon.png"));
+            soundIcon.setIcon(soundImageIcon);
+            soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+        } else {
+            soundOn = true; 
+            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/images/Icons/soundOnIcon.png"));
+            soundIcon.setIcon(soundImageIcon);
+            soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+        }
+    }
+
+    public static void playSound(String soundType) {
+        if (soundOn) { 
+            File soundFile;
+        
+            Clip sound; 
+        
+            try {
+                soundFile = new File ("src/audio/"+ soundType +".wav"); 
+                try {
+                AudioInputStream input = AudioSystem.getAudioInputStream(soundFile.getAbsoluteFile());
+                    
+                    sound = AudioSystem.getClip(); 
+                    sound.open(input);
+                    sound.start();
+        
+                } catch(Exception e) {
+                    System.out.println("unable to play");
+                }
+            } catch (Exception e) {
+                System.out.println("file not found");
+            }
+        }
+        
     }
 
     public void decode(String allStrData) {
@@ -299,6 +384,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             
                     else if (strData.contains(Server.ADD_PLAYER)) {
                         players.put(strData.substring(Server.ADD_PLAYER.length()), Player.STARTING_HAND_SIZE);
+                        playSound(PLAYER_IN_OR_OUT_SOUND);
                         updateTable();
                     }
     
@@ -352,7 +438,6 @@ public class GUIHandler extends JFrame implements ActionListener {
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
                         String card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length());
                         updateDiscardPile(card);
-
                     } 
 
                     else if (strData.contains(Server.DRAW_CARDS)) {
@@ -360,8 +445,13 @@ public class GUIHandler extends JFrame implements ActionListener {
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
                             ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + strCard.toString() + ".png"));
-                            newCards.add(new JButton(icon));
+                            JButton addCard = new JButton(icon);
+                            addCard.setSize(icon.getIconWidth(), icon.getIconHeight());
+
+                            newCards.add(addCard);
                             strHand.add(strCard.toString()); 
+                            playSound(CARD_FLIPPED_SOUND);
+                            //righthere
                         }
 
                         hand.addAll(newCards);
@@ -384,11 +474,13 @@ public class GUIHandler extends JFrame implements ActionListener {
         
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
+            playSound(GAME_START_SOUND);
         }
 
         else if (e.getSource() == deck) {
             write(Server.ASK_TO_DRAW);
         }
+
 
         else if (hand != null && hand.contains(e.getSource())) {
             int i = hand.indexOf(e.getSource());
@@ -396,8 +488,19 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (e.getSource() == rules) {
-            JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
+             
+             JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
+
+        } 
+
+        else if (e.getSource() == options) {
+           optionWindow.setVisible(true);
         }
+
+        else if (e.getSource() == soundIcon) {
+            toggleSound();
+        }
+
     }
 
     private void write(String data) {
