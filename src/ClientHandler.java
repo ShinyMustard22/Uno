@@ -144,6 +144,10 @@ public class ClientHandler implements Runnable {
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
             }
+
+            else {
+                write(Server.ERROR);
+            }
         }
 
         else if (data.contains(Server.ASK_TO_DRAW)) {
@@ -151,6 +155,10 @@ public class ClientHandler implements Runnable {
 
             if (card != null) {
                 write(Server.DRAW_CARDS + card.toString());
+            }
+
+            else {
+                write(Server.ERROR);
             }
         }
     }
