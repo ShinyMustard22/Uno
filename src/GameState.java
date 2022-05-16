@@ -104,6 +104,10 @@ public class GameState {
         return currentPlayer;
     }
 
+    public Queue<Card> getDeck(){
+        return deck;
+    }
+
     public boolean gameHasStarted() {
         return gameStarted;
     }
@@ -143,7 +147,7 @@ public class GameState {
 
     public void update() {
         for (Card c : discardPile){
-            deck.add(discardPile.pop());
+            deck.add(c);
         }
     }
 

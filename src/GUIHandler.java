@@ -152,10 +152,14 @@ public class GUIHandler extends JFrame implements ActionListener {
         Iterator<String> iter = players.keySet().iterator();
         int index = 0;
 
+        int myIndex = 0;
         while (iter.hasNext()) {
             String playerName = iter.next();
             columnNames[index] = playerName;
             data[0][index] = players.get(playerName);
+            if (columnNames[index].equals(myName)) {
+                myIndex = index;
+            }
             index++;
         }
         
@@ -166,7 +170,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerTable.getTableHeader().setReorderingAllowed(false);
         playerTable.setEnabled(false);
         playerTable.setGridColor(Color.BLACK);
-        playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
+        playerTable.getTableHeader().setBackground(Color.RED);
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -359,12 +363,14 @@ public class GUIHandler extends JFrame implements ActionListener {
                     } 
 
                     else if (strData.contains(Server.DRAW_CARDS)) {
+                        System.out.println(strData);
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
                         java.util.List<JButton> newCards = new LinkedList<JButton>();
                         for (String strCard : cardsToAdd) {
-                            ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard.toString() + ".png"));
+                            System.out.println(strCard);
+                            ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
                             newCards.add(new JButton(icon));
-                            strHand.add(strCard.toString()); 
+                            strHand.add(strCard);
                         }
 
                         hand.addAll(newCards);
@@ -383,9 +389,11 @@ public class GUIHandler extends JFrame implements ActionListener {
         });
     }
 
+    private String myName;
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nameField) {
+            myName =  nameField.getText();
             write(Server.NAME + nameField.getText());
         }
         

@@ -23,7 +23,7 @@ public abstract class ColorCard extends Card {
         }
 
         WildCard wildCard = (WildCard) card;
-        return wildCard.getColor().equals(color);
+        return false; //TODO implement wild card color selection
     }
 
     public boolean equals(Object other) {

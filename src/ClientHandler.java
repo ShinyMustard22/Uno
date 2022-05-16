@@ -38,8 +38,10 @@ public class ClientHandler implements Runnable {
     private String read() {
         try {
             String message = in.readUTF();
+            //System.out.println(message);
             while (message.isEmpty()) {
                 message = in.readUTF();
+                System.out.println(message);
             }
 
             return message;
@@ -159,7 +161,15 @@ public class ClientHandler implements Runnable {
 //            } else {
 //                board.update();
 //            }
-            write(Server.DRAW_CARDS + drawCards(1, username));
+            List<Card> cards = drawCards(1, username);
+            System.out.println("6" + cards);
+            if (cards.isEmpty()){
+                write(Server.ERROR);
+            }
+            else{
+                write(Server.DRAW_CARDS + cards.get(0));
+            }
+
         }
 
         else if (data.contains(Server.ASK_TO_DRAW_TWO)){
@@ -174,17 +184,26 @@ public class ClientHandler implements Runnable {
 
     private List<Card> drawCards(int n, String username) {
         List<Card> cards = new ArrayList<Card>();
-        for (int i = 0; i < n; i ++ ) {
+        if (n == 0){
+            return cards;
+        }
+        else if (n == 1){
             Card c = board.draw(username);
-            if (c!= null) {
-                cards.add(c);
-            }
-            else{
-                board.update();
-                c = board.draw(username);
+            if (c!= null){
                 cards.add(c);
             }
         }
+        else{
+            for (int i = 0; i < n; i ++ ) {
+                Card c = board.getDeck().remove();
+                if (c == null){
+                    board.update();
+                    c = board.getDeck().remove();
+                }
+                cards.add(c);
+            }
+        }
+
         return cards;
     }
 
