@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import cards.Card;
+import cards.WildCard;
 
 public class ClientHandler implements Runnable {
     private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
@@ -66,11 +67,18 @@ public class ClientHandler implements Runnable {
 
     private void killEverything(Socket socket, DataInputStream in, DataOutputStream out) {
         board.removePlayer(username);
-        clientHandlers.remove(this);
         broadcastMessage(Server.REMOVE_PLAYER + username);
-        if (clientHandlers.size() != 0 && !board.gameHasStarted()) {
-            clientHandlers.get(0).write(Server.SET_LEADER);
+
+        if (clientHandlers.size() == 1) {
+            board = new GameState();
         }
+
+        else if (!board.gameHasStarted() && clientHandlers.indexOf(this) == 0) {
+            clientHandlers.get(1).write(Server.SET_LEADER);
+        }
+
+        broadcastMessage(Server.REMOVE_PLAYER + username);
+        clientHandlers.remove(this);
 
         try {
             if (in != null) {
@@ -139,6 +147,13 @@ public class ClientHandler implements Runnable {
 
             Card card = Card.decode(strCard);
 
+            if (card instanceof WildCard) {
+                WildCard wildCard = (WildCard) card;
+                write(Server.CHOOSE_COLOR);
+                String color = read();
+                wildCard.setColor(color);
+            }
+
             if (board.play(card, index)) {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
@@ -161,6 +176,8 @@ public class ClientHandler implements Runnable {
                 write(Server.ERROR);
             }
         }
+
+
     }
 
     @Override

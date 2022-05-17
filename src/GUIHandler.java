@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+import cards.ColorCard;
 import java.awt.event.*;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -16,8 +17,6 @@ public class GUIHandler extends JFrame implements ActionListener {
     private static final int startingWidth  = 1000;
     private static final int startingHeight = 400;
     private static int margin = 5;
-
-    private Taskbar taskbar;
 
     private JMenuBar menuBar;
     private JMenu help;
@@ -62,8 +61,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         setBounds(0, 0, startingWidth, startingHeight);
 
         this.out = out;
-
-        taskbar = Taskbar.getTaskbar();
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
@@ -119,18 +116,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-    }
-
-    public void setIconImage(Image image) {
-        super.setIconImage(image);
-
-        try {
-            taskbar.setIconImage(image);
-        } catch (UnsupportedOperationException e) {
-            System.out.println("The os does not support: 'taskbar.setIconImage'");
-        } catch (SecurityException e) {
-            System.out.println("There was a security exception for: 'taskbar.setIconImage'");
-        }
     }
 
 
@@ -327,7 +312,25 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
+    }
 
+    private void returnToBoard() {
+        board.removeAll();
+
+        board.add(deck);
+        board.add(discardPile);
+
+        try{
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch(Exception e){
+           e.printStackTrace(); 
+        }
+
+        board.revalidate();
+        board.repaint();
+
+        revalidate();
+        repaint();
     }
 
     private void spawnUno() {
@@ -345,7 +348,9 @@ public class GUIHandler extends JFrame implements ActionListener {
             ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOffIcon.png"));
             soundIcon.setIcon(soundImageIcon);
             soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
-        } else {
+        } 
+        
+        else {
             soundOn = true; 
             ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
             soundIcon.setIcon(soundImageIcon);
@@ -368,10 +373,10 @@ public class GUIHandler extends JFrame implements ActionListener {
                     sound.start();
         
                 } catch(Exception e) {
-                    System.out.println("unable to play");
+                    
                 }
             } catch (Exception e) {
-                System.out.println("file not found");
+                System.out.println("audio file not found");
             }
         }
         
@@ -460,8 +465,6 @@ public class GUIHandler extends JFrame implements ActionListener {
                             ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
                             newCards.add(new JButton(icon));
                             strHand.add(strCard);
-
-                            
                         }
 
                         hand.addAll(newCards);
@@ -478,7 +481,6 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.UNO_TIME)) {
                         spawnUno();
-                        System.out.println("got here");
                     }
                 }
             }
@@ -507,9 +509,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (e.getSource() == rules) {
-             
              JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
-
         } 
 
         else if (e.getSource() == options) {
@@ -520,6 +520,25 @@ public class GUIHandler extends JFrame implements ActionListener {
             toggleSound();
         }
 
+        else if (e.getSource() == red) {
+            write(ColorCard.RED);
+            returnToBoard();
+        }
+
+        else if (e.getSource() == blue) {
+            write(ColorCard.BLUE);
+            returnToBoard();
+        }
+
+        else if (e.getSource() == green) {
+            write(ColorCard.GREEN);
+            returnToBoard();
+        }
+
+        else if (e.getSource() == yellow) {
+            write(ColorCard.YELLOW);
+            returnToBoard();
+        }
     }
 
     private void write(String data) {
