@@ -81,15 +81,62 @@ public class GameState {
         }
     }
 
-    public void advanceTurn() {
-        if (turn.hasNext()) {
-            currentPlayer = turn.next();
+    public void effect(Card c){
+        if (c.getType() == Type.drawTwo){
+            String listOfCards = "";
+            for (int i = 0; i < 2; i ++ ){
+                Card card = deck.remove();
+                listOfCards += " " + card.toString();
+            }
+            for (ClientHandler ch : ClientHandler.getclientHandlers()) {
+                if (ch.getUsername().equals(currentPlayer.getUsername())) {
+                    ch.write(Server.DRAW_CARDS + listOfCards);
+                }
+            }
         }
 
-        else {
-            turn = players.listIterator();
-            currentPlayer = turn.next();
+        else if (c.getType() == Type.drawFour){
+            String listOfCards = "";
+            for (int i = 0; i < 4; i ++ ){
+                Card card = deck.remove();
+                listOfCards += " " + card.toString();
+            }
+            for (ClientHandler ch : ClientHandler.getclientHandlers()) {
+                if (ch.getUsername().equals(currentPlayer.getUsername())) {
+                    ch.write(Server.DRAW_CARDS + listOfCards);
+                }
+            }
         }
+
+        else if (c.getType() == Type.skip || c.getType() == Type.reverse){
+            advanceTurn(c);
+        }
+
+    }
+    public void advanceTurn(Card c) {
+        if (c.getType() == Type.reverse){
+            Collections.reverse(players);
+            turn = players.listIterator();
+            if (turn.hasNext()) {
+                currentPlayer = turn.next();
+            }
+
+            else {
+                turn = players.listIterator();
+                currentPlayer = turn.next();
+            }
+        }
+        else{
+            if (turn.hasNext()) {
+                currentPlayer = turn.next();
+            }
+
+            else {
+                turn = players.listIterator();
+                currentPlayer = turn.next();
+            }
+        }
+
     }
 
     public boolean startGame() {
@@ -134,7 +181,7 @@ public class GameState {
             currentPlayer.play(index);
             discardPile.push(card);
 
-            advanceTurn();
+            advanceTurn(card);
             return true;
         }
         return false;
@@ -160,7 +207,7 @@ public class GameState {
 
         Card card = deck.remove();
         getPlayer(username).addCard(card);
-        advanceTurn();
+        advanceTurn(card);
         return card;
     }
 }

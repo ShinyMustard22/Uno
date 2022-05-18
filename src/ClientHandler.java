@@ -24,6 +24,14 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    public static ArrayList<ClientHandler> getclientHandlers(){
+        return clientHandlers;
+    }
+
+    public String getUsername(){
+        return username;
+    }
+
     private boolean alreadyUsedName(String name) {
         for (ClientHandler clientHandler : clientHandlers) {
             if (name.equals(clientHandler.username)) {
@@ -48,7 +56,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void write(String data) {
+    public void write(String data) {
         try {
             out.writeUTF(data);
             out.flush();
