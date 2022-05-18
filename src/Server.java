@@ -24,6 +24,7 @@ public class Server {
     public static final String CHOOSE_COLOR = "chooseColor: ";
     public static final String ERROR = "error: ";
     public static final String UNO_TIME = "unoTime: ";
+    public static final String PLAYER_WON = "playerWon: ";
 
     private ServerSocket serverSocket;
     private Socket socket;

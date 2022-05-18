@@ -81,42 +81,52 @@ public class GameState {
         }
     }
 
-    public void effect(Card c){
-        if (c.getType() == Type.drawTwo){
-            String listOfCards = "";
-            for (int i = 0; i < 2; i ++ ){
-                Card card = deck.remove();
-                listOfCards += " " + card.toString();
-            }
-            for (ClientHandler ch : ClientHandler.getclientHandlers()) {
-                if (ch.getUsername().equals(currentPlayer.getUsername())) {
-                    ch.write(Server.DRAW_CARDS + listOfCards);
-                }
+    // public void effect(Card c){
+    //     if (c.getType() == Type.drawTwo){
+    //         String listOfCards = "";
+    //         for (int i = 0; i < 2; i ++ ){
+    //             Card card = deck.remove();
+    //             listOfCards += " " + card.toString();
+    //         }
+    //         for (ClientHandler ch : ClientHandler.getclientHandlers()) {
+    //             if (ch.getUsername().equals(currentPlayer.getUsername())) {
+    //                 ch.write(Server.DRAW_CARDS + listOfCards);
+    //             }
+    //         }
+    //     }
+
+    //     else if (c.getType() == Type.drawFour){
+    //         String listOfCards = "";
+    //         for (int i = 0; i < 4; i ++ ){
+    //             Card card = deck.remove();
+    //             listOfCards += " " + card.toString();
+    //         }
+    //         for (ClientHandler ch : ClientHandler.getclientHandlers()) {
+    //             if (ch.getUsername().equals(currentPlayer.getUsername())) {
+    //                 ch.write(Server.DRAW_CARDS + listOfCards);
+    //             }
+    //         }
+    //     }
+
+    //     else if (c.getType() == Type.skip || c.getType() == Type.reverse){
+    //         advanceTurn(c);
+    //     }
+
+    // }
+
+    private void reverseList() {
+        for (Player player : players) {
+            if (player.equals(getCurrentPlayer())) {
+                
             }
         }
-
-        else if (c.getType() == Type.drawFour){
-            String listOfCards = "";
-            for (int i = 0; i < 4; i ++ ){
-                Card card = deck.remove();
-                listOfCards += " " + card.toString();
-            }
-            for (ClientHandler ch : ClientHandler.getclientHandlers()) {
-                if (ch.getUsername().equals(currentPlayer.getUsername())) {
-                    ch.write(Server.DRAW_CARDS + listOfCards);
-                }
-            }
-        }
-
-        else if (c.getType() == Type.skip || c.getType() == Type.reverse){
-            advanceTurn(c);
-        }
-
     }
+
     public void advanceTurn(Card c) {
         if (c.getType() == Type.reverse){
-            Collections.reverse(players);
+            reverseList();
             turn = players.listIterator();
+
             if (turn.hasNext()) {
                 currentPlayer = turn.next();
             }
@@ -126,6 +136,27 @@ public class GameState {
                 currentPlayer = turn.next();
             }
         }
+
+        if (c.getType() == Type.skip) {
+            if (turn.hasNext()) {
+                currentPlayer = turn.next();
+            }
+
+            else {
+                turn = players.listIterator();
+                currentPlayer = turn.next();
+            }
+
+            if (turn.hasNext()) {
+                currentPlayer = turn.next();
+            }
+
+            else {
+                turn = players.listIterator();
+                currentPlayer = turn.next();
+            }
+        }
+
         else{
             if (turn.hasNext()) {
                 currentPlayer = turn.next();
@@ -181,9 +212,26 @@ public class GameState {
             currentPlayer.play(index);
             discardPile.push(card);
 
+            if (card instanceof DrawTwoCard) {
+                if (turn.hasNext()) {
+                    Player nextPlayer = players.get(turn.nextIndex());
+                    for (int i = 0; i < 2; i++) {
+                        nextPlayer.addCard(deck.remove());
+                    }
+                }
+
+                else {
+                    Player nextPlayer = players.get(0);
+                    for (int i = 0; i < 2; i++) {
+                        nextPlayer.addCard(deck.remove());
+                    }
+                }
+            }
+
             advanceTurn(card);
             return true;
         }
+
         return false;
     }
 

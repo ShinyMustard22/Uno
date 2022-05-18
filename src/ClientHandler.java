@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.*;
 import cards.Card;
 import cards.WildCard;
 
@@ -24,14 +24,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public static ArrayList<ClientHandler> getclientHandlers(){
-        return clientHandlers;
-    }
-
-    public String getUsername(){
-        return username;
-    }
-
     private boolean alreadyUsedName(String name) {
         for (ClientHandler clientHandler : clientHandlers) {
             if (name.equals(clientHandler.username)) {
@@ -41,6 +33,14 @@ public class ClientHandler implements Runnable {
 
         return false;
     }
+
+    // public static void sendCards(String username, List<Card> newCards) {
+    //     for (ClientHandler clientHandler : clientHandlers) {
+    //         if (username.equals(clientHandler.username)) {
+    //             break;
+    //         }
+    //     }
+    // }
 
     private String read() {
         try {
@@ -56,7 +56,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void write(String data) {
+    private void write(String data) {
         try {
             out.writeUTF(data);
             out.flush();
@@ -139,7 +139,7 @@ public class ClientHandler implements Runnable {
             board.startGame();
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.write(Server.FIRST_CARD + board.getLastPlayedCard().toString() + "\n" +
-                Server.INIT_PLAYER_HAND + board.getPlayer(username).getCardList());
+                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList());
             }
         }
 
@@ -166,6 +166,10 @@ public class ClientHandler implements Runnable {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
+
+                if (board.getPlayer(username).getHand().size() == 0) {
+                    
+                }
             }
 
             else {
