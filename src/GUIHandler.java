@@ -113,26 +113,28 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
 
-        // unoPanel = new JPanel(null); 
-        // unoPanel.setBackground(Color.CYAN);
-        // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));;
+        unoLayers = getLayeredPane();
 
-        // unoLayers = getLayeredPane();
-        // unoLayers.setLayout(null);
-        // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10); 
+        UnoLayoutManager unoLayout = new UnoLayoutManager(); 
+        unoLayers.setLayout(unoLayout);
+
+        unoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); 
+        unoPanel.setBackground(Color.CYAN);
+        // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));
+        // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10);
+
+        unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER);
+        unoLayout.setBounds(unoPanel, new Rectangle(5, 5, 30, 30)); //change to 0,0 pos
         
         // Insets insets = unoLayers.getInsets(); 
         // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
         // unoPanel.setVisible(false);
 
-        // unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER); 
-        // setVisible(true);
+        add(unoLayers); 
+        pack();
+        setVisible(true);
 
-        // add(unoLayers); 
-        // unoLayers.setVisible(true);
-
-        add(mainPanel);
-        
+        // add(mainPanel);
 
         players = new LinkedHashMap<String, Integer>();
 
@@ -382,24 +384,24 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-        // int x = (int)(Math.random() * getWidth()); 
-        // int y = (int)(Math.random() * getHeight());
+        int x = (int)(Math.random() * getWidth()); 
+        int y = (int)(Math.random() * getHeight());
         
-        // unoButton = new JButton("UNO!");
-        // unoButton.setSize(10,10);
+        unoButton = new JButton("UNO!");
+        unoButton.setSize(10,10);
 
-        // unoPanel.add(unoButton);
-        // unoPanel.setVisible(true);
-        // unoPanel.setLocation(x, y);
+        unoPanel.add(unoButton);
+        unoPanel.setLocation(x, y);
+        unoPanel.setVisible(true);
+        
+        unoPanel.revalidate();
+        unoPanel.repaint();
 
-        // unoPanel.revalidate();
-        // unoPanel.repaint();
+        unoLayers.revalidate();
+        unoLayers.repaint();
 
-        // unoLayers.revalidate();
-        // unoLayers.repaint();
-
-        // revalidate();
-        // repaint();
+        revalidate();
+        repaint();
     }
     private void toggleSound() {
         if (soundOn) {
