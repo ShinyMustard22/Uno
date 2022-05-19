@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ListIterator;
 import cards.Card;
 
 public class Player {
@@ -13,12 +12,28 @@ public class Player {
         this.hand = hand;
     }
 
-    public void addCard(Card card) {
-        hand.add(card);
+    public boolean addCard(Card newCard, Card lastCard) {
+        for (Card card : hand) {
+            if (card.playable(lastCard)) {
+                return false;
+            }
+        }
+
+        hand.add(newCard);
+        return true;
     }
 
-    public void play(int index){
-        hand.remove(index);
+    public void forcedDraw(List<Card> newCards) {
+        hand.addAll(newCards);
+    }
+
+    public boolean play(Card lastCard, int index) {
+        if (hand.get(index).playable(lastCard)) {
+            hand.remove(index);
+            return true;
+        }
+
+        return false;
     }
 
     public String getUsername() {
@@ -35,15 +50,6 @@ public class Player {
     }
 
     public String getCardList() {
-        String cardList = "";
-        ListIterator<Card> iter = hand.listIterator();
-        while (iter.hasNext()) {
-            cardList += iter.next().toString();
-            if (iter.hasNext()) {
-                cardList += " ";
-            }
-        }
-
-        return cardList;
+        return Card.listToString(hand);
     }
 }
