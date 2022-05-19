@@ -303,7 +303,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private void chooseColorScreen() {
         board.removeAll();
 
-        try{
+        for (JButton card : hand) {
+            card.removeActionListener(this);
+        }
+
+        try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch(Exception e){
            e.printStackTrace(); 
@@ -344,6 +348,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private void returnToBoard() {
         board.removeAll();
+
+        for (JButton card : hand) {
+            card.addActionListener(this);
+        }
 
         board.add(deck);
         board.add(discardPile);
