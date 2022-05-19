@@ -1,5 +1,8 @@
 package cards;
 
+import java.util.List;
+import java.util.ListIterator;
+
 public abstract class Card {
 
     public enum Type {
@@ -101,6 +104,20 @@ public abstract class Card {
         }
 
         return null;
+    }
+
+    public static String listToString(List<Card> cards) {
+        StringBuffer strList = new StringBuffer();
+
+        ListIterator<Card> iter = cards.listIterator();
+        while (iter.hasNext()) {
+            strList.append(iter.next());
+            if (iter.hasNext()) {
+                strList.append(" ");
+            }
+        }
+
+        return strList.toString();
     }
 
     public abstract Type getType();
