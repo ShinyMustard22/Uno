@@ -382,24 +382,24 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-        int x = (int)(Math.random() * getWidth()); 
-        int y = (int)(Math.random() * getHeight());
+        // int x = (int)(Math.random() * getWidth()); 
+        // int y = (int)(Math.random() * getHeight());
         
-        unoButton = new JButton("UNO!");
-        unoButton.setSize(10,10);
+        // unoButton = new JButton("UNO!");
+        // unoButton.setSize(10,10);
 
-        unoPanel.add(unoButton);
-        unoPanel.setVisible(true);
-        unoPanel.setLocation(x, y);
+        // unoPanel.add(unoButton);
+        // unoPanel.setVisible(true);
+        // unoPanel.setLocation(x, y);
 
-        unoPanel.revalidate();
-        unoPanel.repaint();
+        // unoPanel.revalidate();
+        // unoPanel.repaint();
 
-        unoLayers.revalidate();
-        unoLayers.repaint();
+        // unoLayers.revalidate();
+        // unoLayers.repaint();
 
-        revalidate();
-        repaint();
+        // revalidate();
+        // repaint();
     }
     private void toggleSound() {
         if (soundOn) {
