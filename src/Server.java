@@ -19,12 +19,14 @@ public class Server {
     public static final String FIRST_CARD = "firstCard: ";
     public static final String PLAY_CARD = "playCard: ";
     public static final String SOMEBODY_PLAYED_CARD = "playerPlayedCard: ";
+    public static final String DREW_CARDS = "drewXCards: ";
     public static final String ASK_TO_DRAW = "askToDraw: ";
     public static final String DRAW_CARDS = "drawCards: ";
     public static final String CHOOSE_COLOR = "chooseColor: ";
     public static final String ERROR = "error: ";
     public static final String UNO_TIME = "unoTime: ";
     public static final String PLAYER_WON = "playerWon: ";
+    public static final String WON = "youWon: ";
 
     private ServerSocket serverSocket;
     private Socket socket;
