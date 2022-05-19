@@ -1,11 +1,8 @@
 import java.awt.*;
 import javax.swing.*;
-<<<<<<< HEAD
 import javax.swing.plaf.DimensionUIResource;
 
-=======
 import javax.swing.border.EmptyBorder;
->>>>>>> 60a30c10961f35c5b81ce5d29f84dee520d76db8
 import cards.ColorCard;
 import java.awt.event.*;
 import java.io.DataOutputStream;
