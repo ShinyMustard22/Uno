@@ -59,6 +59,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private LinkedHashMap<String, Integer> players;
 
     private StringBuffer rulesString;
+    private int place;
     
     private DataOutputStream out;
 
@@ -113,6 +114,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
 
+        //unoLayers = new JLayeredPane();
         unoLayers = getLayeredPane();
 
         UnoLayoutManager unoLayout = new UnoLayoutManager(); 
@@ -130,12 +132,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
         // unoPanel.setVisible(false);
 
-        add(unoLayers); 
+        // add(unoLayers); 
         pack();
         setVisible(true);
-
+    
         // add(mainPanel);
-
+    
         players = new LinkedHashMap<String, Integer>();
 
         setVisible(true);
@@ -359,7 +361,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    private void enterSpectateMode(int place) {
+    private void enterSpectateMode() {
         playerHand.removeAll();
 
         congratulations = new JLabel("Congratulations! Your placing: " + place);
@@ -378,6 +380,29 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         playerHand.revalidate();
         playerHand.repaint();
+
+        revalidate();
+        repaint();
+    }
+
+    private void finalScreen() {
+        JLabel finalLabel1 = new JLabel("The Game is Over! Your place: " + place);
+        finalLabel1.setHorizontalAlignment(JLabel.CENTER);
+        finalLabel1.setForeground(Color.GREEN.darker());
+        finalLabel1.setFont(new Font(finalLabel1.getFont().getName(), Font.PLAIN, 32));
+
+        JLabel finalLabel2 = new JLabel("Be sure to play again!");
+        finalLabel2.setHorizontalAlignment(JLabel.CENTER);
+        finalLabel2.setFont(new Font(finalLabel2.getFont().getName(), Font.PLAIN, 32));
+
+        mainPanel.removeAll();
+        mainPanel.setLayout(new GridLayout(2, 1));
+        mainPanel.add(finalLabel1);
+        mainPanel.add(finalLabel2);
+        mainPanel.setBorder(new EmptyBorder(gbc.insets));
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
 
         revalidate();
         repaint();
@@ -512,7 +537,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
                         String[] card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length()).split(" ");
-                        System.out.println(card);
                         updateDiscardPile(card[1]);
                         players.replace(card[0], players.get(card[0]) - 1);
                         updateTable();
@@ -547,8 +571,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.WON)) {
-                        int place = Integer.valueOf(strData.substring(Server.WON.length()));
-                        enterSpectateMode(place);
+                        place = Integer.valueOf(strData.substring(Server.WON.length()));
+                        enterSpectateMode();
                     }
 
                     else if (strData.contains(Server.PLAYER_WON)) {
@@ -559,6 +583,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         String[] playerHandSize = strData.substring(Server.DREW_CARDS.length()).split(" ");
                         players.replace(playerHandSize[0], Integer.valueOf(playerHandSize[1]));
                         updateTable();
+                    }
+
+                    else if (strData.contains(Server.END_GAME)) {
+                        finalScreen();
                     }
                 }
             }

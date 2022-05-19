@@ -135,7 +135,7 @@ public class ClientHandler implements Runnable {
                 boolean isLeader = clientHandlers.size() == 0;
 
                 write(Server.INIT_PLAYER_LIST + board.getPlayerList() + "\n" +
-                    Server.AM_LEADER + isLeader + "\n" + Server.UNO_TIME);
+                    Server.AM_LEADER + isLeader);
 
                 broadcastMessage(Server.ADD_PLAYER + username);
                 clientHandlers.add(this);
@@ -143,10 +143,17 @@ public class ClientHandler implements Runnable {
         }
 
         else if (data.contains(Server.GAME_STARTED)) {
+            if (board.getTotalPlayers() < 2) {
+                write(Server.ERROR);
+                return;
+            }
+    
+
             board.startGame();
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.write(Server.FIRST_CARD + board.getLastPlayedCard().toString() + "\n" +
-                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList());
+                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList() +
+                "\n" + Server.UNO_TIME);
             }
         }
 
@@ -178,6 +185,12 @@ public class ClientHandler implements Runnable {
                     int place = board.playerWon(username);
                     write(Server.WON + place + "\n" + Server.REMOVE_PLAYER + username);
                     broadcastMessage(Server.PLAYER_WON + "\n" + Server.REMOVE_PLAYER + username);
+                }
+
+                if (board.getTotalPlayers() < 2) {
+                    for (ClientHandler clientHandler : clientHandlers) {
+                        clientHandler.write(Server.END_GAME);
+                    }
                 }
             }
 
