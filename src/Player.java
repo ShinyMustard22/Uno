@@ -40,10 +40,6 @@ public class Player {
         return username;
     }
 
-    public List<Card> getHand() {
-        return hand;
-    }
-
     public boolean equals(Object other) {
         Player player = (Player) other;
         return player.username.equals(username);
@@ -51,5 +47,9 @@ public class Player {
 
     public String getCardList() {
         return Card.listToString(hand);
+    }
+
+    public int getHandSize() {
+        return hand.size();
     }
 }

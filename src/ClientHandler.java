@@ -169,6 +169,12 @@ public class ClientHandler implements Runnable {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
+
+                if (board.getPlayer(username).getHandSize() == 0) {
+                    int place = board.playerWon(username);
+                    write(Server.WON + place + "\n" + Server.REMOVE_PLAYER + username);
+                    broadcastMessage(Server.PLAYER_WON + "\n" + Server.REMOVE_PLAYER + username);
+                }
             }
 
             else {

@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import cards.ColorCard;
 import java.awt.event.*;
 import java.io.DataOutputStream;
@@ -40,6 +41,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JPanel overLayPanel; 
     private JButton unoButton;
+
+    private JLabel congratulations, spectateLabel;
 
     private static boolean soundOn = true; 
     private static final String cardFlippedSound = "cardFlipping"; 
@@ -223,6 +226,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         board.removeAll();
 
         startGame = new JButton("Start Game");
+        startGame.setFont(new Font(startGame.getFont().getName(), Font.PLAIN, 32));
         startGame.addActionListener(this);
         board.add(startGame, gbc);
 
@@ -288,7 +292,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         red.addActionListener(this);
 
         blue = new JButton("Blue");
-        blue.setBackground(Color.BLUE);
+        blue.setBackground(Color.CYAN);
         blue.setOpaque(true);
         blue.addActionListener(this);
 
@@ -328,6 +332,30 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         board.revalidate();
         board.repaint();
+
+        revalidate();
+        repaint();
+    }
+
+    private void enterSpectateMode(int place) {
+        playerHand.removeAll();
+
+        congratulations = new JLabel("Congratulations! Your placing: " + place);
+        congratulations.setHorizontalAlignment(JLabel.CENTER);
+        congratulations.setForeground(Color.GREEN.darker());
+        congratulations.setFont(new Font(congratulations.getFont().getName(), Font.PLAIN, 32));
+
+        spectateLabel = new JLabel("You are now spectating...");
+        spectateLabel.setHorizontalAlignment(JLabel.CENTER);
+        spectateLabel.setFont(new Font(spectateLabel.getFont().getName(), Font.PLAIN, 32));
+
+        playerHand.setLayout(new GridLayout(2, 1));
+        playerHand.add(congratulations);
+        playerHand.add(spectateLabel);
+        playerHand.setBorder(new EmptyBorder(gbc.insets));
+
+        playerHand.revalidate();
+        playerHand.repaint();
 
         revalidate();
         repaint();
@@ -378,8 +406,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             } catch (Exception e) {
                 System.out.println("audio file not found");
             }
-        }
-        
+        }   
     }
 
     public void decode(String allStrData) {
@@ -481,6 +508,15 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.UNO_TIME)) {
                         spawnUno();
+                    }
+
+                    else if (strData.contains(Server.WON)) {
+                        int place = Integer.valueOf(strData.substring(Server.WON.length()));
+                        enterSpectateMode(place);
+                    }
+
+                    else if (strData.contains(Server.PLAYER_WON)) {
+
                     }
                 }
             }

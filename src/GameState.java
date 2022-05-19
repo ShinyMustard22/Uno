@@ -9,6 +9,7 @@ public class GameState {
     private ListIterator<Player> turn;
     private Player currentPlayer;
     private boolean gameStarted;
+    private int currentPlace;
 
     public GameState() {
         deck = new Deck();
@@ -21,6 +22,7 @@ public class GameState {
         
         players = new LinkedList<Player>();
         gameStarted = false;
+        currentPlace = 0;
     }
 
     public boolean addPlayer(String username) {
@@ -58,6 +60,12 @@ public class GameState {
         }
 
         fixIterator();
+    }
+
+    public int playerWon(String username) {
+        removePlayer(username);
+        currentPlace++;
+        return currentPlace;
     }
 
     private void fixIterator() {
