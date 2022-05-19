@@ -1,5 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.plaf.DimensionUIResource;
+
 import cards.ColorCard;
 import java.awt.event.*;
 import java.io.DataOutputStream;
@@ -12,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import javax.sound.sampled.*; 
 
-public class GUIHandler extends JFrame implements ActionListener {
+public class GUIHandler extends JFrame implements ActionListener, ComponentListener {
 
     private static final int startingWidth  = 1000;
     private static final int startingHeight = 400;
@@ -38,7 +40,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JDialog optionWindow; 
 
-    private JPanel overLayPanel; 
+    private JLayeredPane unoLayers; 
+    private JPanel unoPanel; 
     private JButton unoButton;
 
     private static boolean soundOn = true; 
@@ -80,9 +83,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         soundIcon.addActionListener(this); 
         optionWindow.add(soundIcon); 
 
-        // overLayPanel = new JPanel(new OverlayLayout(this));
-        // overLayPanel.setVisible(false);
-
         mainPanel = new JPanel(new BorderLayout());
 
         board = new JPanel(new GridBagLayout());
@@ -109,7 +109,27 @@ public class GUIHandler extends JFrame implements ActionListener {
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
+
+        // unoPanel = new JPanel(null); 
+        // unoPanel.setBackground(Color.CYAN);
+        // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));;
+
+        // unoLayers = getLayeredPane();
+        // unoLayers.setLayout(null);
+        // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10); 
+        
+        // Insets insets = unoLayers.getInsets(); 
+        // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
+        // unoPanel.setVisible(false);
+
+        // unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER); 
+        // setVisible(true);
+
+        // add(unoLayers); 
+        // unoLayers.setVisible(true);
+
         add(mainPanel);
+        
 
         players = new LinkedHashMap<String, Integer>();
 
@@ -334,13 +354,24 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void spawnUno() {
-        // int x = (int)(Math.random() * getWidth()); 
-        // int y = (int)(Math.random() * getHeight());
+        int x = (int)(Math.random() * getWidth()); 
+        int y = (int)(Math.random() * getHeight());
         
-        
+        unoButton = new JButton("UNO!");
+        unoButton.setSize(10,10);
 
-        // revalidate();
-        // repaint();
+        unoPanel.add(unoButton);
+        unoPanel.setVisible(true);
+        unoPanel.setLocation(x, y);
+
+        unoPanel.revalidate();
+        unoPanel.repaint();
+
+        unoLayers.revalidate();
+        unoLayers.repaint();
+
+        revalidate();
+        repaint();
     }
     private void toggleSound() {
         if (soundOn) {
@@ -538,7 +569,36 @@ public class GUIHandler extends JFrame implements ActionListener {
         else if (e.getSource() == yellow) {
             write(ColorCard.YELLOW);
             returnToBoard();
+
         }
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+       if (e.getSource() == this) {
+           
+       }
+    }
+
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        
+        
+    }
+
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        
+        
+    }
+
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        
+        
     }
 
     private void write(String data) {
@@ -566,4 +626,5 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         }
     }
+
 }
