@@ -1,6 +1,5 @@
 import java.util.*;
 import cards.*;
-import cards.Card.Type;
 
 public class GameState {
     
@@ -15,7 +14,7 @@ public class GameState {
         deck = new Deck();
         discardPile = new Stack<Card>();
 
-        while (deck.peek().getType() == Type.wild) {
+        while (deck.peek() instanceof WildCard) {
             deck.add(deck.remove());
         }
         discardPile.push(deck.remove());
@@ -25,7 +24,7 @@ public class GameState {
     }
 
     public boolean addPlayer(String username) {
-        if (gameStarted) {
+        if (gameStarted || players.size() >= 10) {
             return false;
         }  
 
@@ -81,49 +80,37 @@ public class GameState {
         }
     }
 
-    // public void effect(Card c){
-    //     if (c.getType() == Type.drawTwo){
-    //         String listOfCards = "";
-    //         for (int i = 0; i < 2; i ++ ){
-    //             Card card = deck.remove();
-    //             listOfCards += " " + card.toString();
-    //         }
-    //         for (ClientHandler ch : ClientHandler.getclientHandlers()) {
-    //             if (ch.getUsername().equals(currentPlayer.getUsername())) {
-    //                 ch.write(Server.DRAW_CARDS + listOfCards);
-    //             }
-    //         }
-    //     }
-
-    //     else if (c.getType() == Type.drawFour){
-    //         String listOfCards = "";
-    //         for (int i = 0; i < 4; i ++ ){
-    //             Card card = deck.remove();
-    //             listOfCards += " " + card.toString();
-    //         }
-    //         for (ClientHandler ch : ClientHandler.getclientHandlers()) {
-    //             if (ch.getUsername().equals(currentPlayer.getUsername())) {
-    //                 ch.write(Server.DRAW_CARDS + listOfCards);
-    //             }
-    //         }
-    //     }
-
-    //     else if (c.getType() == Type.skip || c.getType() == Type.reverse){
-    //         advanceTurn(c);
-    //     }
-
-    // }
-
     private void reverseList() {
-        for (Player player : players) {
-            if (player.equals(getCurrentPlayer())) {
-                
+        List<Player> beforeList = new LinkedList<Player>();
+        List<Player> afterList = new LinkedList<Player>();
+        ListIterator<Player> iter = players.listIterator();
+        int currentPlayerIndex = players.indexOf(currentPlayer);
+
+        while (iter.hasNext()) {
+            if (iter.nextIndex() < currentPlayerIndex) {
+                beforeList.add(iter.next());
+            }
+
+            else if (iter.previousIndex() >= currentPlayerIndex) {
+                afterList.add(iter.next());
+            }
+
+            else {
+                iter.next();
             }
         }
+
+        Collections.reverse(beforeList);
+        Collections.reverse(afterList);
+
+        players.clear();
+        players.addAll(beforeList);
+        players.addAll(afterList);
+        players.add(currentPlayer);
     }
 
-    public void advanceTurn(Card c) {
-        if (c.getType() == Type.reverse){
+    public void advanceTurn(Card card) {
+        if (card instanceof ReverseCard){
             reverseList();
             turn = players.listIterator();
 
@@ -137,37 +124,58 @@ public class GameState {
             }
         }
 
-        if (c.getType() == Type.skip) {
-            if (turn.hasNext()) {
-                currentPlayer = turn.next();
-            }
-
-            else {
-                turn = players.listIterator();
-                currentPlayer = turn.next();
-            }
-
-            if (turn.hasNext()) {
-                currentPlayer = turn.next();
-            }
-
-            else {
-                turn = players.listIterator();
-                currentPlayer = turn.next();
-            }
+        else if (card instanceof SkipCard) {
+            skipTurn();
         }
 
-        else{
+        else if (card instanceof DrawTwoCard) {
+            Player nextPlayer;
+
             if (turn.hasNext()) {
-                currentPlayer = turn.next();
+                nextPlayer = players.get(turn.nextIndex());
             }
 
             else {
                 turn = players.listIterator();
-                currentPlayer = turn.next();
+                nextPlayer = players.get(turn.nextIndex());
             }
+
+            List<Card> newCards = drawFromDeck(2);
+            nextPlayer.forcedDraw(newCards);
+            ClientHandler.sendCards(nextPlayer.getUsername(), newCards);
+
+            skipTurn();
         }
 
+        else if (card instanceof DrawFourCard) {
+            Player nextPlayer;
+
+            if (turn.hasNext()) {
+                nextPlayer = players.get(turn.nextIndex());
+            }
+
+            else {
+                turn = players.listIterator();
+                nextPlayer = players.get(turn.nextIndex());
+            }
+
+            List<Card> newCards = drawFromDeck(4);
+            nextPlayer.forcedDraw(newCards);
+            ClientHandler.sendCards(nextPlayer.getUsername(), newCards);
+
+            skipTurn();
+        }
+
+        else {
+            pass();
+        }
+
+    }
+
+    private void skipTurn() {
+        for (int i = 0; i < 2; i++) {
+            pass();
+        }
     }
 
     public boolean startGame() {
@@ -203,31 +211,9 @@ public class GameState {
         return discardPile.peek();
     }
 
-    public boolean playable(String username, Card card) {
-            return card.playable(discardPile.peek());
-    }
-
     public boolean play(Card card, int index) {
-        if (playable(currentPlayer.getUsername(), card))  {
-            currentPlayer.play(index);
+        if (currentPlayer.play(discardPile.peek(), index)) {
             discardPile.push(card);
-
-            if (card instanceof DrawTwoCard) {
-                if (turn.hasNext()) {
-                    Player nextPlayer = players.get(turn.nextIndex());
-                    for (int i = 0; i < 2; i++) {
-                        nextPlayer.addCard(deck.remove());
-                    }
-                }
-
-                else {
-                    Player nextPlayer = players.get(0);
-                    for (int i = 0; i < 2; i++) {
-                        nextPlayer.addCard(deck.remove());
-                    }
-                }
-            }
-
             advanceTurn(card);
             return true;
         }
@@ -235,27 +221,47 @@ public class GameState {
         return false;
     }
 
-    public void resetDeck() {
+    public Card draw() {
+        if (currentPlayer.addCard(deck.peek(), discardPile.peek())) {
+            Card card = deck.remove();
+            pass();
+            return card;
+        }
+
+        return null;
+    }
+
+    private void restock() {
         deck.addAll(discardPile);
         discardPile.clear();
         
-        while (deck.peek().getType() == Type.wild) {
+        while (deck.peek() instanceof WildCard) {
             deck.add(deck.remove());
         }
         discardPile.push(deck.remove());
     }
 
-    public Card draw(String username) {
-        List<Card> hand = getPlayer(username).getHand();
-        for (Card card : hand) {
-            if (playable(username, card)) {
-                return null;
+    private List<Card> drawFromDeck(int numberOfCards) {
+        List<Card> cardsToDraw = new LinkedList<Card>();
+        for (int i = 0; i < numberOfCards; i++) {
+            if (deck.isEmpty()) {
+                restock();
             }
+
+            cardsToDraw.add(deck.remove());
         }
 
-        Card card = deck.remove();
-        getPlayer(username).addCard(card);
-        advanceTurn(card);
-        return card;
+        return cardsToDraw;
+    }
+
+    private void pass() {
+        if (turn.hasNext()) {
+            currentPlayer = turn.next();
+        }
+
+        else {
+            turn = players.listIterator();
+            currentPlayer = turn.next();
+        }
     }
 }

@@ -24,9 +24,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private boolean alreadyUsedName(String name) {
+    private boolean alreadyUsedName() {
         for (ClientHandler clientHandler : clientHandlers) {
-            if (name.equals(clientHandler.username)) {
+            if (username.equals(clientHandler.username)) {
                 return true;
             }
         }
@@ -34,13 +34,15 @@ public class ClientHandler implements Runnable {
         return false;
     }
 
-    // public static void sendCards(String username, List<Card> newCards) {
-    //     for (ClientHandler clientHandler : clientHandlers) {
-    //         if (username.equals(clientHandler.username)) {
-    //             break;
-    //         }
-    //     }
-    // }
+    public static void sendCards(String username, List<Card> newCards) {
+        for (ClientHandler clientHandler : clientHandlers) {
+            if (username.equals(clientHandler.username)) {
+                clientHandler.write(Server.DRAW_CARDS + Card.listToString(newCards));
+                // clientHandler.broadcastMessage(data);
+                return;
+            }
+        }
+    }
 
     private String read() {
         try {
@@ -112,7 +114,7 @@ public class ClientHandler implements Runnable {
 
         if (data.contains(Server.NAME)) {
             username = data.substring(Server.NAME.length());
-            while (username.contains(" ") || alreadyUsedName(username)) {
+            while (username.contains(" ") || alreadyUsedName()) {
                 if (username.contains(" ")) {
                     write(Server.INVALID_USERNAME);
                 }
@@ -125,14 +127,15 @@ public class ClientHandler implements Runnable {
                 username = username.substring(Server.NAME.length());
             }
 
-            board.addPlayer(username);
-            boolean isLeader = clientHandlers.size() == 0;
+            if (board.addPlayer(username)) {
+                boolean isLeader = clientHandlers.size() == 0;
 
-            write(Server.INIT_PLAYER_LIST + board.getPlayerList() + "\n" +
-                Server.AM_LEADER + isLeader + "\n" + Server.UNO_TIME);
+                write(Server.INIT_PLAYER_LIST + board.getPlayerList() + "\n" +
+                    Server.AM_LEADER + isLeader + "\n" + Server.UNO_TIME);
 
-            broadcastMessage(Server.ADD_PLAYER + username);
-            clientHandlers.add(this);
+                broadcastMessage(Server.ADD_PLAYER + username);
+                clientHandlers.add(this);
+            }
         }
 
         else if (data.contains(Server.GAME_STARTED)) {
@@ -166,10 +169,6 @@ public class ClientHandler implements Runnable {
                 write(Server.PLAY_CARD + strCard + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
-
-                if (board.getPlayer(username).getHand().size() == 0) {
-                    
-                }
             }
 
             else {
@@ -178,7 +177,7 @@ public class ClientHandler implements Runnable {
         }
 
         else if (data.contains(Server.ASK_TO_DRAW)) {
-            Card card = board.draw(username);
+            Card card = board.draw();
 
             if (card != null) {
                 write(Server.DRAW_CARDS + card.toString());
