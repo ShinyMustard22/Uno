@@ -118,17 +118,19 @@ public class GameState {
     }
 
     public void advanceTurn(Card card) {
-        if (card instanceof ReverseCard){
-            reverseList();
-            turn = players.listIterator();
-
-            if (turn.hasNext()) {
-                currentPlayer = turn.next();
-            }
-
-            else {
+        if (card instanceof ReverseCard) {
+            if (players.size() > 2) {
+                reverseList();
                 turn = players.listIterator();
-                currentPlayer = turn.next();
+
+                if (turn.hasNext()) {
+                    currentPlayer = turn.next();
+                }
+
+                else {
+                    turn = players.listIterator();
+                    currentPlayer = turn.next();
+                }
             }
         }
 
@@ -232,7 +234,10 @@ public class GameState {
     public Card draw() {
         if (currentPlayer.addCard(deck.peek(), discardPile.peek())) {
             Card card = deck.remove();
-            pass();
+            if (!card.playable(discardPile.peek())) {
+                pass();
+            }
+            
             return card;
         }
 
@@ -260,6 +265,10 @@ public class GameState {
         }
 
         return cardsToDraw;
+    }
+
+    public int getTotalPlayers() {
+        return players.size();
     }
 
     private void pass() {

@@ -27,6 +27,7 @@ public class Server {
     public static final String UNO_TIME = "unoTime: ";
     public static final String PLAYER_WON = "playerWon: ";
     public static final String WON = "youWon: ";
+    public static final String END_GAME = "endGame: ";
 
     private ServerSocket serverSocket;
     private Socket socket;
