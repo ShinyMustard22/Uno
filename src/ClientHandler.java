@@ -38,7 +38,11 @@ public class ClientHandler implements Runnable {
         for (ClientHandler clientHandler : clientHandlers) {
             if (username.equals(clientHandler.username)) {
                 clientHandler.write(Server.DRAW_CARDS + Card.listToString(newCards));
-                // clientHandler.broadcastMessage(data);
+                for (ClientHandler clientHandler2 : clientHandlers) {
+                    clientHandler2.write(Server.DREW_CARDS + clientHandler.username + " " + 
+                        board.getPlayer(clientHandler.username).getHandSize());
+                }
+
                 return;
             }
         }
@@ -167,8 +171,8 @@ public class ClientHandler implements Runnable {
 
             if (board.play(card, index)) {
                 write(Server.PLAY_CARD + strCard + "\n" +
-                    Server.SOMEBODY_PLAYED_CARD + strCard);
-                broadcastMessage(Server.SOMEBODY_PLAYED_CARD + strCard);
+                    Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
+                broadcastMessage(Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
 
                 if (board.getPlayer(username).getHandSize() == 0) {
                     int place = board.playerWon(username);
@@ -186,7 +190,11 @@ public class ClientHandler implements Runnable {
             Card card = board.draw();
 
             if (card != null) {
-                write(Server.DRAW_CARDS + card.toString());
+                write(Server.DRAW_CARDS + card.toString()+ "\n" + 
+                    Server.DREW_CARDS + username + " " + 
+                    board.getPlayer(username).getHandSize());
+                broadcastMessage(Server.DREW_CARDS + username + " " +
+                    board.getPlayer(username).getHandSize());
             }
 
             else {

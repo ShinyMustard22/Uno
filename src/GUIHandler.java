@@ -478,8 +478,11 @@ public class GUIHandler extends JFrame implements ActionListener {
                     } 
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
-                        String card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length());
-                        updateDiscardPile(card);
+                        String[] card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length()).split(" ");
+                        System.out.println(card);
+                        updateDiscardPile(card[1]);
+                        players.replace(card[0], players.get(card[0]) - 1);
+                        updateTable();
                     } 
 
                     else if (strData.contains(Server.DRAW_CARDS)) {
@@ -516,7 +519,13 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.PLAYER_WON)) {
+                        // Do something
+                    }
 
+                    else if (strData.contains(Server.DREW_CARDS)) {
+                        String[] playerHandSize = strData.substring(Server.DREW_CARDS.length()).split(" ");
+                        players.replace(playerHandSize[0], Integer.valueOf(playerHandSize[1]));
+                        updateTable();
                     }
                 }
             }
