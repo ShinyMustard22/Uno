@@ -2,11 +2,13 @@ import java.util.*;
 import cards.*;
 
 public class GameState {
-    
     private Queue<Card> deck;
     private Stack<Card> discardPile;
+
     private List<Player> players;
+    private List<Player> wonPlayers;
     private ListIterator<Player> turn;
+
     private Player currentPlayer;
     private boolean gameStarted;
     private int currentPlace;
@@ -21,6 +23,7 @@ public class GameState {
         discardPile.push(deck.remove());
         
         players = new LinkedList<Player>();
+        wonPlayers = new LinkedList<Player>();
         gameStarted = false;
         currentPlace = 0;
     }
@@ -62,14 +65,26 @@ public class GameState {
         fixIterator();
     }
 
-    public int playerWon(String username) {
-        removePlayer(username);
+    public void playerWon(String username) {
         currentPlace++;
-        return currentPlace;
+        Player player = getPlayer(username);
+        player.setPlace(currentPlace);
+        wonPlayers.add(player);
+        removePlayer(username);
+    }
+
+    public int getPlaceOfPlayer(String username) {
+        for (Player player : wonPlayers) {
+            if (player.getUsername().equals(username)) {
+                return player.getPlace();
+            }
+        }
+
+        return -1;
     }
 
     private void fixIterator() {
-        if (turn == null) {
+        if (turn == null || players.size() == 1) {
             return;
         }
 
@@ -118,6 +133,10 @@ public class GameState {
     }
 
     public void advanceTurn(Card card) {
+        if (currentPlayer.getHandSize() == 0 && players.size() == 2) {
+            return;
+        }
+
         if (card instanceof ReverseCard) {
             if (players.size() > 2) {
                 reverseList();
@@ -280,5 +299,12 @@ public class GameState {
             turn = players.listIterator();
             currentPlayer = turn.next();
         }
+    }
+
+    public void endGame() {
+        Player lastPlayer = players.get(0);
+        currentPlace++;
+        lastPlayer.setPlace(currentPlace);
+        wonPlayers.add(lastPlayer);
     }
 }

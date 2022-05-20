@@ -182,15 +182,18 @@ public class ClientHandler implements Runnable {
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
 
                 if (board.getPlayer(username).getHandSize() == 0) {
-                    int place = board.playerWon(username);
-                    write(Server.WON + place + "\n" + Server.REMOVE_PLAYER + username);
+                    board.playerWon(username);
+                    write(Server.WON + board.getPlaceOfPlayer(username) + "\n" + Server.REMOVE_PLAYER + username);
                     broadcastMessage(Server.PLAYER_WON + "\n" + Server.REMOVE_PLAYER + username);
                 }
 
                 if (board.getTotalPlayers() < 2) {
+                    board.endGame();
                     for (ClientHandler clientHandler : clientHandlers) {
-                        clientHandler.write(Server.END_GAME);
+                        int place = board.getPlaceOfPlayer(clientHandler.username);
+                        clientHandler.write(Server.END_GAME + place);
                     }
+                    board = new GameState();
                 }
             }
 

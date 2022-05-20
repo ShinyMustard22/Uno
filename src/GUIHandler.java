@@ -44,6 +44,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JLayeredPane unoLayers; 
     private JPanel unoPanel; 
     private JButton unoButton;
+    private JButton red, blue, green, yellow;
 
     private JLabel congratulations, spectateLabel;
 
@@ -54,12 +55,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private static final String errorSound = "wrong"; 
     public static final String gameStartedSound = "gameStart"; 
 
-    private JButton red, blue, green, yellow;
-
     private LinkedHashMap<String, Integer> players;
-
     private StringBuffer rulesString;
-    private int place;
     
     private DataOutputStream out;
 
@@ -114,7 +111,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
 
-        // //unoLayers = new JLayeredPane();
+        // unoLayers = new JLayeredPane();
         // unoLayers = getLayeredPane();
 
         // UnoLayoutManager unoLayout = new UnoLayoutManager(); 
@@ -369,7 +366,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    private void enterSpectateMode() {
+    private void enterSpectateMode(int place) {
         playerHand.removeAll();
 
         congratulations = new JLabel("Congratulations! Your placing: " + place);
@@ -393,7 +390,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    private void finalScreen() {
+    private void finalScreen(int place) {
         JLabel finalLabel1 = new JLabel("The Game is Over! Your place: " + place);
         finalLabel1.setHorizontalAlignment(JLabel.CENTER);
         finalLabel1.setForeground(Color.GREEN.darker());
@@ -423,15 +420,15 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         unoButton = new JButton("UNO!");
         unoButton.setSize(10,10);
 
-        unoPanel.add(unoButton);
-        unoPanel.setLocation(x, y);
-        unoPanel.setVisible(true);
+        // unoPanel.add(unoButton);
+        // unoPanel.setLocation(x, y);
+        // unoPanel.setVisible(true);
         
-        unoPanel.revalidate();
-        unoPanel.repaint();
+        // unoPanel.revalidate();
+        // unoPanel.repaint();
 
-        unoLayers.revalidate();
-        unoLayers.repaint();
+        // unoLayers.revalidate();
+        // unoLayers.repaint();
 
         revalidate();
         repaint();
@@ -579,8 +576,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.WON)) {
-                        place = Integer.valueOf(strData.substring(Server.WON.length()));
-                        enterSpectateMode();
+                        int place = Integer.valueOf(strData.substring(Server.WON.length()));
+                        enterSpectateMode(place);
                     }
 
                     else if (strData.contains(Server.PLAYER_WON)) {
@@ -594,7 +591,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.END_GAME)) {
-                        finalScreen();
+                        int place = Integer.valueOf(strData.substring(Server.END_GAME.length()));
+                        finalScreen(place);
                     }
                 }
             }

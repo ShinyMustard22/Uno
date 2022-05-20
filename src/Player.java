@@ -5,6 +5,7 @@ public class Player {
     public static final int STARTING_HAND_SIZE = 7;
 
     private String username;
+    private int place;
     private List<Card> hand;
 
     public Player(String username, List<Card> hand) {
@@ -51,5 +52,13 @@ public class Player {
 
     public int getHandSize() {
         return hand.size();
+    }
+
+    public void setPlace(int place) {
+        this.place = place;
+    }
+
+    public int getPlace() {
+        return place;
     }
 }
