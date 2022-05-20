@@ -114,29 +114,29 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
 
-        //unoLayers = new JLayeredPane();
-        unoLayers = getLayeredPane();
+        // //unoLayers = new JLayeredPane();
+        // unoLayers = getLayeredPane();
 
-        UnoLayoutManager unoLayout = new UnoLayoutManager(); 
-        unoLayers.setLayout(unoLayout);
+        // UnoLayoutManager unoLayout = new UnoLayoutManager(); 
+        // unoLayers.setLayout(unoLayout);
 
-        unoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); 
-        unoPanel.setBackground(Color.CYAN);
-        // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));
-        // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10);
+        // unoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); 
+        // unoPanel.setBackground(Color.CYAN);
+        // // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));
+        // // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10);
 
-        unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER);
-        unoLayout.setBounds(unoPanel, new Rectangle(5, 5, 30, 30)); //change to 0,0 pos
+        // unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER);
+        // unoLayout.setBounds(unoPanel, new Rectangle(5, 5, 30, 30)); //change to 0,0 pos
         
-        // Insets insets = unoLayers.getInsets(); 
-        // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
-        // unoPanel.setVisible(false);
+        // // Insets insets = unoLayers.getInsets(); 
+        // // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
+        // // unoPanel.setVisible(false);
 
-        // add(unoLayers); 
-        pack();
-        setVisible(true);
+        // // add(unoLayers); 
+        // pack();
+        // setVisible(true);
     
-        // add(mainPanel);
+        add(mainPanel);
     
         players = new LinkedHashMap<String, Integer>();
 
