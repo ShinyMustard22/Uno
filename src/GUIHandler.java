@@ -44,7 +44,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JLayeredPane unoLayers; 
     private JPanel unoPanel; 
     private JButton unoButton;
-    private JButton red, blue, green, yellow;
+    private JButton red, blue, green, yellow, cancelWild;
 
     private JLabel congratulations, spectateLabel;
 
@@ -311,7 +311,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         }
 
         red = new JButton("Red");
-        red.setPreferredSize(red.getMaximumSize());
         red.setBackground(Color.RED);
         red.setOpaque(true);
         red.addActionListener(this);
@@ -331,10 +330,14 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         yellow.setOpaque(true);
         yellow.addActionListener(this);
 
+        cancelWild = new JButton("Never mind...");
+        cancelWild.addActionListener(this);
+
         board.add(red, gbc);
         board.add(blue, gbc);
         board.add(green, gbc);
         board.add(yellow, gbc);
+        board.add(cancelWild, gbc);
 
         board.revalidate();
         board.repaint();
@@ -345,6 +348,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private void returnToBoard() {
         board.removeAll();
+
+        red.removeActionListener(this);
+        blue.removeActionListener(this);
+        green.removeActionListener(this);
+        yellow.removeActionListener(this);
+        cancelWild.removeActionListener(this);
 
         for (JButton card : hand) {
             card.addActionListener(this);
@@ -651,6 +660,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             write(ColorCard.YELLOW);
             returnToBoard();
 
+        }
+
+        else if (e.getSource() == cancelWild) {
+            write(Server.CANCEL_OPERATION);
+            returnToBoard();
         }
     }
 

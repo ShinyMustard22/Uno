@@ -28,6 +28,7 @@ public class Server {
     public static final String PLAYER_WON = "playerWon: ";
     public static final String WON = "youWon: ";
     public static final String END_GAME = "endGame: ";
+    public static final String CANCEL_OPERATION = "cancelOperation: ";
 
     private ServerSocket serverSocket;
     private Socket socket;

@@ -171,8 +171,13 @@ public class ClientHandler implements Runnable {
 
             if (card instanceof WildCard) {
                 WildCard wildCard = (WildCard) card;
+                
                 write(Server.CHOOSE_COLOR);
                 String color = read();
+                if (color.equals(Server.CANCEL_OPERATION)) {
+                    return;
+                }
+
                 wildCard.setColor(color);
             }
 
