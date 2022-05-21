@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.plaf.DimensionUIResource;
-import javax.swing.plaf.InsetsUIResource;
+// import javax.swing.plaf.DimensionUIResource;
+// import javax.swing.plaf.InsetsUIResource;
 import javax.swing.border.EmptyBorder;
 import cards.ColorCard;
 import java.awt.event.*;
@@ -42,8 +42,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private JDialog optionWindow; 
 
-    private JLayeredPane unoLayers; 
-    private JPanel unoPanel; 
+    // private JLayeredPane unoLayers; 
+    // private JPanel unoPanel; 
     private JButton unoButton;
     private JButton red, blue, green, yellow, cancelWild;
 
@@ -52,15 +52,20 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private static boolean soundOn = true; 
     private static final String cardFlippedSound = "cardFlipping"; 
     private static final String playerJoinsOrLeaves = "playerInOrOut";
-    private static final String unoSound = "unoVerbal"; 
+    // private static final String unoSound = "unoVerbal"; 
     private static final String errorSound = "wrong"; 
-    public static final String gameStartedSound = "gameStart"; 
+    public static final String gameStartedSound = "gameStart";
+
+    private static final Color lightBlue = new Color(176,196,222);
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
     
     private DataOutputStream out;
     private String myName;
+
+    private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
+    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -240,7 +245,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             data[0][index] = players.get(playerName);
             if (columnNames[index].equals(myName)) {
                 myIndex = index;
-
             }
             index++;
         }
@@ -251,13 +255,13 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerTable.setOpaque(false);
         playerTable.getTableHeader().setReorderingAllowed(false);
         playerTable.setEnabled(false);
-        playerTable.setGridColor(Color.BLACK);
         playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
-        Font headerFont = new Font(Font.SANS_SERIF, Font.BOLD, 16);
-        playerTable.getTableHeader().setFont(headerFont);
+        playerTable.setFont(appFont);
+        playerTable.getTableHeader().setFont(appFont);
         playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
-                .setHeaderRenderer(new LeaderRenderer(new Color(176,196,222), Color.blue));
-        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(new Color(240,248,255), Color.black));
+            .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
+        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(
+            lightBlue.brighter(), Color.black));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -267,25 +271,34 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    static class LeaderRenderer extends DefaultTableCellRenderer
-    {
+    private static class LeaderRenderer extends DefaultTableCellRenderer {
         Color bg, fg;
+
         public LeaderRenderer(Color bg, Color fg) {
             this.bg = bg;
             this.fg = fg;
         }
-        public Component getTableCellRendererComponent(JTable table, Object
-                value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
-                    isSelected, hasFocus, row, column);
-            cell.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+                isSelected, hasFocus, row, column);
+            cell.setFont(appFont);
             cell.setBackground(bg);
             cell.setForeground(fg);
             return cell;
         }
     }
 
+    private static class PlayerRenderer extends DefaultTableCellRenderer {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value,
+                isSelected, hasFocus, row, column);
+            cell.setFont(boldFont);
+            return cell;
+        }
+    }
 
     private void createBoard(String firstCard) {
         board.removeAll();
@@ -438,6 +451,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
+    private void setTurn(int index) {
+        updateTable();
+        System.out.println(index);
+        playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
+    }
+
     private void enterSpectateMode(int place) {
         playerHand.removeAll();
 
@@ -505,6 +524,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         // revalidate();
         // repaint();
     }
+    
     private void toggleSound() {
         if (soundOn) {
             soundOn = false; 
@@ -660,14 +680,15 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         // Do something
                     }
 
+                    else if (strData.contains(Server.SET_TURN)) {
+                        int index = Integer.valueOf(strData.substring(Server.SET_TURN.length()));
+                        setTurn(index);
+                    }
+
                     else if (strData.contains(Server.DREW_CARDS)) {
                         String[] playerHandSize = strData.substring(Server.DREW_CARDS.length()).split(" ");
                         players.replace(playerHandSize[0], Integer.valueOf(playerHandSize[1]));
                         updateTable();
-                    }
-
-                    else if (strData.contains(Server.UNO_TIME)) {
-                        // Do something
                     }
 
                     else if (strData.contains(Server.END_GAME)) {
@@ -750,20 +771,17 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
        }
     }
 
-
     @Override
     public void componentMoved(ComponentEvent e) {
         
         
     }
 
-
     @Override
     public void componentShown(ComponentEvent e) {
         
         
     }
-
 
     @Override
     public void componentHidden(ComponentEvent e) {
