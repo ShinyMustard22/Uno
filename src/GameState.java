@@ -173,7 +173,6 @@ public class GameState {
             nextPlayer.forcedDraw(newCards);
             ClientHandler.sendCards(nextPlayer.getUsername(), newCards);
 
-//            advanceTurn(card);
             skipTurn();
         }
 
@@ -193,7 +192,6 @@ public class GameState {
             nextPlayer.forcedDraw(newCards);
             ClientHandler.sendCards(nextPlayer.getUsername(), newCards);
 
-            //advanceTurn(card);
             skipTurn();
         }
 

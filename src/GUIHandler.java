@@ -14,17 +14,17 @@ import java.util.*;
 import javax.sound.sampled.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class GUIHandler extends JFrame implements ActionListener, ComponentListener {
+public class GUIHandler extends JFrame implements ActionListener {
 
     private static final int startingWidth  = 1000;
     private static final int startingHeight = 400;
+    private static final int unoButtonWidth = 50;
+    private static final int unoButtonHeight = 50;
     private static int margin = 5;
 
     private JMenuBar menuBar;
     private JMenu help;
-    private JMenuItem rules;
-    private JMenuItem options;
-    // private JButton soundIcon;
+    private JMenuItem rules, options;
     private JTextField nameField;
     private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
@@ -34,18 +34,14 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private JPanel mainPanel, playerInfo, playerHand;
     private AnimationPanel board;
-    private JScrollPane playerHandScroll;
     private GridBagConstraints gbc;
     private JTable playerTable;
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    // private JDialog optionWindow;
-
-    private JLayeredPane unoLayers; 
-    private JPanel unoPanel; 
-
+    private JLayeredPane layeredPane;
     private JButton unoButton;
+
     private JButton red, blue, green, yellow, cancelWild;
 
     private JLabel congratulations, spectateLabel;
@@ -53,21 +49,18 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private static boolean soundOn = true;
     private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
-    private static final String unoSound = "unoVerbal"; 
     private static final String errorSound = "wrong"; 
     public static final String gameStartedSound = "gameStart";
 
     private static final Color lightBlue = new Color(176,196,222);
-
+    private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
+    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
 
     private DataOutputStream out;
     private String myName;
-
-    private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
-    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -79,19 +72,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
 
         setIconImage(unoLogo.getImage());
-
-        // optionWindow = new JDialog(this);
-        // optionWindow.setLayout(new FlowLayout());
-        // optionWindow.setResizable(false);
-        // optionWindow.setBounds(0, 0, startingWidth, startingHeight);
-        // optionWindow.setVisible(false);
-        // optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        // ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
-        // soundIcon = new JButton(soundImageIcon);
-        // soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
-        // soundIcon.addActionListener(this);
-        // optionWindow.add(soundIcon);
 
         mainPanel = new JPanel(new BorderLayout());
 
@@ -114,35 +94,20 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
         playerHand = new JPanel(new FlowLayout());
-        playerHandScroll = new JScrollPane(playerHand);
-        playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         playerHand.add(invalidName);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
-        mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
+        mainPanel.add(playerHand, BorderLayout.SOUTH);
 
-        mainPanel.setBounds(0,0, startingWidth, startingHeight);
+        add(mainPanel);
 
-        unoPanel = new JPanel();
-    
-        unoPanel.setVisible(false);
-        mainPanel.setVisible(true);
-
-        unoLayers = new JLayeredPane(); 
-        unoLayers.setLayout(null);
-        unoLayers.setBounds(0,0,startingWidth,startingHeight);
-
-        unoLayers.add(mainPanel);
-        unoLayers.add(unoPanel,0);
-    
-        add(unoLayers);
+        layeredPane = getLayeredPane();
+        unoButton = new JButton("Uno!");
+        unoButton.addActionListener(this);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(startingWidth, startingHeight);
-        setLayout(null);
         setVisible(true);
         setLocationRelativeTo(null);
     
@@ -506,24 +471,16 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    private void spawnUno() {
-        int x = (int)(Math.random() * getWidth()); 
-        int y = (int)(Math.random() * getHeight());
-        
-        unoButton = new JButton("UNO!");
-        unoButton.setSize(50,30);
-        unoButton.addActionListener(this);
+    private void spawnUno() {;
+        int x = (int) (Math.random() * (getWidth() - unoButtonWidth)); 
+        int y = (int) (Math.random() * (getHeight() - unoButtonHeight));
 
-        unoPanel.setOpaque(true);
-        unoPanel.add(unoButton);
-        unoPanel.setBounds(x,y,unoButton.getWidth() ,unoButton.getHeight());
-        unoPanel.setVisible(true);
-        
-        unoPanel.revalidate();
-        unoPanel.repaint();
+        unoButton.setBounds(x, y, unoButtonWidth, unoButtonHeight);
 
-        unoLayers.revalidate();
-        unoLayers.repaint();
+        layeredPane.add(unoButton, JLayeredPane.POPUP_LAYER);
+
+        layeredPane.revalidate();
+        layeredPane.repaint();
 
         revalidate();
         repaint();
@@ -711,7 +668,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
             playSound(gameStartedSound);
-            System.out.println("game started");
         }
 
         else if (e.getSource() == deck) {
@@ -758,45 +714,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         }
 
         else if (e.getSource() == unoButton) {
-            write(Server.UNO_TIME);
-            System.out.println("uno pressed");
-
-            playSound(unoSound);
-
-            unoLayers.remove(unoPanel);
-
-            unoPanel.revalidate();
-            unoPanel.repaint();
-
-            revalidate();
-            repaint();
-        
+            
         }
-    }
-
-    @Override
-    public void componentResized(ComponentEvent e) {
-       if (e.getSource() == this) {
-
-       }
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent e) {
-
-
-    }
-
-    @Override
-    public void componentShown(ComponentEvent e) {
-
-
-    }
-
-    @Override
-    public void componentHidden(ComponentEvent e) {
-
-
     }
 
     private void write(String data) {
