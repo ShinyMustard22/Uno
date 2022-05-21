@@ -13,7 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import javax.sound.sampled.*; 
+import javax.sound.sampled.*;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class GUIHandler extends JFrame implements ActionListener, ComponentListener {
 
@@ -59,6 +60,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private StringBuffer rulesString;
     
     private DataOutputStream out;
+    private String myName;
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -224,10 +226,15 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         Iterator<String> iter = players.keySet().iterator();
         int index = 0;
 
+        int myIndex = 0;
         while (iter.hasNext()) {
             String playerName = iter.next();
             columnNames[index] = playerName;
             data[0][index] = players.get(playerName);
+            if (columnNames[index].equals(myName)) {
+                myIndex = index;
+
+            }
             index++;
         }
         
@@ -239,6 +246,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerTable.setEnabled(false);
         playerTable.setGridColor(Color.BLACK);
         playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
+        Font headerFont = new Font(Font.SANS_SERIF, Font.BOLD, 16);
+        playerTable.getTableHeader().setFont(headerFont);
+        playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
+                .setHeaderRenderer(new LeaderRenderer(new Color(176,196,222), Color.blue));
+        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(new Color(240,248,255), Color.black));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -247,6 +259,26 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         revalidate();
         repaint();
     }
+
+    static class LeaderRenderer extends DefaultTableCellRenderer
+    {
+        Color bg, fg;
+        public LeaderRenderer(Color bg, Color fg) {
+            this.bg = bg;
+            this.fg = fg;
+        }
+        public Component getTableCellRendererComponent(JTable table, Object
+                value, boolean isSelected, boolean hasFocus, int row, int column)
+        {
+            Component cell = super.getTableCellRendererComponent(table, value,
+                    isSelected, hasFocus, row, column);
+            cell.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+            cell.setBackground(bg);
+            cell.setForeground(fg);
+            return cell;
+        }
+    }
+
 
     private void createBoard(String firstCard) {
         board.removeAll();
@@ -639,6 +671,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nameField) {
+            myName = nameField.getText();
             write(Server.NAME + nameField.getText());
         }
         
