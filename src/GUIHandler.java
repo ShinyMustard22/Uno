@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.DimensionUIResource;
-
+import javax.swing.plaf.InsetsUIResource;
 import javax.swing.border.EmptyBorder;
 import cards.ColorCard;
 import java.awt.event.*;
@@ -27,7 +27,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JMenuItem options; 
     private JButton soundIcon; 
     private JTextField nameField;
-    private JTextArea errorMessage;
+    private JTextPane errorMessage;
     private JLabel invalidName, enterNamePrompt, waiting;
     private JButton startGame;
     private JButton deck;
@@ -140,8 +140,33 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        if (out == null) {
+            errorScreen();
+        }
     }
 
+    private void errorScreen() {
+        mainPanel.removeAll();
+        mainPanel.setLayout(new GridLayout());
+
+        errorMessage = new JTextPane();
+        errorMessage.setText("ERROR: Communication with the server was interrupted... \n" + 
+            "Please try again at another time...");
+        errorMessage.setFont(new Font(errorMessage.getFont().getName(), Font.PLAIN, 32));
+        errorMessage.setForeground(Color.RED);
+        errorMessage.setEditable(false);
+        errorMessage.setOpaque(false);
+
+        mainPanel.setBorder(new EmptyBorder(0, 50, 0, 50));
+        mainPanel.add(errorMessage);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        revalidate();
+        repaint();
+    }
 
     private void waitingScreen() {
         board.removeAll();
@@ -283,12 +308,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    private void removeCard(String card) {
-        int i = strHand.indexOf(card);
-        playerHand.remove(hand.get(i)); 
+    private void removeCard(int index) {
+        playerHand.remove(hand.get(index)); 
 
-        strHand.remove(i); 
-        hand.remove(i);
+        strHand.remove(index); 
+        hand.remove(index);
 
         playerHand.revalidate();
         playerHand.repaint();
@@ -423,11 +447,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-        int x = (int)(Math.random() * getWidth()); 
-        int y = (int)(Math.random() * getHeight());
+        // int x = (int)(Math.random() * getWidth()); 
+        // int y = (int)(Math.random() * getHeight());
         
-        unoButton = new JButton("UNO!");
-        unoButton.setSize(10,10);
+        // unoButton = new JButton("UNO!");
+        // unoButton.setSize(10,10);
 
         // unoPanel.add(unoButton);
         // unoPanel.setLocation(x, y);
@@ -439,8 +463,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         // unoLayers.revalidate();
         // unoLayers.repaint();
 
-        revalidate();
-        repaint();
+        // revalidate();
+        // repaint();
     }
     private void toggleSound() {
         if (soundOn) {
@@ -545,8 +569,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     } 
 
                     else if (strData.contains(Server.PLAY_CARD)) {
-                        String card = strData.substring(Server.PLAY_CARD.length());
-                        removeCard(card);
+                        int cardIndex = Integer.valueOf(strData.substring(Server.PLAY_CARD.length()));
+                        removeCard(cardIndex);
                     } 
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
@@ -599,6 +623,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         updateTable();
                     }
 
+                    else if (strData.contains(Server.UNO_TIME)) {
+                        // Do something
+                    }
+
                     else if (strData.contains(Server.END_GAME)) {
                         int place = Integer.valueOf(strData.substring(Server.END_GAME.length()));
                         finalScreen(place);
@@ -622,7 +650,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         else if (e.getSource() == deck) {
             write(Server.ASK_TO_DRAW);
         }
-
 
         else if (hand != null && hand.contains(e.getSource())) {
             int i = hand.indexOf(e.getSource());
@@ -665,6 +692,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         else if (e.getSource() == cancelWild) {
             write(Server.CANCEL_OPERATION);
             returnToBoard();
+        }
+
+        else if (e.getSource() == unoButton) {
+            write(Server.UNO_TIME);
         }
     }
 

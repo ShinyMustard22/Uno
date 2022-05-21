@@ -171,7 +171,7 @@ public class ClientHandler implements Runnable {
 
             if (card instanceof WildCard) {
                 WildCard wildCard = (WildCard) card;
-                
+
                 write(Server.CHOOSE_COLOR);
                 String color = read();
                 if (color.equals(Server.CANCEL_OPERATION)) {
@@ -182,11 +182,16 @@ public class ClientHandler implements Runnable {
             }
 
             if (board.play(card, index)) {
-                write(Server.PLAY_CARD + strCard + "\n" +
+                write(Server.PLAY_CARD + index + "\n" +
                     Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
 
-                if (board.getPlayer(username).getHandSize() == 0) {
+                if (board.getPlayer(username).getHandSize() == 1) {
+                    write(Server.UNO_TIME);
+                    broadcastMessage(Server.UNO_TIME);
+                }
+
+                else if (board.getPlayer(username).getHandSize() == 0) {
                     board.playerWon(username);
                     write(Server.WON + board.getPlaceOfPlayer(username) + "\n" + Server.REMOVE_PLAYER + username);
                     broadcastMessage(Server.PLAYER_WON + "\n" + Server.REMOVE_PLAYER + username);

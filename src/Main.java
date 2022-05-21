@@ -36,8 +36,9 @@ public class Main {
             
         }
 
-        System.out.println("ERROR: Communication with the server was interrupted...");
-        System.exit(1);
+        if (gui == null) {
+            gui = new GUIHandler(null);
+        }
     }
     public static void main(String[] args) {
         Main client = new Main();
@@ -63,7 +64,7 @@ public class Main {
             @Override
             public void run() {
                 String data;
-                while(socket.isConnected()) {
+                while(socket != null && socket.isConnected()) {
                     data = read();
                     gui.decode(data);
                 }
