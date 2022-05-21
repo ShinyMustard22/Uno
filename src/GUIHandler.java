@@ -113,29 +113,27 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHand, BorderLayout.SOUTH);
 
-        // unoLayers = new JLayeredPane();
-        // unoLayers = getLayeredPane();
+        mainPanel.setBounds(0,0, startingWidth, startingHeight);
 
-        // UnoLayoutManager unoLayout = new UnoLayoutManager(); 
-        // unoLayers.setLayout(unoLayout);
-
-        // unoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); 
-        // unoPanel.setBackground(Color.CYAN);
-        // // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));
-        // // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10);
-
-        // unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER);
-        // unoLayout.setBounds(unoPanel, new Rectangle(5, 5, 30, 30)); //change to 0,0 pos
-        
-        // // Insets insets = unoLayers.getInsets(); 
-        // // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
-        // // unoPanel.setVisible(false);
-
-        // // add(unoLayers); 
-        // pack();
-        // setVisible(true);
+        unoPanel = new JPanel();
     
-        add(mainPanel);
+        unoPanel.setVisible(false);
+        mainPanel.setVisible(true);
+
+        unoLayers = new JLayeredPane(); 
+        unoLayers.setLayout(null);
+        unoLayers.setBounds(0,0,startingWidth,startingHeight);
+
+        unoLayers.add(mainPanel);
+        unoLayers.add(unoPanel,0);
+    
+        add(unoLayers);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(startingWidth, startingHeight);
+        setLayout(null);
+        setVisible(true);
+        setLocationRelativeTo(null);
     
         players = new LinkedHashMap<String, Integer>();
 
@@ -486,24 +484,28 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-        // int x = (int)(Math.random() * getWidth()); 
-        // int y = (int)(Math.random() * getHeight());
+        System.out.println("spawn uno is called");
+
+        int x = (int)(Math.random() * getWidth()); 
+        int y = (int)(Math.random() * getHeight());
         
-        // unoButton = new JButton("UNO!");
-        // unoButton.setSize(10,10);
+        unoButton = new JButton("UNO!");
+        unoButton.setSize(50,30);
+        unoButton.addActionListener(this);
 
-        // unoPanel.add(unoButton);
-        // unoPanel.setLocation(x, y);
-        // unoPanel.setVisible(true);
+        unoPanel.setOpaque(true);
+        unoPanel.add(unoButton);
+        unoPanel.setBounds(x,y,70,70);
+        unoPanel.setVisible(true);
         
-        // unoPanel.revalidate();
-        // unoPanel.repaint();
+        unoPanel.revalidate();
+        unoPanel.repaint();
 
-        // unoLayers.revalidate();
-        // unoLayers.repaint();
+        unoLayers.revalidate();
+        unoLayers.repaint();
 
-        // revalidate();
-        // repaint();
+        revalidate();
+        repaint();
     }
     private void toggleSound() {
         if (soundOn) {
@@ -647,10 +649,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         playSound(errorSound);
                     }
 
-                    else if (strData.contains(Server.UNO_TIME)) {
-                        spawnUno();
-                    }
-
                     else if (strData.contains(Server.WON)) {
                         int place = Integer.valueOf(strData.substring(Server.WON.length()));
                         enterSpectateMode(place);
@@ -667,7 +665,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.UNO_TIME)) {
-                        // Do something
+                        spawnUno();
                     }
 
                     else if (strData.contains(Server.END_GAME)) {
@@ -740,6 +738,27 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         else if (e.getSource() == unoButton) {
             write(Server.UNO_TIME);
+            System.out.println("uno pressed");
+
+            unoLayers.remove(unoPanel);
+
+            // int x = (int)(Math.random() * getWidth()); 
+            // int y = (int)(Math.random() * getHeight());
+
+            // unoPanel.setLocation(x, y);
+
+            unoPanel.revalidate();
+            unoPanel.repaint();
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
+
+            unoLayers.revalidate();
+            unoLayers.repaint();
+
+            revalidate();
+            repaint();
+        
         }
     }
 
