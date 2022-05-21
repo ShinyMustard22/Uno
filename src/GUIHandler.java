@@ -645,11 +645,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.PLAY_CARD)) {
-//
-//                        String card = strData.substring(Server.PLAY_CARD.length());
-//                        removeCard(card);
-//                    }
-//
                         int cardIndex = Integer.valueOf(strData.substring(Server.PLAY_CARD.length()));
                         removeCard(cardIndex);
                     } 
@@ -783,16 +778,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             write(Server.UNO_TIME);
             System.out.println("uno pressed");
 
+            playSound(unoSound);
+
             unoLayers.remove(unoPanel);
 
             unoPanel.revalidate();
             unoPanel.repaint();
-
-            mainPanel.revalidate();
-            mainPanel.repaint();
-
-            unoLayers.revalidate();
-            unoLayers.repaint();
 
             revalidate();
             repaint();
