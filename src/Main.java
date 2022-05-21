@@ -39,6 +39,10 @@ public class Main {
         if (gui == null) {
             gui = new GUIHandler(null);
         }
+
+        else {
+            gui.errorScreen();
+        }
     }
     public static void main(String[] args) {
         Main client = new Main();
@@ -64,7 +68,7 @@ public class Main {
             @Override
             public void run() {
                 String data;
-                while(socket != null && socket.isConnected()) {
+                while(socket != null && !socket.isClosed()) {
                     data = read();
                     gui.decode(data);
                 }

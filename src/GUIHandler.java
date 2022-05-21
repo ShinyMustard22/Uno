@@ -28,7 +28,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JMenuItem options; 
     private JButton soundIcon; 
     private JTextField nameField;
-    private JTextPane errorMessage;
+    private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
     private JButton startGame;
     private JButton deck;
@@ -148,20 +148,27 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         }
     }
 
-    private void errorScreen() {
+    public void errorScreen() {
         mainPanel.removeAll();
-        mainPanel.setLayout(new GridLayout());
+        mainPanel.setLayout(new GridBagLayout());
 
-        errorMessage = new JTextPane();
-        errorMessage.setText("ERROR: Communication with the server was interrupted... \n" + 
-            "Please try again at another time...");
-        errorMessage.setFont(new Font(errorMessage.getFont().getName(), Font.PLAIN, 32));
-        errorMessage.setForeground(Color.RED);
-        errorMessage.setEditable(false);
-        errorMessage.setOpaque(false);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        mainPanel.setBorder(new EmptyBorder(0, 50, 0, 50));
-        mainPanel.add(errorMessage);
+        errorMessage1 = new JLabel("ERROR: Communication with the server was interrupted...");
+        errorMessage1.setFont(new Font(errorMessage1.getFont().getName(), Font.PLAIN, 32));
+        errorMessage1.setForeground(Color.RED);
+        errorMessage1.setOpaque(false);
+        mainPanel.add(errorMessage1, gbc);
+
+        gbc.gridy = 1;
+
+        errorMessage2 = new JLabel("Please try again at another time...");
+        errorMessage2.setFont(new Font(errorMessage2.getFont().getName(), Font.PLAIN, 32));
+        errorMessage2.setForeground(Color.RED);
+        errorMessage2.setOpaque(false);
+        mainPanel.add(errorMessage2, gbc);
 
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -541,6 +548,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if (allStrData == null) {
+                    return;
+                }
+
                 String[] data = allStrData.split("\n");
 
                 for (String strData : data) {
