@@ -26,7 +26,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JMenu help;
     private JMenuItem rules;
     private JMenuItem options;
-    private JButton soundIcon;
+    // private JButton soundIcon;
     private JTextField nameField;
     private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
@@ -42,7 +42,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JDialog optionWindow;
+    // private JDialog optionWindow;
 
     private JLayeredPane unoLayers; 
     private JPanel unoPanel; 
@@ -82,18 +82,18 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         setIconImage(unoLogo.getImage());
 
-        optionWindow = new JDialog(this);
-        optionWindow.setLayout(new FlowLayout());
-        optionWindow.setResizable(false);
-        optionWindow.setBounds(0, 0, startingWidth, startingHeight);
-        optionWindow.setVisible(false);
-        optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        // optionWindow = new JDialog(this);
+        // optionWindow.setLayout(new FlowLayout());
+        // optionWindow.setResizable(false);
+        // optionWindow.setBounds(0, 0, startingWidth, startingHeight);
+        // optionWindow.setVisible(false);
+        // optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
-        soundIcon = new JButton(soundImageIcon);
-        soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
-        soundIcon.addActionListener(this);
-        optionWindow.add(soundIcon);
+        // ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
+        // soundIcon = new JButton(soundImageIcon);
+        // soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+        // soundIcon.addActionListener(this);
+        // optionWindow.add(soundIcon);
 
         mainPanel = new JPanel(new BorderLayout());
 
@@ -149,10 +149,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         setLocationRelativeTo(null);
     
         players = new LinkedHashMap<String, Integer>();
-
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         if (out == null) {
             errorScreen();
@@ -212,7 +208,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         help.add(rules);
 
-        options = new JMenuItem("Options");
+        options = new JMenuItem("Sound ON");
         options.addActionListener(this);
         help.add(options);
 
@@ -541,16 +537,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private void toggleSound() {
         if (soundOn) {
             soundOn = false;
-            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOffIcon.png"));
-            soundIcon.setIcon(soundImageIcon);
-            soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+            options.setText("Sound OFF");
         }
 
         else {
             soundOn = true;
-            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
-            soundIcon.setIcon(soundImageIcon);
-            soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+            options.setText("Sound ON");
         }
     }
 
@@ -741,11 +733,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         }
 
         else if (e.getSource() == options) {
-           optionWindow.setVisible(true);
-        }
-
-        else if (e.getSource() == soundIcon) {
-            toggleSound();
+           toggleSound();
         }
 
         else if (e.getSource() == red) {
