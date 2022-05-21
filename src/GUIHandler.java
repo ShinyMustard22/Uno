@@ -373,15 +373,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-//<<<<<<< HEAD
-//    private void removeCard(String card) {
-//        int i = strHand.indexOf(card);
-//        int x = hand.get(i).getX();
-//        playerHand.remove(hand.get(i));
-//
-//        strHand.remove(i);
-//        hand.remove(i);
-//=======
     private void removeCard(int index) {
         int x = hand.get(index).getX();
         String card = strHand.get(index);
@@ -478,7 +469,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private void setTurn(int index) {
         updateTable();
-        System.out.println(index);
         playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
     }
 
@@ -530,13 +520,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-//<<<<<<< HEAD
-//        int x = (int)(Math.random() * getWidth());
-//        int y = (int)(Math.random() * getHeight());
-//
-//        unoButton = new JButton("UNO!");
-//        unoButton.setSize(10,10);
-//=======
         // int x = (int)(Math.random() * getWidth()); 
         // int y = (int)(Math.random() * getHeight());
         
