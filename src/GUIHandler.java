@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.plaf.DimensionUIResource;
-
+// import javax.swing.plaf.DimensionUIResource;
+// import javax.swing.plaf.InsetsUIResource;
 import javax.swing.border.EmptyBorder;
 import cards.ColorCard;
 import java.awt.event.*;
@@ -28,7 +28,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JMenuItem options;
     private JButton soundIcon;
     private JTextField nameField;
-    private JTextArea errorMessage;
+    private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
     private JButton startGame;
     private JButton deck;
@@ -43,8 +43,9 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private JDialog optionWindow;
 
-    private JLayeredPane unoLayers;
-    private JPanel unoPanel;
+    // private JLayeredPane unoLayers; 
+    // private JPanel unoPanel; 
+
     private JButton unoButton;
     private JButton red, blue, green, yellow, cancelWild;
 
@@ -53,15 +54,26 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private static boolean soundOn = true;
     private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
-    private static final String unoSound = "unoVerbal";
-    private static final String errorSound = "wrong";
+//<<<<<<< HEAD
+//    private static final String unoSound = "unoVerbal";
+//    private static final String errorSound = "wrong";
+//    public static final String gameStartedSound = "gameStart";
+//=======
+    // private static final String unoSound = "unoVerbal"; 
+    private static final String errorSound = "wrong"; 
     public static final String gameStartedSound = "gameStart";
+
+    private static final Color lightBlue = new Color(176,196,222);
+
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
 
     private DataOutputStream out;
     private String myName;
+
+    private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
+    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -143,8 +155,40 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        if (out == null) {
+            errorScreen();
+        }
     }
 
+    public void errorScreen() {
+        mainPanel.removeAll();
+        mainPanel.setLayout(new GridBagLayout());
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        errorMessage1 = new JLabel("ERROR: Communication with the server was interrupted...");
+        errorMessage1.setFont(new Font(errorMessage1.getFont().getName(), Font.PLAIN, 32));
+        errorMessage1.setForeground(Color.RED);
+        errorMessage1.setOpaque(false);
+        mainPanel.add(errorMessage1, gbc);
+
+        gbc.gridy = 1;
+
+        errorMessage2 = new JLabel("Please try again at another time...");
+        errorMessage2.setFont(new Font(errorMessage2.getFont().getName(), Font.PLAIN, 32));
+        errorMessage2.setForeground(Color.RED);
+        errorMessage2.setOpaque(false);
+        mainPanel.add(errorMessage2, gbc);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        revalidate();
+        repaint();
+    }
 
     private void waitingScreen() {
         board.removeAll();
@@ -209,7 +253,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             data[0][index] = players.get(playerName);
             if (columnNames[index].equals(myName)) {
                 myIndex = index;
-
             }
             index++;
         }
@@ -220,13 +263,13 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerTable.setOpaque(false);
         playerTable.getTableHeader().setReorderingAllowed(false);
         playerTable.setEnabled(false);
-        playerTable.setGridColor(Color.BLACK);
         playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
-        Font headerFont = new Font(Font.SANS_SERIF, Font.BOLD, 16);
-        playerTable.getTableHeader().setFont(headerFont);
+        playerTable.setFont(appFont);
+        playerTable.getTableHeader().setFont(appFont);
         playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
-                .setHeaderRenderer(new LeaderRenderer(new Color(176,196,222), Color.blue));
-        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(new Color(240,248,255), Color.black));
+            .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
+        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(
+            lightBlue.brighter(), Color.black));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -236,25 +279,34 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    static class LeaderRenderer extends DefaultTableCellRenderer
-    {
+    private static class LeaderRenderer extends DefaultTableCellRenderer {
         Color bg, fg;
+
         public LeaderRenderer(Color bg, Color fg) {
             this.bg = bg;
             this.fg = fg;
         }
-        public Component getTableCellRendererComponent(JTable table, Object
-                value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
-                    isSelected, hasFocus, row, column);
-            cell.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+                isSelected, hasFocus, row, column);
+            cell.setFont(appFont);
             cell.setBackground(bg);
             cell.setForeground(fg);
             return cell;
         }
     }
 
+    private static class PlayerRenderer extends DefaultTableCellRenderer {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value,
+                isSelected, hasFocus, row, column);
+            cell.setFont(boldFont);
+            return cell;
+        }
+    }
 
     private void createBoard(String firstCard) {
         board.removeAll();
@@ -316,13 +368,22 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    private void removeCard(String card) {
-        int i = strHand.indexOf(card);
-        int x = hand.get(i).getX();
-        playerHand.remove(hand.get(i));
+//<<<<<<< HEAD
+//    private void removeCard(String card) {
+//        int i = strHand.indexOf(card);
+//        int x = hand.get(i).getX();
+//        playerHand.remove(hand.get(i));
+//
+//        strHand.remove(i);
+//        hand.remove(i);
+//=======
+    private void removeCard(int index) {
+        int x = hand.get(index).getX();
+        String card = strHand.get(index);
+        playerHand.remove(hand.get(index)); 
 
-        strHand.remove(i);
-        hand.remove(i);
+        strHand.remove(index); 
+        hand.remove(index);
 
         playerHand.revalidate();
         playerHand.repaint();
@@ -410,6 +471,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
+    private void setTurn(int index) {
+        updateTable();
+        System.out.println(index);
+        playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
+    }
+
     private void enterSpectateMode(int place) {
         playerHand.removeAll();
 
@@ -458,11 +525,19 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-        int x = (int)(Math.random() * getWidth());
-        int y = (int)(Math.random() * getHeight());
+//<<<<<<< HEAD
+//        int x = (int)(Math.random() * getWidth());
+//        int y = (int)(Math.random() * getHeight());
+//
+//        unoButton = new JButton("UNO!");
+//        unoButton.setSize(10,10);
+//=======
+        // int x = (int)(Math.random() * getWidth()); 
+        // int y = (int)(Math.random() * getHeight());
+        
+        // unoButton = new JButton("UNO!");
+        // unoButton.setSize(10,10);
 
-        unoButton = new JButton("UNO!");
-        unoButton.setSize(10,10);
 
         // unoPanel.add(unoButton);
         // unoPanel.setLocation(x, y);
@@ -474,9 +549,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         // unoLayers.revalidate();
         // unoLayers.repaint();
 
-        revalidate();
-        repaint();
+        // revalidate();
+        // repaint();
     }
+    
     private void toggleSound() {
         if (soundOn) {
             soundOn = false;
@@ -520,6 +596,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if (allStrData == null) {
+                    return;
+                }
+
                 String[] data = allStrData.split("\n");
 
                 for (String strData : data) {
@@ -580,9 +660,15 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.PLAY_CARD)) {
-                        String card = strData.substring(Server.PLAY_CARD.length());
-                        removeCard(card);
-                    }
+//<<<<<<< HEAD
+//                        String card = strData.substring(Server.PLAY_CARD.length());
+//                        removeCard(card);
+//                    }
+//=======
+                        int cardIndex = Integer.valueOf(strData.substring(Server.PLAY_CARD.length()));
+                        removeCard(cardIndex);
+                    } 
+
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
                         String[] card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length()).split(" ");
@@ -628,6 +714,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         // Do something
                     }
 
+                    else if (strData.contains(Server.SET_TURN)) {
+                        int index = Integer.valueOf(strData.substring(Server.SET_TURN.length()));
+                        setTurn(index);
+                    }
+
                     else if (strData.contains(Server.DREW_CARDS)) {
                         String[] playerHandSize = strData.substring(Server.DREW_CARDS.length()).split(" ");
                         players.replace(playerHandSize[0], Integer.valueOf(playerHandSize[1]));
@@ -658,7 +749,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         else if (e.getSource() == deck) {
             write(Server.ASK_TO_DRAW);
         }
-
 
         else if (hand != null && hand.contains(e.getSource())) {
             int i = hand.indexOf(e.getSource());
@@ -702,6 +792,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             write(Server.CANCEL_OPERATION);
             returnToBoard();
         }
+
+        else if (e.getSource() == unoButton) {
+            write(Server.UNO_TIME);
+        }
     }
 
     @Override
@@ -711,20 +805,17 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
        }
     }
 
-
     @Override
     public void componentMoved(ComponentEvent e) {
 
 
     }
 
-
     @Override
     public void componentShown(ComponentEvent e) {
 
 
     }
-
 
     @Override
     public void componentHidden(ComponentEvent e) {
