@@ -36,6 +36,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
     private JPanel mainPanel, playerInfo, playerHand;
     private AnimationPanel board;
+    private JScrollPane playerHandScroll;
     private GridBagConstraints gbc;
     private JTable playerTable;
     private LinkedList<JButton> hand;
@@ -102,6 +103,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel = new JPanel(new BorderLayout());
 
         board = new AnimationPanel(new GridBagLayout());
+
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(margin, margin, margin, margin);
 
@@ -119,12 +121,15 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
         playerHand = new JPanel(new FlowLayout());
+        playerHandScroll = new JScrollPane(playerHand);
+        playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         playerHand.add(invalidName);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
-        mainPanel.add(playerHand, BorderLayout.SOUTH);
+        mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
 
         // unoLayers = new JLayeredPane();
         // unoLayers = getLayeredPane();
