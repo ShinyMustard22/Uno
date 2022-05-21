@@ -25,8 +25,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JMenuBar menuBar;
     private JMenu help;
     private JMenuItem rules;
-    private JMenuItem options; 
-    private JButton soundIcon; 
+    private JMenuItem options;
+    private JButton soundIcon;
     private JTextField nameField;
     private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
@@ -34,33 +34,42 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JButton deck;
     private JLabel discardPile;
 
-    private JPanel mainPanel, playerInfo, board, playerHand;
+    private JPanel mainPanel, playerInfo, playerHand;
+    private AnimationPanel board;
+    private JScrollPane playerHandScroll;
     private GridBagConstraints gbc;
     private JTable playerTable;
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JDialog optionWindow; 
+    private JDialog optionWindow;
 
     private JLayeredPane unoLayers; 
     private JPanel unoPanel; 
+
     private JButton unoButton;
     private JButton red, blue, green, yellow, cancelWild;
 
     private JLabel congratulations, spectateLabel;
 
-    private static boolean soundOn = true; 
-    private static final String cardFlippedSound = "cardFlipping"; 
+    private static boolean soundOn = true;
+    private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
     private static final String unoSound = "unoVerbal"; 
     private static final String errorSound = "wrong"; 
-    public static final String gameStartedSound = "gameStart"; 
+    public static final String gameStartedSound = "gameStart";
+
+    private static final Color lightBlue = new Color(176,196,222);
+
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
-    
+
     private DataOutputStream out;
     private String myName;
+
+    private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
+    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -73,7 +82,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         setIconImage(unoLogo.getImage());
 
-        optionWindow = new JDialog(this); 
+        optionWindow = new JDialog(this);
         optionWindow.setLayout(new FlowLayout());
         optionWindow.setResizable(false);
         optionWindow.setBounds(0, 0, startingWidth, startingHeight);
@@ -83,12 +92,13 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
         soundIcon = new JButton(soundImageIcon);
         soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
-        soundIcon.addActionListener(this); 
-        optionWindow.add(soundIcon); 
+        soundIcon.addActionListener(this);
+        optionWindow.add(soundIcon);
 
         mainPanel = new JPanel(new BorderLayout());
 
-        board = new JPanel(new GridBagLayout());
+        board = new AnimationPanel(new GridBagLayout());
+
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(margin, margin, margin, margin);
 
@@ -106,12 +116,15 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
         playerHand = new JPanel(new FlowLayout());
+        playerHandScroll = new JScrollPane(playerHand);
+        playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         playerHand.add(invalidName);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
-        mainPanel.add(playerHand, BorderLayout.SOUTH);
+        mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
 
         mainPanel.setBounds(0,0, startingWidth, startingHeight);
 
@@ -199,8 +212,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         help.add(rules);
 
-        options = new JMenuItem("Options"); 
-        options.addActionListener(this); 
+        options = new JMenuItem("Options");
+        options.addActionListener(this);
         help.add(options);
 
         menuBar.add(help);
@@ -210,7 +223,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         waiting = new JLabel("Waiting for the game to start...");
         waiting.setFont(new Font(waiting.getFont().getName(), Font.PLAIN, 32));
         board.add(waiting, gbc);
-        
+
         board.revalidate();
         board.repaint();
 
@@ -238,24 +251,23 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             data[0][index] = players.get(playerName);
             if (columnNames[index].equals(myName)) {
                 myIndex = index;
-
             }
             index++;
         }
-        
+
         playerTable = new JTable(data, columnNames);
         playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - 10 * 2, playerTable.getMinimumSize().height));
         playerTable.setFillsViewportHeight(true);
         playerTable.setOpaque(false);
         playerTable.getTableHeader().setReorderingAllowed(false);
         playerTable.setEnabled(false);
-        playerTable.setGridColor(Color.BLACK);
         playerTable.getTableHeader().setBackground(Color.LIGHT_GRAY);
-        Font headerFont = new Font(Font.SANS_SERIF, Font.BOLD, 16);
-        playerTable.getTableHeader().setFont(headerFont);
+        playerTable.setFont(appFont);
+        playerTable.getTableHeader().setFont(appFont);
         playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
-                .setHeaderRenderer(new LeaderRenderer(new Color(176,196,222), Color.blue));
-        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(new Color(240,248,255), Color.black));
+            .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
+        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(
+            lightBlue.brighter(), Color.black));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -265,35 +277,44 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         repaint();
     }
 
-    static class LeaderRenderer extends DefaultTableCellRenderer
-    {
+    private static class LeaderRenderer extends DefaultTableCellRenderer {
         Color bg, fg;
+
         public LeaderRenderer(Color bg, Color fg) {
             this.bg = bg;
             this.fg = fg;
         }
-        public Component getTableCellRendererComponent(JTable table, Object
-                value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
-                    isSelected, hasFocus, row, column);
-            cell.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+                isSelected, hasFocus, row, column);
+            cell.setFont(appFont);
             cell.setBackground(bg);
             cell.setForeground(fg);
             return cell;
         }
     }
 
+    private static class PlayerRenderer extends DefaultTableCellRenderer {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value,
+                isSelected, hasFocus, row, column);
+            cell.setFont(boldFont);
+            return cell;
+        }
+    }
 
     private void createBoard(String firstCard) {
         board.removeAll();
 
         ImageIcon faceDown = new ImageIcon(getClass().getResource("/assets/images/card_face_down.png"));
         deck = new JButton(faceDown);
-        board.add(deck, gbc);  
+        board.add(deck, gbc);
         deck.setSize(faceDown.getIconWidth(), faceDown.getIconHeight());
         deck.addActionListener(this);
-        
+
         ImageIcon lastCard = new ImageIcon(getClass().getResource("/assets/images/" + firstCard + ".png"));
         discardPile = new JLabel(lastCard);
         board.add(discardPile, gbc);
@@ -315,11 +336,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         board.revalidate();
         board.repaint();
-        
+
         revalidate();
-        repaint(); 
+        repaint();
     }
-    
+
     private void createHand(java.util.List<JButton> newCards) {
         for (JButton card : newCards) {
             playerHand.add(card);
@@ -332,7 +353,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         revalidate();
         repaint();
-    } 
+    }
 
     private void updateDiscardPile(String card) {
         discardPile.setIcon(new ImageIcon(getClass().getResource("/assets/images/" + card + ".png")));
@@ -346,6 +367,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void removeCard(int index) {
+        int x = hand.get(index).getX();
+        String card = strHand.get(index);
         playerHand.remove(hand.get(index)); 
 
         strHand.remove(index); 
@@ -355,7 +378,8 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         playerHand.repaint();
 
         revalidate();
-        repaint(); 
+        repaint();
+        board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY());
     }
 
     private void chooseColorScreen() {
@@ -368,7 +392,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch(Exception e){
-           e.printStackTrace(); 
+           e.printStackTrace();
         }
 
         red = new JButton("Red");
@@ -426,7 +450,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         try{
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch(Exception e){
-           e.printStackTrace(); 
+           e.printStackTrace();
         }
 
         board.revalidate();
@@ -434,6 +458,12 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         revalidate();
         repaint();
+    }
+
+    private void setTurn(int index) {
+        updateTable();
+        System.out.println(index);
+        playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
     }
 
     private void enterSpectateMode(int place) {
@@ -495,7 +525,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         unoPanel.setOpaque(true);
         unoPanel.add(unoButton);
-        unoPanel.setBounds(x,y,70,70);
+        unoPanel.setBounds(x,y,unoButton.getWidth() ,unoButton.getHeight());
         unoPanel.setVisible(true);
         
         unoPanel.revalidate();
@@ -507,16 +537,17 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         revalidate();
         repaint();
     }
+    
     private void toggleSound() {
         if (soundOn) {
-            soundOn = false; 
+            soundOn = false;
             ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOffIcon.png"));
             soundIcon.setIcon(soundImageIcon);
             soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
-        } 
-        
+        }
+
         else {
-            soundOn = true; 
+            soundOn = true;
             ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
             soundIcon.setIcon(soundImageIcon);
             soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
@@ -524,26 +555,26 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     public static void playSound(String soundType) {
-        if (soundOn) { 
+        if (soundOn) {
             File soundFile;
-            AudioInputStream input; 
-            Clip sound; 
-        
+            AudioInputStream input;
+            Clip sound;
+
             try {
-                soundFile = new File ("src/assets/audio/"+ soundType +".wav"); 
+                soundFile = new File ("src/assets/audio/"+ soundType +".wav");
                 try {
                     input = AudioSystem.getAudioInputStream(soundFile.getAbsoluteFile());
-                    sound = AudioSystem.getClip(); 
+                    sound = AudioSystem.getClip();
                     sound.open(input);
                     sound.start();
-        
+
                 } catch(Exception e) {
-                    
+
                 }
             } catch (Exception e) {
                 System.out.println("audio file not found");
             }
-        }   
+        }
     }
 
     public void decode(String allStrData) {
@@ -564,22 +595,22 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         }
                         waitingScreen();
                     }
-            
+
                     else if (strData.contains(Server.ADD_PLAYER)) {
                         players.put(strData.substring(Server.ADD_PLAYER.length()), Player.STARTING_HAND_SIZE);
                         playSound(playerJoinsOrLeaves);
                         updateTable();
                     }
-    
+
                     else if (strData.contains(Server.REMOVE_PLAYER)) {
                         players.remove(strData.substring(Server.REMOVE_PLAYER.length()));
                         updateTable();
                     }
-    
+
                     else if (strData.contains(Server.INVALID_USERNAME)) {
                         invalidName.setText("This username contains illegal characters...");
                     }
-    
+
                     else if (strData.contains(Server.TAKEN_USERNAME)) {
                         invalidName.setText("This username has been taken...");
                     }
@@ -587,7 +618,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     else if (strData.contains(Server.FIRST_CARD)) {
                         createBoard(strData.substring(Server.FIRST_CARD.length()));
                     }
-    
+
                     else if (strData.contains(Server.INIT_PLAYER_HAND)) {
                         hand = new LinkedList<JButton>();
                         strHand = new LinkedList<String>();
@@ -596,13 +627,13 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         for (String card : strPlayerHand) {
                             ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + card.toString() + ".png"));
                             newCards.add(new JButton(icon));
-                            strHand.add(card.toString()); 
+                            strHand.add(card.toString());
                         }
 
                         hand.addAll(newCards);
                         createHand(newCards);
                     }
-    
+
                     else if (strData.contains(Server.AM_LEADER)) {
                         if (strData.contains("true")) {
                             makeLeader();
@@ -611,19 +642,25 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
                     else if (strData.contains(Server.SET_LEADER)) {
                         makeLeader();
-                    } 
+                    }
 
                     else if (strData.contains(Server.PLAY_CARD)) {
+//
+//                        String card = strData.substring(Server.PLAY_CARD.length());
+//                        removeCard(card);
+//                    }
+//
                         int cardIndex = Integer.valueOf(strData.substring(Server.PLAY_CARD.length()));
                         removeCard(cardIndex);
                     } 
+
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
                         String[] card = strData.substring(Server.SOMEBODY_PLAYED_CARD.length()).split(" ");
                         updateDiscardPile(card[1]);
                         players.replace(card[0], players.get(card[0]) - 1);
                         updateTable();
-                    } 
+                    }
 
                     else if (strData.contains(Server.DRAW_CARDS)) {
                         String[] cardsToAdd = strData.substring(Server.DRAW_CARDS.length()).split(" ");
@@ -631,7 +668,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
                         for (String strCard : cardsToAdd) {
                             playSound(cardFlippedSound);
-                            
+
                             ImageIcon icon = new ImageIcon(getClass().getResource("/assets/images/" + strCard + ".png"));
                             newCards.add(new JButton(icon));
                             strHand.add(strCard);
@@ -656,6 +693,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
                     else if (strData.contains(Server.PLAYER_WON)) {
                         // Do something
+                    }
+
+                    else if (strData.contains(Server.SET_TURN)) {
+                        int index = Integer.valueOf(strData.substring(Server.SET_TURN.length()));
+                        setTurn(index);
                     }
 
                     else if (strData.contains(Server.DREW_CARDS)) {
@@ -683,10 +725,11 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
             myName = nameField.getText();
             write(Server.NAME + nameField.getText());
         }
-        
+
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
             playSound(gameStartedSound);
+            System.out.println("game started");
         }
 
         else if (e.getSource() == deck) {
@@ -700,7 +743,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         else if (e.getSource() == rules) {
              JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
-        } 
+        }
 
         else if (e.getSource() == options) {
            optionWindow.setVisible(true);
@@ -742,11 +785,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
             unoLayers.remove(unoPanel);
 
-            // int x = (int)(Math.random() * getWidth()); 
-            // int y = (int)(Math.random() * getHeight());
-
-            // unoPanel.setLocation(x, y);
-
             unoPanel.revalidate();
             unoPanel.repaint();
 
@@ -765,29 +803,26 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     @Override
     public void componentResized(ComponentEvent e) {
        if (e.getSource() == this) {
-           
+
        }
     }
 
-
     @Override
     public void componentMoved(ComponentEvent e) {
-        
-        
-    }
 
+
+    }
 
     @Override
     public void componentShown(ComponentEvent e) {
-        
-        
-    }
 
+
+    }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-        
-        
+
+
     }
 
     private void write(String data) {
@@ -802,7 +837,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                 }
 
                 return null;
-            }  
+            }
         }.execute();
     }
 

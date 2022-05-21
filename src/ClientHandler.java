@@ -48,6 +48,16 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private int indexOfPlayersTurn() {
+        for (int i = 0; i < clientHandlers.size(); i++) {
+            if (board.getPlayer(clientHandlers.get(i).username).equals(board.getCurrentPlayer())) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     private String read() {
         try {
             String message = in.readUTF();
@@ -204,6 +214,13 @@ public class ClientHandler implements Runnable {
                         clientHandler.write(Server.END_GAME + place);
                     }
                     board = new GameState();
+                }
+
+                else {
+                    int playerTurnIndex = indexOfPlayersTurn();
+                    for (ClientHandler clientHandler : clientHandlers) {
+                        clientHandler.write(Server.SET_TURN + playerTurnIndex);
+                    }
                 }
             }
 
