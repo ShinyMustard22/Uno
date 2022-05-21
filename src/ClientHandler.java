@@ -162,8 +162,7 @@ public class ClientHandler implements Runnable {
             board.startGame();
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.write(Server.FIRST_CARD + board.getLastPlayedCard().toString() + "\n" +
-                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList() +
-                "\n" + Server.UNO_TIME);
+                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList());
             }
         }
 

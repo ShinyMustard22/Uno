@@ -1,7 +1,5 @@
 import java.awt.*;
 import javax.swing.*;
-// import javax.swing.plaf.DimensionUIResource;
-// import javax.swing.plaf.InsetsUIResource;
 import javax.swing.border.EmptyBorder;
 import cards.ColorCard;
 import java.awt.event.*;
@@ -26,7 +24,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private JMenu help;
     private JMenuItem rules;
     private JMenuItem options;
-    private JButton soundIcon;
+    // private JButton soundIcon;
     private JTextField nameField;
     private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
@@ -42,10 +40,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JDialog optionWindow;
+    // private JDialog optionWindow;
 
-    // private JLayeredPane unoLayers; 
-    // private JPanel unoPanel; 
+    private JLayeredPane unoLayers; 
+    private JPanel unoPanel; 
 
     private JButton unoButton;
     private JButton red, blue, green, yellow, cancelWild;
@@ -55,12 +53,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     private static boolean soundOn = true;
     private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
-//<<<<<<< HEAD
-//    private static final String unoSound = "unoVerbal";
-//    private static final String errorSound = "wrong";
-//    public static final String gameStartedSound = "gameStart";
-//=======
-    // private static final String unoSound = "unoVerbal"; 
+    private static final String unoSound = "unoVerbal"; 
     private static final String errorSound = "wrong"; 
     public static final String gameStartedSound = "gameStart";
 
@@ -87,18 +80,18 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         setIconImage(unoLogo.getImage());
 
-        optionWindow = new JDialog(this);
-        optionWindow.setLayout(new FlowLayout());
-        optionWindow.setResizable(false);
-        optionWindow.setBounds(0, 0, startingWidth, startingHeight);
-        optionWindow.setVisible(false);
-        optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        // optionWindow = new JDialog(this);
+        // optionWindow.setLayout(new FlowLayout());
+        // optionWindow.setResizable(false);
+        // optionWindow.setBounds(0, 0, startingWidth, startingHeight);
+        // optionWindow.setVisible(false);
+        // optionWindow.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
-        soundIcon = new JButton(soundImageIcon);
-        soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
-        soundIcon.addActionListener(this);
-        optionWindow.add(soundIcon);
+        // ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
+        // soundIcon = new JButton(soundImageIcon);
+        // soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+        // soundIcon.addActionListener(this);
+        // optionWindow.add(soundIcon);
 
         mainPanel = new JPanel(new BorderLayout());
 
@@ -131,35 +124,29 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
 
-        // unoLayers = new JLayeredPane();
-        // unoLayers = getLayeredPane();
+        mainPanel.setBounds(0,0, startingWidth, startingHeight);
 
-        // UnoLayoutManager unoLayout = new UnoLayoutManager();
-        // unoLayers.setLayout(unoLayout);
+        unoPanel = new JPanel();
+    
+        unoPanel.setVisible(false);
+        mainPanel.setVisible(true);
 
-        // unoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        // unoPanel.setBackground(Color.CYAN);
-        // // unoPanel.setPreferredSize(new DimensionUIResource(15, 15));
-        // // unoLayers.setBounds(0, 0, startingWidth + 10, startingHeight + 10);
+        unoLayers = new JLayeredPane(); 
+        unoLayers.setLayout(null);
+        unoLayers.setBounds(0,0,startingWidth,startingHeight);
 
-        // unoLayers.add(mainPanel, JLayeredPane.DEFAULT_LAYER);
-        // unoLayout.setBounds(unoPanel, new Rectangle(5, 5, 30, 30)); //change to 0,0 pos
+        unoLayers.add(mainPanel);
+        unoLayers.add(unoPanel,0);
+    
+        add(unoLayers);
 
-        // // Insets insets = unoLayers.getInsets();
-        // // unoPanel.setBounds(insets.left + 2, insets.top + 2, unoPanel.getPreferredSize().width, unoPanel.getPreferredSize().height);
-        // // unoPanel.setVisible(false);
-
-        // // add(unoLayers);
-        // pack();
-        // setVisible(true);
-
-        add(mainPanel);
-
-        players = new LinkedHashMap<String, Integer>();
-
-        setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(startingWidth, startingHeight);
+        setLayout(null);
+        setVisible(true);
         setLocationRelativeTo(null);
+    
+        players = new LinkedHashMap<String, Integer>();
 
         if (out == null) {
             errorScreen();
@@ -219,7 +206,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         help.add(rules);
 
-        options = new JMenuItem("Options");
+        options = new JMenuItem("Sound ON");
         options.addActionListener(this);
         help.add(options);
 
@@ -520,40 +507,37 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
     }
 
     private void spawnUno() {
-        // int x = (int)(Math.random() * getWidth()); 
-        // int y = (int)(Math.random() * getHeight());
+        int x = (int)(Math.random() * getWidth()); 
+        int y = (int)(Math.random() * getHeight());
         
-        // unoButton = new JButton("UNO!");
-        // unoButton.setSize(10,10);
+        unoButton = new JButton("UNO!");
+        unoButton.setSize(50,30);
+        unoButton.addActionListener(this);
 
+        unoPanel.setOpaque(true);
+        unoPanel.add(unoButton);
+        unoPanel.setBounds(x,y,unoButton.getWidth() ,unoButton.getHeight());
+        unoPanel.setVisible(true);
+        
+        unoPanel.revalidate();
+        unoPanel.repaint();
 
-        // unoPanel.add(unoButton);
-        // unoPanel.setLocation(x, y);
-        // unoPanel.setVisible(true);
+        unoLayers.revalidate();
+        unoLayers.repaint();
 
-        // unoPanel.revalidate();
-        // unoPanel.repaint();
-
-        // unoLayers.revalidate();
-        // unoLayers.repaint();
-
-        // revalidate();
-        // repaint();
+        revalidate();
+        repaint();
     }
     
     private void toggleSound() {
         if (soundOn) {
             soundOn = false;
-            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOffIcon.png"));
-            soundIcon.setIcon(soundImageIcon);
-            soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+            options.setText("Sound OFF");
         }
 
         else {
             soundOn = true;
-            ImageIcon soundImageIcon = new ImageIcon(getClass().getResource("/assets/images/soundOnIcon.png"));
-            soundIcon.setIcon(soundImageIcon);
-            soundIcon.setSize(soundImageIcon.getIconWidth(), soundImageIcon.getIconHeight());
+            options.setText("Sound ON");
         }
     }
 
@@ -648,11 +632,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                     }
 
                     else if (strData.contains(Server.PLAY_CARD)) {
-//<<<<<<< HEAD
-//                        String card = strData.substring(Server.PLAY_CARD.length());
-//                        removeCard(card);
-//                    }
-//=======
                         int cardIndex = Integer.valueOf(strData.substring(Server.PLAY_CARD.length()));
                         removeCard(cardIndex);
                     } 
@@ -689,10 +668,6 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         playSound(errorSound);
                     }
 
-                    else if (strData.contains(Server.UNO_TIME)) {
-                        spawnUno();
-                    }
-
                     else if (strData.contains(Server.WON)) {
                         int place = Integer.valueOf(strData.substring(Server.WON.length()));
                         enterSpectateMode(place);
@@ -711,6 +686,10 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
                         String[] playerHandSize = strData.substring(Server.DREW_CARDS.length()).split(" ");
                         players.replace(playerHandSize[0], Integer.valueOf(playerHandSize[1]));
                         updateTable();
+                    }
+
+                    else if (strData.contains(Server.UNO_TIME)) {
+                        spawnUno();
                     }
 
                     else if (strData.contains(Server.END_GAME)) {
@@ -732,6 +711,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
             playSound(gameStartedSound);
+            System.out.println("game started");
         }
 
         else if (e.getSource() == deck) {
@@ -748,11 +728,7 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
         }
 
         else if (e.getSource() == options) {
-           optionWindow.setVisible(true);
-        }
-
-        else if (e.getSource() == soundIcon) {
-            toggleSound();
+           toggleSound();
         }
 
         else if (e.getSource() == red) {
@@ -783,6 +759,18 @@ public class GUIHandler extends JFrame implements ActionListener, ComponentListe
 
         else if (e.getSource() == unoButton) {
             write(Server.UNO_TIME);
+            System.out.println("uno pressed");
+
+            playSound(unoSound);
+
+            unoLayers.remove(unoPanel);
+
+            unoPanel.revalidate();
+            unoPanel.repaint();
+
+            revalidate();
+            repaint();
+        
         }
     }
 
