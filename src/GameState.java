@@ -243,8 +243,6 @@ public class GameState {
     }
 
     public boolean play(Card card, int index) {
-        System.out.println("lastcard: " + discardPile.peek());
-        System.out.println("thiscard: " + card);
         if (currentPlayer.play(discardPile.peek(), index)) {
             discardPile.push(card);
 

@@ -450,7 +450,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void enterSpectateMode(int place) {
         playerHand.removeAll();
-        layeredPane.removeAll();
+        layeredPane.remove(unoButton);
+
         deck.removeActionListener(this);
 
         congratulations = new JLabel("Congratulations! Your placing: " + place);
@@ -475,6 +476,8 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void finalScreen(int place) {
+        layeredPane.remove(unoButton);
+
         JLabel finalLabel1 = new JLabel("The Game is Over! Your place: " + place);
         finalLabel1.setHorizontalAlignment(JLabel.CENTER);
         finalLabel1.setForeground(Color.GREEN.darker());
