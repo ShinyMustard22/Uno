@@ -3,6 +3,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import cards.ColorCard;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +37,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JPanel mainPanel, playerInfo, playerHand;
     private AnimationPanel board;
+    private JScrollPane playerHandScroll;
     private GridBagConstraints gbc;
     private JTable playerTable;
     private LinkedList<JButton> hand;
@@ -85,7 +89,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         nameField = new JTextField(10);
         invalidName = new JLabel();
         invalidName.setForeground(Color.RED);
-        invalidName.setFont(new Font(invalidName.getFont().getName(), Font.PLAIN, 24));
+        Font invalidfont = new Font(invalidName.getFont().getName(), Font.PLAIN, 24);
+        invalidName.setFont(invalidfont);
+        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, "This username contains illegal characters..."));
 
         nameField.addActionListener(this);
         board.add(enterNamePrompt);
@@ -95,12 +101,17 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
         playerHand = new JPanel(new FlowLayout());
+        playerHandScroll = new JScrollPane(playerHand);
+        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        playerHandScroll.setBorder(null);
 
         playerHand.add(invalidName);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
-        mainPanel.add(playerHand, BorderLayout.SOUTH);
+        mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
 
         add(mainPanel);
 
@@ -148,6 +159,17 @@ public class GUIHandler extends JFrame implements ActionListener {
         revalidate();
         repaint();
     }
+
+    private Dimension getTextFieldDimension(Font font, String text) {
+        if (null == font || null == text) {
+            throw new IllegalArgumentException("Font or text is null");
+        }
+        AffineTransform affinetransform = new AffineTransform();
+        FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
+        final Rectangle2D stringBounds = font.getStringBounds("This username contains illegal characters...", frc);
+        return new Dimension((int)stringBounds.getWidth(), (int)stringBounds.getHeight());
+    }
+
 
     private void waitingScreen() {
         board.removeAll();
