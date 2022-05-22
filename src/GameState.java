@@ -214,6 +214,8 @@ public class GameState {
         turn = players.listIterator();
         currentPlayer = turn.next();
 
+        ClientHandler.newDiscardPile(discardPile.peek());
+
         return gameStarted;
     }
 
@@ -283,6 +285,8 @@ public class GameState {
             deck.add(deck.remove());
         }
         discardPile.push(deck.remove());
+
+        ClientHandler.newDiscardPile(discardPile.peek());
     }
 
     private List<Card> drawFromDeck(int numberOfCards) {

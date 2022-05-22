@@ -57,6 +57,11 @@ public class GUIHandler extends JFrame implements ActionListener {
     public static final String gameStartedSound = "gameStart";
 
     private static final Color lightBlue = new Color(176,196,222);
+    private static final Color unoRed = new Color(215, 38, 0);
+    private static final Color unoBlue = new Color(9, 86, 191);
+    private static final Color unoGreen = new Color(55, 151, 17);
+    private static final Color unoYellow = new Color(236, 212, 7);
+
     private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
     private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
@@ -379,22 +384,22 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         red = new JButton("Red");
-        red.setBackground(Color.RED);
+        red.setBackground(unoRed);
         red.setOpaque(true);
         red.addActionListener(this);
 
         blue = new JButton("Blue");
-        blue.setBackground(Color.CYAN);
+        blue.setBackground(unoBlue);
         blue.setOpaque(true);
         blue.addActionListener(this);
 
         green = new JButton("Green");
-        green.setBackground(Color.GREEN);
+        green.setBackground(unoGreen);
         green.setOpaque(true);
         green.addActionListener(this);
 
         yellow = new JButton("Yellow");
-        yellow.setBackground(Color.YELLOW);
+        yellow.setBackground(unoYellow);
         yellow.setOpaque(true);
         yellow.addActionListener(this);
 
@@ -523,6 +528,32 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
+    }
+
+    private void setColor(String strColor) {
+        Color color;
+
+        if (strColor.equals(ColorCard.RED)) {
+            color = unoRed;
+        }
+
+        else if (strColor.equals(ColorCard.BLUE)) {
+            color = unoBlue;
+        }
+
+        else if (strColor.equals(ColorCard.GREEN)) {
+            color = unoGreen;
+        }
+        
+        else if (strColor.equals(ColorCard.YELLOW)) {
+            color = unoYellow;
+        }
+
+        else {
+            throw new IllegalArgumentException();
+        }
+        
+        board.setBackground(color);
     }
     
     private void toggleSound() {
@@ -698,6 +729,10 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.END_UNO_TIME)) {
                         deleteUno();
+                    }
+
+                    else if (strData.contains(Server.SET_COLOR)) {
+                        setColor(strData.substring(Server.SET_COLOR.length()));
                     }
                 }
             }

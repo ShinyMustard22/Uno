@@ -31,6 +31,8 @@ public class Server {
     public static final String END_GAME = "endGame: ";
     public static final String CANCEL_OPERATION = "cancelOperation: ";
     public static final String SET_TURN = "setTurn: ";
+    public static final String SET_COLOR = "colorIs: ";
+    public static final String NEW_DISCARD_PILE = "newDiscardPile: ";
 
     private ServerSocket serverSocket;
     private Socket socket;
