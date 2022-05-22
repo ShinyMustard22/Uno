@@ -1,12 +1,14 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import cards.Card;
 import cards.WildCard;
 
 public class ClientHandler implements Runnable {
     private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
     private static GameState board = new GameState();
+    private static AtomicBoolean isUno = new AtomicBoolean(false);
 
     private Socket socket;
     private DataInputStream in;
@@ -50,7 +52,11 @@ public class ClientHandler implements Runnable {
 
     private int indexOfPlayersTurn() {
         for (int i = 0; i < clientHandlers.size(); i++) {
-            if (board.getPlayer(clientHandlers.get(i).username).equals(board.getCurrentPlayer())) {
+            if (board.getPlayer(clientHandlers.get(i).username) == null) {
+                continue;
+            }
+
+            else if (board.getPlayer(clientHandlers.get(i).username).equals(board.getCurrentPlayer())) {
                 return i;
             }
         }
@@ -166,6 +172,14 @@ public class ClientHandler implements Runnable {
             }
         }
 
+        else if (isUno.get() && data.contains(Server.UNO_TIME)) {
+            board.saidUno(username);
+            isUno.set(false);
+            for (ClientHandler clientHandler : clientHandlers) {
+                clientHandler.write(Server.END_UNO_TIME);
+            }
+        }
+
         else if (!board.getPlayer(username).equals(board.getCurrentPlayer())) {
             write(Server.ERROR);
             return;
@@ -196,8 +210,12 @@ public class ClientHandler implements Runnable {
                 broadcastMessage(Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
 
                 if (board.getPlayer(username).getHandSize() == 1) {
-                    write(Server.UNO_TIME);
-                    broadcastMessage(Server.UNO_TIME);
+                    isUno.set(true);
+                    for (ClientHandler clientHandler : clientHandlers) {
+                        if (board.getPlayer(clientHandler.username) != null) {
+                            clientHandler.write(Server.UNO_TIME);
+                        }
+                    }
                 }
 
                 else if (board.getPlayer(username).getHandSize() == 0) {

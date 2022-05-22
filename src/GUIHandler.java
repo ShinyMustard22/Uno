@@ -61,6 +61,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private DataOutputStream out;
     private String myName;
+    private boolean gameIsOver;
 
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -112,6 +113,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
     
         players = new LinkedHashMap<String, Integer>();
+        gameIsOver = false;
 
         if (out == null) {
             errorScreen();
@@ -420,12 +422,14 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void setTurn(int index) {
-        updateTable();
-        playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
+        // updateTable();
+        // playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
     }
 
     private void enterSpectateMode(int place) {
         playerHand.removeAll();
+        layeredPane.removeAll();
+        deck.removeActionListener(this);
 
         congratulations = new JLabel("Congratulations! Your placing: " + place);
         congratulations.setHorizontalAlignment(JLabel.CENTER);
@@ -471,13 +475,23 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private void spawnUno() {;
+    private void spawnUno() {
         int x = (int) (Math.random() * (getWidth() - unoButtonWidth)); 
         int y = (int) (Math.random() * (getHeight() - unoButtonHeight));
 
         unoButton.setBounds(x, y, unoButtonWidth, unoButtonHeight);
 
         layeredPane.add(unoButton, JLayeredPane.POPUP_LAYER);
+
+        layeredPane.revalidate();
+        layeredPane.repaint();
+
+        revalidate();
+        repaint();
+    }
+
+    private void deleteUno() {
+        layeredPane.remove(unoButton);
 
         layeredPane.revalidate();
         layeredPane.repaint();
@@ -548,7 +562,9 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.REMOVE_PLAYER)) {
                         players.remove(strData.substring(Server.REMOVE_PLAYER.length()));
-                        updateTable();
+                        if (!gameIsOver) {
+                            updateTable();
+                        }
                     }
 
                     else if (strData.contains(Server.INVALID_USERNAME)) {
@@ -631,7 +647,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.PLAYER_WON)) {
-                        // Do something
+                        // Play some sfx
                     }
 
                     else if (strData.contains(Server.SET_TURN)) {
@@ -650,8 +666,13 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.END_GAME)) {
+                        gameIsOver = true;
                         int place = Integer.valueOf(strData.substring(Server.END_GAME.length()));
                         finalScreen(place);
+                    }
+
+                    else if (strData.contains(Server.END_UNO_TIME)) {
+                        deleteUno();
                     }
                 }
             }
@@ -714,7 +735,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (e.getSource() == unoButton) {
-            
+            write(Server.UNO_TIME);
         }
     }
 
@@ -743,5 +764,4 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         }
     }
-
 }

@@ -25,6 +25,7 @@ public class Server {
     public static final String CHOOSE_COLOR = "chooseColor: ";
     public static final String ERROR = "error: ";
     public static final String UNO_TIME = "unoTime: ";
+    public static final String END_UNO_TIME = "endUnoTime: ";
     public static final String PLAYER_WON = "playerWon: ";
     public static final String WON = "youWon: ";
     public static final String END_GAME = "endGame: ";

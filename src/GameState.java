@@ -7,6 +7,7 @@ public class GameState {
 
     private List<Player> players;
     private List<Player> wonPlayers;
+    private List<Player> unoDangerPlayers;
     private ListIterator<Player> turn;
 
     private Player currentPlayer;
@@ -24,6 +25,7 @@ public class GameState {
         
         players = new LinkedList<Player>();
         wonPlayers = new LinkedList<Player>();
+        unoDangerPlayers = new LinkedList<Player>();
         gameStarted = false;
         currentPlace = 0;
     }
@@ -241,8 +243,15 @@ public class GameState {
     }
 
     public boolean play(Card card, int index) {
+        System.out.println("lastcard: " + discardPile.peek());
+        System.out.println("thiscard: " + card);
         if (currentPlayer.play(discardPile.peek(), index)) {
             discardPile.push(card);
+
+            if (currentPlayer.getHandSize() == 1) {
+                unoDangerPlayers.add(currentPlayer);
+            }
+
             advanceTurn(card);
             return true;
         }
@@ -252,7 +261,12 @@ public class GameState {
 
     public Card draw() {
         if (currentPlayer.addCard(deck.peek(), discardPile.peek())) {
+            if (deck.size() == 0) {
+                restock();
+            }
+
             Card card = deck.remove();
+
             if (!card.playable(discardPile.peek())) {
                 pass();
             }
@@ -299,6 +313,19 @@ public class GameState {
             turn = players.listIterator();
             currentPlayer = turn.next();
         }
+    }
+
+    public void saidUno(String username) {
+        Player thisPlayer = getPlayer(username);
+        for (Player player : unoDangerPlayers) {
+            if (!player.equals(thisPlayer)) {
+                List<Card> newCards = drawFromDeck(4);
+                player.forcedDraw(newCards);
+                ClientHandler.sendCards(player.getUsername(), newCards);
+            }
+        }
+
+        unoDangerPlayers.clear();
     }
 
     public void endGame() {
