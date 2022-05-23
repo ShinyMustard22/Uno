@@ -272,10 +272,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void setTurn(int index) {
-        playerTable.getTableHeader().getColumnModel().getColumn(index)
-            .setHeaderRenderer(new PlayerRenderer(index, true));
-        playerTable.getColumnModel().getColumn(index).setCellRenderer(
-            new PlayerRenderer(index, false));
+        playerTable.getColumnModel().getColumn(index).setHeaderRenderer(new PlayerRenderer());
 
         
 
@@ -307,54 +304,11 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private class PlayerRenderer extends DefaultTableCellRenderer {
-        private int myIndex;
-        private int index;
-        private boolean isTitle;
-
-        public PlayerRenderer(int index, boolean isTitle) {
-            this.index = index;
-            this.isTitle = isTitle;
-
-            int i = 0;
-            Iterator<String> iter = players.keySet().iterator();
-            while (iter.hasNext()) {
-                if (iter.next().equals(myName)) {
-                    myIndex = i;
-                }
-                i++;
-            }
-        }
-
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
             boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, column);
-            cell.setFont(boldFont);
-
-            if (myIndex == index) {
-                if (isTitle) {
-                    cell.setBackground(lightBlue);
-                }
-
-                else {
-                    cell.setBackground(lightBlue.brighter());
-                }
-                
-                cell.setForeground(Color.BLUE);
-            }
-
-            else {
-                if (isTitle) {
-                    cell.setBackground(Color.LIGHT_GRAY);
-                }
-
-                else {
-                    cell.setBackground(Color.WHITE);
-                }
-                
-                cell.setForeground(Color.BLACK);
-            }
-
+            cell.setBackground(Color.GREEN.brighter());
             return cell;
         }
     }
