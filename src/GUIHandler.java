@@ -107,7 +107,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         playerHand = new JPanel(new FlowLayout());
         playerHandScroll = new JScrollPane(playerHand);
-        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         playerHandScroll.setBorder(null);
@@ -169,6 +169,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         if (null == font || null == text) {
             throw new IllegalArgumentException("Font or text is null");
         }
+
         AffineTransform affinetransform = new AffineTransform();
         FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
         final Rectangle2D stringBounds = font.getStringBounds("This username contains illegal characters...", frc);
@@ -232,7 +233,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         Iterator<String> iter = players.keySet().iterator();
         int index = 0;
 
-        int myIndex = 0;
+        int myIndex = index;
         while (iter.hasNext()) {
             String playerName = iter.next();
             columnNames[index] = playerName;
@@ -244,7 +245,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         playerTable = new JTable(data, columnNames);
-        playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - 10 * 2, playerTable.getMinimumSize().height));
+        playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - margin * 4, playerTable.getMinimumSize().height));
         playerTable.setFillsViewportHeight(true);
         playerTable.setOpaque(false);
         playerTable.getTableHeader().setReorderingAllowed(false);
@@ -266,8 +267,10 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void setTurn(int index) {
-        // updateTable();
-        playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer(lightBlue, Color.BLUE));
+        playerTable.getTableHeader().getColumnModel().getColumn(index)
+            .setHeaderRenderer(new PlayerRenderer(index, true));
+        playerTable.getColumnModel().getColumn(index).setCellRenderer(
+            new PlayerRenderer(index, false));
 
         playerInfo.revalidate();
         playerInfo.repaint();
@@ -276,8 +279,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private static class LeaderRenderer extends DefaultTableCellRenderer {
-        Color bg, fg;
+    private class LeaderRenderer extends DefaultTableCellRenderer {
+        Color bg;
+        Color fg;
 
         public LeaderRenderer(Color bg, Color fg) {
             this.bg = bg;
@@ -295,12 +299,23 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
-    private static class PlayerRenderer extends DefaultTableCellRenderer {
-        Color bg, fg;
+    private class PlayerRenderer extends DefaultTableCellRenderer {
+        private int myIndex;
+        private int index;
+        private boolean isTitle;
 
-        public PlayerRenderer(Color bg, Color fg) {
-            this.bg = bg;
-            this.fg = fg;
+        public PlayerRenderer(int index, boolean isTitle) {
+            this.index = index;
+            this.isTitle = isTitle;
+
+            int i = 0;
+            Iterator<String> iter = players.keySet().iterator();
+            while (iter.hasNext()) {
+                if (iter.next().equals(myName)) {
+                    myIndex = i;
+                }
+                i++;
+            }
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
@@ -308,8 +323,31 @@ public class GUIHandler extends JFrame implements ActionListener {
             Component cell = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, column);
             cell.setFont(boldFont);
-            cell.setBackground(bg);
-            cell.setForeground(fg);
+
+            if (myIndex == index) {
+                if (isTitle) {
+                    cell.setBackground(lightBlue);
+                }
+
+                else {
+                    cell.setBackground(lightBlue.brighter());
+                }
+                
+                cell.setForeground(Color.BLUE);
+            }
+
+            else {
+                if (isTitle) {
+                    cell.setBackground(Color.LIGHT_GRAY);
+                }
+
+                else {
+                    cell.setBackground(Color.WHITE);
+                }
+                
+                cell.setForeground(Color.BLACK);
+            }
+
             return cell;
         }
     }

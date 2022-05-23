@@ -1,4 +1,3 @@
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -95,4 +94,3 @@ public class AnimationPanel extends JPanel  {
 //        }
     }
 }
-
