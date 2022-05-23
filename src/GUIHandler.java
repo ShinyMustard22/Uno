@@ -80,6 +80,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
+        ImageIcon tableBg = new ImageIcon(getClass().getResource("/assets/images/tableBg.jpg"));
 
         setIconImage(unoLogo.getImage());
 
@@ -109,10 +110,10 @@ public class GUIHandler extends JFrame implements ActionListener {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(unoLogo.getImage(), 0, 0, null);
+                g.drawImage(tableBg.getImage(), 0, 0, null);
             }
         };
-        
+
         playerHandScroll = new JScrollPane(playerHand);
         playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
