@@ -265,6 +265,17 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
+    private void setTurn(int index) {
+        // updateTable();
+        playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer(lightBlue, Color.BLUE));
+
+        playerInfo.revalidate();
+        playerInfo.repaint();
+    
+        revalidate();
+        repaint();
+    }
+
     private static class LeaderRenderer extends DefaultTableCellRenderer {
         Color bg, fg;
 
@@ -285,11 +296,20 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private static class PlayerRenderer extends DefaultTableCellRenderer {
+        Color bg, fg;
+
+        public PlayerRenderer(Color bg, Color fg) {
+            this.bg = bg;
+            this.fg = fg;
+        }
+
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
             boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, column);
             cell.setFont(boldFont);
+            cell.setBackground(bg);
+            cell.setForeground(fg);
             return cell;
         }
     }
@@ -367,7 +387,14 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
-        board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY());
+        
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY());
+                return null;
+            }
+        }.execute();
     }
 
     private void chooseColorScreen() {
@@ -446,11 +473,6 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
-    }
-
-    private void setTurn(int index) {
-        // updateTable();
-        // playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
     }
 
     private void enterSpectateMode(int place) {
