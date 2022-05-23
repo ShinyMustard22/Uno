@@ -19,11 +19,6 @@ public class AnimationPanel extends JPanel  {
 
     }
 
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(bg.getWidth(),bg.getHeight());
-    }
-
     private int fromX, fromY, toX, toY;
     private boolean movingCard = false;
 
