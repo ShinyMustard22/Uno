@@ -43,7 +43,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JLayeredPane layeredPane;
+    private JLayeredPane unoLayeredPane, playerHandPane;
     private JButton unoButton;
 
     private JButton red, blue, green, yellow, cancelWild;
@@ -80,6 +80,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
+        ImageIcon tableBg = new ImageIcon(getClass().getResource("/assets/images/tableBg.jpg"));
 
         setIconImage(unoLogo.getImage());
 
@@ -105,14 +106,19 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerInfo = new JPanel(new BorderLayout());
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
-        playerHand = new JPanel(new FlowLayout());
+        playerHand = new JPanel(new FlowLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(tableBg.getImage(), 0, 0, null);
+            }
+        };
+
         playerHandScroll = new JScrollPane(playerHand);
         playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         playerHandScroll.setBorder(null);
-
-        playerHand.add(invalidName);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
@@ -120,7 +126,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         add(mainPanel);
 
-        layeredPane = getLayeredPane();
+        unoLayeredPane = getLayeredPane();
         unoButton = new JButton("Uno!");
         unoButton.addActionListener(this);
 
@@ -266,6 +272,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void setTurn(int index) {
         playerTable.getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
+
+        
 
         playerInfo.revalidate();
         playerInfo.repaint();
@@ -469,7 +477,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void enterSpectateMode(int place) {
         playerHand.removeAll();
-        layeredPane.remove(unoButton);
+        unoLayeredPane.remove(unoButton);
 
         deck.removeActionListener(this);
 
@@ -495,7 +503,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void finalScreen(int place) {
-        layeredPane.remove(unoButton);
+        unoLayeredPane.remove(unoButton);
 
         JLabel finalLabel1 = new JLabel("The Game is Over! Your place: " + place);
         finalLabel1.setHorizontalAlignment(JLabel.CENTER);
@@ -525,20 +533,20 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         unoButton.setBounds(x, y, unoButtonWidth, unoButtonHeight);
 
-        layeredPane.add(unoButton, JLayeredPane.POPUP_LAYER);
+        unoLayeredPane.add(unoButton, JLayeredPane.POPUP_LAYER);
 
-        layeredPane.revalidate();
-        layeredPane.repaint();
+        unoLayeredPane.revalidate();
+        unoLayeredPane.repaint();
 
         revalidate();
         repaint();
     }
 
     private void deleteUno() {
-        layeredPane.remove(unoButton);
+        unoLayeredPane.remove(unoButton);
 
-        layeredPane.revalidate();
-        layeredPane.repaint();
+        unoLayeredPane.revalidate();
+        unoLayeredPane.repaint();
 
         revalidate();
         repaint();
