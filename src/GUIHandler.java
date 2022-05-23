@@ -47,6 +47,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JButton unoButton;
 
     private JButton red, blue, green, yellow, cancelWild;
+    private String currentColor;
 
     private JLabel congratulations, spectateLabel;
 
@@ -63,7 +64,6 @@ public class GUIHandler extends JFrame implements ActionListener {
     private static final Color unoYellow = new Color(236, 212, 7);
 
     private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
-    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
@@ -229,7 +229,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerInfo.removeAll();
 
         String[] columnNames = new String[players.size()];
-        Object[][] data = new Object[2][players.size()];
+        Object[][] data = new Object[1][players.size()];
         Iterator<String> iter = players.keySet().iterator();
         int index = 0;
 
@@ -255,8 +255,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerTable.getTableHeader().setFont(appFont);
         playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
             .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
-        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(
-            lightBlue.brighter(), Color.black));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -267,7 +265,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void setTurn(int index) {
-        playerTable.getColumnModel().getColumn(index).setHeaderRenderer(new PlayerRenderer());
+        playerTable.getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
 
         playerInfo.revalidate();
         playerInfo.repaint();
@@ -391,6 +389,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void chooseColorScreen() {
         board.removeAll();
+        board.setBackground(UIManager.getColor ("Panel.background"));
 
         for (JButton card : hand) {
             card.removeActionListener(this);
@@ -440,6 +439,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void returnToBoard() {
         board.removeAll();
+        setColor();
 
         red.removeActionListener(this);
         blue.removeActionListener(this);
@@ -544,22 +544,22 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private void setColor(String strColor) {
+    private void setColor() {
         Color color;
 
-        if (strColor.equals(ColorCard.RED)) {
+        if (currentColor.equals(ColorCard.RED)) {
             color = unoRed;
         }
 
-        else if (strColor.equals(ColorCard.BLUE)) {
+        else if (currentColor.equals(ColorCard.BLUE)) {
             color = unoBlue;
         }
 
-        else if (strColor.equals(ColorCard.GREEN)) {
+        else if (currentColor.equals(ColorCard.GREEN)) {
             color = unoGreen;
         }
         
-        else if (strColor.equals(ColorCard.YELLOW)) {
+        else if (currentColor.equals(ColorCard.YELLOW)) {
             color = unoYellow;
         }
 
@@ -746,7 +746,19 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.SET_COLOR)) {
-                        setColor(strData.substring(Server.SET_COLOR.length()));
+                        currentColor = strData.substring(Server.SET_COLOR.length());
+                        setColor();
+                    }
+
+                    else if (strData.contains(Server.NEW_DISCARD_PILE)) {
+                        String card = strData.substring(Server.NEW_DISCARD_PILE.length());
+                        discardPile.setIcon(new ImageIcon("/assets/images/" + card + ".png"));
+
+                        board.revalidate();
+                        board.repaint();
+
+                        revalidate();
+                        repaint();
                     }
                 }
             }

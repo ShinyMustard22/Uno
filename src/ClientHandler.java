@@ -185,12 +185,14 @@ public class ClientHandler implements Runnable {
                 write(Server.ERROR);
                 return;
             }
-    
 
             board.startGame();
+            ColorCard firstCard = (ColorCard) board.getLastPlayedCard();
+
             for (ClientHandler clientHandler : clientHandlers) {
-                clientHandler.write(Server.FIRST_CARD + board.getLastPlayedCard().toString() + "\n" +
-                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList());
+                clientHandler.write(Server.FIRST_CARD + firstCard.toString() + "\n" +
+                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList() + "\n" +
+                Server.SET_COLOR + firstCard.getColor() + "\n" + Server.SET_TURN + indexOfPlayersTurn());
             }
         }
 
@@ -269,9 +271,7 @@ public class ClientHandler implements Runnable {
 
                 else {
                     int playerTurnIndex = indexOfPlayersTurn();
-                    for (ClientHandler clientHandler : clientHandlers) {
-                        clientHandler.write(Server.SET_TURN + playerTurnIndex);
-                    }
+                    broadcastToAll(Server.SET_TURN + playerTurnIndex);
                 }
             }
 
@@ -286,7 +286,8 @@ public class ClientHandler implements Runnable {
             if (card != null) {
                 write(Server.DRAW_CARDS + card.toString());
                 broadcastToAll(Server.DREW_CARDS + username + " " +
-                    board.getPlayer(username).getHandSize());
+                    board.getPlayer(username).getHandSize() + "\n" + 
+                    Server.SET_TURN + indexOfPlayersTurn());
             }
 
             else {
