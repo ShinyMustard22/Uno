@@ -214,8 +214,6 @@ public class GameState {
         turn = players.listIterator();
         currentPlayer = turn.next();
 
-        ClientHandler.newDiscardPile(discardPile.peek());
-
         return gameStarted;
     }
 

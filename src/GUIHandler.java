@@ -43,7 +43,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JLayeredPane unoLayeredPane, playerHandPane;
+    private JLayeredPane unoLayeredPane;
     private JButton unoButton;
 
     private JButton red, blue, green, yellow, cancelWild;
