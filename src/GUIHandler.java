@@ -51,10 +51,10 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JLabel congratulations, spectateLabel;
 
-    File bgSoundFile;
-    AudioInputStream bgSoundInput;
-    Clip bgClip;
-
+    private File bgSoundFile;
+    private AudioInputStream bgSoundInput;
+    private Clip bgClip;
+    
     private static boolean soundOn = true;
     private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
@@ -77,6 +77,9 @@ public class GUIHandler extends JFrame implements ActionListener {
     private String myName;
     private boolean gameIsOver;
 
+    /**
+     * @param out DataOutputStream
+     */
     public GUIHandler(DataOutputStream out) {
         super("Uno");
         setBounds(0, 0, startingWidth, startingHeight);
@@ -85,20 +88,10 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
-        ImageIcon tableBg = new ImageIcon(getClass().getResource("/assets/images/tableBg.jpg"));
-
         setIconImage(unoLogo.getImage());
 
-        ImageIcon tableTop = new ImageIcon(getClass().getResource("/assets/images/tableTop.jpg"));
-        
-        mainPanel = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(tableTop.getImage().getScaledInstance(startingWidth, startingHeight, Image.SCALE_DEFAULT), 0, 0, null);
-                
-            }
-        };
+
+        mainPanel = new JPanel(new BorderLayout());
 
         board = new AnimationPanel(new GridBagLayout());
         board.setOpaque(false);
@@ -175,6 +168,9 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Displays an error message if communicated with the server breaks
+     */
     public void errorScreen() {
         mainPanel.removeAll();
         mainPanel.setLayout(new GridBagLayout());
@@ -226,7 +222,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         rules.addActionListener(this);
 
         rulesString = new StringBuffer();
-        Path rulesPath = Paths.get("src/assets/rules.txt");
+        Path rulesPath = Paths.get("/src/assets/rules.txt");
 
         try {
             java.util.List<String> lines = Files.readAllLines(rulesPath, StandardCharsets.UTF_8);
@@ -661,6 +657,10 @@ public class GUIHandler extends JFrame implements ActionListener {
         }  
     }
 
+    /**
+     * 
+     * @param allStrData
+     */
     public void decode(String allStrData) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
