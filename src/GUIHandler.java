@@ -406,6 +406,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
+
     private void updateDiscardPile(String card) {
         discardPile.setIcon(new ImageIcon(getClass().getResource("/assets/images/" + card + ".png")));
         playSound(cardFlippedSound);
