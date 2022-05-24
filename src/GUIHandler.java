@@ -27,7 +27,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private JMenuBar menuBar;
     private JMenu help;
-    private JMenuItem rules, options;
+    private JMenuItem rules, soundEffects, bgMusic;
     private JTextField nameField;
     private JLabel errorMessage1, errorMessage2;
     private JLabel invalidName, enterNamePrompt, waiting;
@@ -49,6 +49,10 @@ public class GUIHandler extends JFrame implements ActionListener {
     private JButton red, blue, green, yellow, cancelWild;
 
     private JLabel congratulations, spectateLabel;
+
+    File bgSoundFile;
+    AudioInputStream bgSoundInput;
+    Clip bgClip;
 
     private static boolean soundOn = true;
     private static final String cardFlippedSound = "cardFlipping";
@@ -75,12 +79,21 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
-
         setIconImage(unoLogo.getImage());
 
-        mainPanel = new JPanel(new BorderLayout());
+        ImageIcon tableTop = new ImageIcon(getClass().getResource("/assets/images/tableTop.jpg"));
+        
+        mainPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(tableTop.getImage().getScaledInstance(startingWidth, startingHeight, Image.SCALE_DEFAULT), 0, 0, null);
+                
+            }
+        };
 
         board = new AnimationPanel(new GridBagLayout());
+        board.setOpaque(false);
 
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(margin, margin, margin, margin);
@@ -98,9 +111,11 @@ public class GUIHandler extends JFrame implements ActionListener {
         board.add(nameField);
 
         playerInfo = new JPanel(new BorderLayout());
+        playerInfo.setOpaque(false);
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
         playerHand = new JPanel(new FlowLayout());
+        playerHand.setOpaque(false);
         playerHandScroll = new JScrollPane(playerHand);
         playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -112,6 +127,29 @@ public class GUIHandler extends JFrame implements ActionListener {
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
+
+        /**
+         * Music from Tunetank.com
+         * Alex MakeMusic - Everest (Copyright Free Music)
+         * Download free: https://tunetank.com/track/471-everest
+        */
+        try {
+            bgSoundFile = new File ("src/assets/audio/bgMusic.wav");
+            try {
+                bgSoundInput = AudioSystem.getAudioInputStream(bgSoundFile.getAbsoluteFile());
+                bgClip = AudioSystem.getClip();
+                bgClip.open(bgSoundInput);
+                bgClip.start();
+                bgClip.loop(Clip.LOOP_CONTINUOUSLY);
+
+                FloatControl volume = (FloatControl) bgClip.getControl(FloatControl.Type.MASTER_GAIN);
+                volume.setValue(-10.0f);
+            } catch(Exception e) {
+
+            }
+        } catch (Exception e) {
+            System.out.println("audio file not found");
+        }
 
         add(mainPanel);
 
@@ -195,9 +233,13 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         help.add(rules);
 
-        options = new JMenuItem("Sound ON");
-        options.addActionListener(this);
-        help.add(options);
+        soundEffects = new JMenuItem("SFX ON");
+        soundEffects.addActionListener(this);
+        help.add(soundEffects);
+
+        bgMusic = new JMenuItem("Music ON");
+        bgMusic.addActionListener(this);
+        help.add(bgMusic);
 
         menuBar.add(help);
 
@@ -525,12 +567,12 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void toggleSound() {
         if (soundOn) {
             soundOn = false;
-            options.setText("Sound OFF");
+            soundEffects.setText("SFX OFF");
         }
-
         else {
             soundOn = true;
-            options.setText("Sound ON");
+            soundEffects.setText("SFX ON");
+            
         }
     }
 
@@ -555,6 +597,17 @@ public class GUIHandler extends JFrame implements ActionListener {
                 System.out.println("audio file not found");
             }
         }
+    }
+    
+    public void toggleBackgroundMusic() {
+        if (bgClip.isActive() && (bgClip != null)) {
+            bgClip.stop();
+            bgMusic.setText("Music OFF");
+        }
+        else {
+            bgClip.start();
+            bgClip.loop(Clip.LOOP_CONTINUOUSLY);
+        }  
     }
 
     public void decode(String allStrData) {
@@ -726,8 +779,12 @@ public class GUIHandler extends JFrame implements ActionListener {
              JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
         }
 
-        else if (e.getSource() == options) {
+        else if (e.getSource() == soundEffects) {
            toggleSound();
+        }
+
+        else if (e.getSource() == bgMusic) {
+            toggleBackgroundMusic();
         }
 
         else if (e.getSource() == red) {
