@@ -158,6 +158,12 @@ public class ClientHandler implements Runnable {
 
         clientHandlers.remove(this);
 
+        if (board.gameHasStarted() && clientHandlers.size() == 1) {
+            board.endGame();
+            clientHandlers.get(0).write(Server.END_GAME + "-");
+            board = new GameState();
+        }
+
         try {
             if (in != null) {
                 in.close();
@@ -181,6 +187,10 @@ public class ClientHandler implements Runnable {
         }
 
         if (data.contains(Server.NAME)) {
+            if (board.gameHasStarted()) {
+                write(Server.GAME_ALREADY_BEGAN);
+            }
+
             username = data.substring(Server.NAME.length());
             while (username.contains(" ") || alreadyUsedName()) {
                 if (username.contains(" ")) {

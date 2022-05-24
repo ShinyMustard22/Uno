@@ -64,6 +64,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private static final Color unoYellow = new Color(236, 212, 7);
 
     private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
+    Font invalidfont = new Font("Arial", Font.PLAIN, 24);
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
@@ -94,8 +95,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         enterNamePrompt = new JLabel("Please enter your name:");
         nameField = new JTextField(10);
         invalidName = new JLabel();
-        invalidName.setForeground(Color.RED);
-        Font invalidfont = new Font(invalidName.getFont().getName(), Font.PLAIN, 24);
         invalidName.setFont(invalidfont);
         invalidName.setPreferredSize(getTextFieldDimension(invalidfont, "This username contains illegal characters..."));
 
@@ -106,13 +105,8 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerInfo = new JPanel(new BorderLayout());
         playerInfo.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
 
-        playerHand = new JPanel(new FlowLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(tableBg.getImage(), 0, 0, null);
-            }
-        };
+        playerHand = new JPanel(new FlowLayout());
+        playerHand.add(invalidName);
 
         playerHandScroll = new JScrollPane(playerHand);
         playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -178,7 +172,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         AffineTransform affinetransform = new AffineTransform();
         FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
-        final Rectangle2D stringBounds = font.getStringBounds("This username contains illegal characters...", frc);
+        final Rectangle2D stringBounds = font.getStringBounds(text, frc);
         return new Dimension((int)stringBounds.getWidth(), (int)stringBounds.getHeight());
     }
 
@@ -397,7 +391,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void chooseColorScreen() {
         board.removeAll();
-        board.setBackground(UIManager.getColor ("Panel.background"));
+        board.setOpaque(true);
 
         for (JButton card : hand) {
             card.removeActionListener(this);
@@ -646,11 +640,24 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.INVALID_USERNAME)) {
-                        invalidName.setText("This username contains illegal characters...");
+                        String message = "This username contains illegal characters...";
+                        invalidName.setForeground(Color.RED);
+                        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, message));
+                        invalidName.setText(message);
                     }
 
                     else if (strData.contains(Server.TAKEN_USERNAME)) {
-                        invalidName.setText("This username has been taken...");
+                        String message = "This username has been taken...";
+                        invalidName.setForeground(Color.RED);
+                        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, message));
+                        invalidName.setText(message);
+                    }
+
+                    else if (strData.contains(Server.GAME_ALREADY_BEGAN)) {
+                        String message = "A game is currently going on right now. Join later...";
+                        invalidName.setForeground(Color.BLUE);
+                        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, message));
+                        invalidName.setText(message);
                     }
 
                     else if (strData.contains(Server.FIRST_CARD)) {

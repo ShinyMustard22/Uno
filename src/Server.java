@@ -131,6 +131,10 @@ public class Server {
      * for when the deck runs out.
      */
     public static final String NEW_DISCARD_PILE = "newDiscardPile: ";
+    /**
+     * Command server sends to client if client wants to play, but game already started
+     */
+    public static final String GAME_ALREADY_BEGAN = "gameAlreadyBegan: ";
 
     private ServerSocket serverSocket;
     private Socket socket;
