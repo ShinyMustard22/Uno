@@ -329,13 +329,25 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
+
     private void createHand(java.util.List<JButton> newCards) {
+        ArrayList<Point> fromList = new ArrayList<>();
+        ArrayList<Point> toList = new ArrayList<>();
+        ArrayList<Component> components = new ArrayList<>();
         for (JButton card : newCards) {
             playerHand.add(card);
-            card.setSize(card.getIcon().getIconWidth(), card.getIcon().getIconHeight());
             card.addActionListener(this);
+            components.add(card);
+            fromList.add(new Point(deck.getX(), deck.getY()));
+            toList.add(new Point(deck.getX(), board.getHeight()));
+        }
+        revalidate();
+        playerHand.setPreferredSize(new Dimension(playerHand.getWidth(), playerHand.getHeight()));
+        for (JButton card : newCards) {
+            card.setVisible(false);
         }
 
+        board.moveCard("card_face_down", fromList, toList, components, 10, 10);
         playerHand.revalidate();
         playerHand.repaint();
 
