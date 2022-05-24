@@ -34,9 +34,10 @@ public class AnimationPanel extends JPanel {
 
     /**
      * moving image cardImage around to generate animation
-     * @param cardImage: image
-     * @param fromList: list of from positions
-     * @param toList: list of to positions
+     *
+     * @param cardImage:  image
+     * @param fromList:   list of from positions
+     * @param toList:     list of to positions
      * @param components: mmake visible after animation
      */
     public void moveCard(String cardImage, ArrayList<Point> fromList, ArrayList<Point> toList,
@@ -130,7 +131,7 @@ public class AnimationPanel extends JPanel {
                 xStep = 0;
                 xOffset = toX;
             }
-            if ((yLimit && xLimit) || total == totalStep ) {
+            if ((yLimit && xLimit) || total == totalStep) {
                 movingCard = false;
                 if (components != null && finishedRound < components.size()) {
                     components.get(finishedRound).setVisible(true);
@@ -143,6 +144,5 @@ public class AnimationPanel extends JPanel {
             repaint();
 
         }
-
     }
 }

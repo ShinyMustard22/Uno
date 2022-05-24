@@ -1,6 +1,13 @@
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Main class which acts as a client for the server. Connects to that server,
+ * and then starts the guided user interface.
+ * 
+ * @author Ritam Chakraborty
+ * @version May 23, 2022
+ */
 public class Main {
     private GUIHandler gui;
 
@@ -8,6 +15,10 @@ public class Main {
     private DataInputStream in;
     private DataOutputStream out;
 
+    /**
+     * Connects its socket to the server and creates an input and output
+     * mechanism to it. Starts the GUI.
+     */
     public Main() {
         try {
             socket = new Socket(Server.IP_ADDRESS, Server.PORT_NUM);
@@ -44,6 +55,12 @@ public class Main {
             gui.errorScreen();
         }
     }
+
+    /**
+     * Creates a new instance of this client. Begins a thread to start
+     * listening for incoming messages from the server.
+     * @param args
+     */
     public static void main(String[] args) {
         Main client = new Main();
         client.listenForMessages();
