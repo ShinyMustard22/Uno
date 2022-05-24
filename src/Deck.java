@@ -1,10 +1,21 @@
 import java.util.*;
 import cards.*;
 
+/**
+ * A deck of cards that extends LinkedList and is intended to be
+ * implemented as queue which returns cards in a random order,
+ * giving the illusion that the deck is shuffled.
+ * 
+ * @author Ritam Chakraborty
+ * @version May 23, 2022
+ */
 public class Deck extends LinkedList<Card> {
 
     private int nextCardPos;
     
+    /**
+     * Adds all the cards in a standard deck of Uno to this list
+     */
     public Deck() {
         // Creating the "0" number cards
         addLast(new NumberCard(ColorCard.RED, 0));
@@ -49,12 +60,12 @@ public class Deck extends LinkedList<Card> {
         nextCardPos = (int) (Math.random() * size());
     }
 
-    public Deck(Collection<Card> newDeck) {
-        addAll(newDeck);
-        nextCardPos = (int) (Math.random() * size());
-    }
-
     @Override
+    /**
+     * Removes a random card from the list.
+     * @throws NoSuchElementException is list is empty
+     * @return random card from the list
+     */
     public Card remove() {
         if (isEmpty()) {
             throw new NoSuchElementException();
@@ -64,6 +75,10 @@ public class Deck extends LinkedList<Card> {
     }
 
     @Override
+    /**
+     * Removes a random card from the list.
+     * @return random card from the list, if list is empty, it returns null
+     */
     public Card poll() {
         if (isEmpty()) {
             return null;
@@ -75,6 +90,11 @@ public class Deck extends LinkedList<Card> {
     }
 
     @Override
+    /**
+     * Returns the top of the deck.
+     * @throws NoSuchElementException is list is empty
+     * @return the top of the deck
+     */
     public Card element() {
         if (isEmpty()) {
             throw new NoSuchElementException();
@@ -83,6 +103,10 @@ public class Deck extends LinkedList<Card> {
         return peek();
     }
 
+    /**
+     * Returns the top of the deck.
+     * @return the top of the deck, if list is empty, it returns null
+     */
     @Override
     public Card peek() {
         if (isEmpty()) {

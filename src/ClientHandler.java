@@ -3,8 +3,20 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import cards.Card;
+import cards.ColorCard;
 import cards.WildCard;
 
+/**
+ * A class that is able to talk to the client using input and output streams.
+ * Holds a static reference to the game state, and to other ClientHandler
+ * instances which handle other clients. Implements the runnable interface
+ * which allows it to listen for messsages on a seperate thread. It decodes
+ * those messages from the client and then acts based on the conent of the
+ * message regarding the clients and the games state.
+ * 
+ * @author Ritam Chakraborty
+ * @version May 23, 2022
+ */
 public class ClientHandler implements Runnable {
     private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
     private static GameState board = new GameState();
@@ -16,6 +28,11 @@ public class ClientHandler implements Runnable {
     
     private String username;
 
+    /**
+     * Establishes the connection between the client and this handler
+     * @param socket the socket that connects to the server that is connected
+     * to the client
+     */
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
@@ -36,6 +53,12 @@ public class ClientHandler implements Runnable {
         return false;
     }
 
+    /**
+     * Sends a list of cards to the client with a specific username. Notifies
+     * other clients as well.
+     * @param username username of the client that has to recieve cards
+     * @param newCards the list of new cards the client will add to their hand
+     */
     public static void sendCards(String username, List<Card> newCards) {
         for (ClientHandler clientHandler : clientHandlers) {
             if (username.equals(clientHandler.username)) {
@@ -48,6 +71,26 @@ public class ClientHandler implements Runnable {
                 return;
             }
         }
+    }
+
+    /**
+     * Notifies client of a new discard pile.
+     * @param topCard the card at the top of the new discard pile
+     */
+    public static void newDiscardPile(Card topCard) {
+        String color;
+
+        if (topCard instanceof ColorCard) {
+            ColorCard colorCard = (ColorCard) topCard;
+            color = colorCard.getColor();
+        }
+
+        else {
+            WildCard wildCard = (WildCard) topCard;
+            color = wildCard.getColor();
+        }
+
+        broadcastToAll(Server.NEW_DISCARD_PILE + topCard.toString() + "\n" + Server.SET_COLOR + color);
     }
 
     private int indexOfPlayersTurn() {
@@ -87,7 +130,13 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void broadcastMessage(String data) {
+    private static void broadcastToAll(String data) {
+        for (ClientHandler clientHandler : clientHandlers) {
+            clientHandler.write(data);
+        }
+    }
+
+    private void broadcastToOthers(String data) {
         for (ClientHandler clientHandler : clientHandlers) {
             if (clientHandler != this) {
                 clientHandler.write(data);
@@ -97,7 +146,7 @@ public class ClientHandler implements Runnable {
 
     private void killEverything(Socket socket, DataInputStream in, DataOutputStream out) {
         board.removePlayer(username);
-        broadcastMessage(Server.REMOVE_PLAYER + username);
+        broadcastToOthers(Server.REMOVE_PLAYER + username);
 
         if (clientHandlers.size() == 1) {
             board = new GameState();
@@ -107,8 +156,13 @@ public class ClientHandler implements Runnable {
             clientHandlers.get(1).write(Server.SET_LEADER);
         }
 
-        broadcastMessage(Server.REMOVE_PLAYER + username);
         clientHandlers.remove(this);
+
+        if (board.gameHasStarted() && clientHandlers.size() == 1) {
+            board.endGame();
+            clientHandlers.get(0).write(Server.END_GAME + "-");
+            board = new GameState();
+        }
 
         try {
             if (in != null) {
@@ -133,6 +187,10 @@ public class ClientHandler implements Runnable {
         }
 
         if (data.contains(Server.NAME)) {
+            if (board.gameHasStarted()) {
+                write(Server.GAME_ALREADY_BEGAN);
+            }
+
             username = data.substring(Server.NAME.length());
             while (username.contains(" ") || alreadyUsedName()) {
                 if (username.contains(" ")) {
@@ -153,7 +211,7 @@ public class ClientHandler implements Runnable {
                 write(Server.INIT_PLAYER_LIST + board.getPlayerList() + "\n" +
                     Server.AM_LEADER + isLeader);
 
-                broadcastMessage(Server.ADD_PLAYER + username);
+                broadcastToOthers(Server.ADD_PLAYER + username);
                 clientHandlers.add(this);
             }
         }
@@ -163,12 +221,14 @@ public class ClientHandler implements Runnable {
                 write(Server.ERROR);
                 return;
             }
-    
 
             board.startGame();
+            ColorCard firstCard = (ColorCard) board.getLastPlayedCard();
+
             for (ClientHandler clientHandler : clientHandlers) {
-                clientHandler.write(Server.FIRST_CARD + board.getLastPlayedCard().toString() + "\n" +
-                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList());
+                clientHandler.write(Server.FIRST_CARD + firstCard.toString() + "\n" +
+                Server.INIT_PLAYER_HAND + board.getPlayer(clientHandler.username).getCardList() + "\n" +
+                Server.SET_COLOR + firstCard.getColor() + "\n" + Server.SET_TURN + indexOfPlayersTurn());
             }
         }
 
@@ -205,9 +265,21 @@ public class ClientHandler implements Runnable {
             }
 
             if (board.play(card, index)) {
-                write(Server.PLAY_CARD + index + "\n" +
-                    Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
-                broadcastMessage(Server.SOMEBODY_PLAYED_CARD + username + " " + strCard);
+                String color;
+                card = board.getLastPlayedCard();
+
+                if (card instanceof ColorCard) {
+                    ColorCard colorCard = (ColorCard) card;
+                    color = colorCard.getColor();
+                }
+
+                else {
+                    WildCard wildCard = (WildCard) card;
+                    color = wildCard.getColor();
+                }
+
+                write(Server.PLAY_CARD + index);
+                broadcastToAll(Server.SOMEBODY_PLAYED_CARD + username + " " + strCard + "\n" + Server.SET_COLOR + color);
 
                 if (board.getPlayer(username).getHandSize() == 1) {
                     isUno.set(true);
@@ -221,7 +293,7 @@ public class ClientHandler implements Runnable {
                 else if (board.getPlayer(username).getHandSize() == 0) {
                     board.playerWon(username);
                     write(Server.WON + board.getPlaceOfPlayer(username) + "\n" + Server.REMOVE_PLAYER + username);
-                    broadcastMessage(Server.PLAYER_WON + "\n" + Server.REMOVE_PLAYER + username);
+                    broadcastToOthers(Server.PLAYER_WON + "\n" + Server.REMOVE_PLAYER + username);
                 }
 
                 if (board.getTotalPlayers() < 2) {
@@ -235,9 +307,7 @@ public class ClientHandler implements Runnable {
 
                 else {
                     int playerTurnIndex = indexOfPlayersTurn();
-                    for (ClientHandler clientHandler : clientHandlers) {
-                        clientHandler.write(Server.SET_TURN + playerTurnIndex);
-                    }
+                    broadcastToAll(Server.SET_TURN + playerTurnIndex);
                 }
             }
 
@@ -250,22 +320,23 @@ public class ClientHandler implements Runnable {
             Card card = board.draw();
 
             if (card != null) {
-                write(Server.DRAW_CARDS + card.toString()+ "\n" + 
-                    Server.DREW_CARDS + username + " " + 
-                    board.getPlayer(username).getHandSize());
-                broadcastMessage(Server.DREW_CARDS + username + " " +
-                    board.getPlayer(username).getHandSize());
+                write(Server.DRAW_CARDS + card.toString());
+                broadcastToAll(Server.DREW_CARDS + username + " " +
+                    board.getPlayer(username).getHandSize() + "\n" + 
+                    Server.SET_TURN + indexOfPlayersTurn());
             }
 
             else {
                 write(Server.ERROR);
             }
         }
-
-
     }
 
     @Override
+    /**
+     * Implemented method from runnable that listens for message from the
+     * client, and then decodes and processes that message.
+     */
     public void run() {
         String data;
 

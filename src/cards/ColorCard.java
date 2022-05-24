@@ -26,6 +26,10 @@ public abstract class ColorCard extends Card {
         return wildCard.getColor().equals(color);
     }
 
+    public String getColor() {
+        return color;
+    }
+
     public boolean equals(Object other) {
         if (!(other instanceof ColorCard)) {
             return false;

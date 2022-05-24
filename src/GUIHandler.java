@@ -43,10 +43,11 @@ public class GUIHandler extends JFrame implements ActionListener {
     private LinkedList<JButton> hand;
     private LinkedList<String> strHand;
 
-    private JLayeredPane layeredPane;
+    private JLayeredPane unoLayeredPane;
     private JButton unoButton;
 
     private JButton red, blue, green, yellow, cancelWild;
+    private String currentColor;
 
     private JLabel congratulations, spectateLabel;
 
@@ -61,8 +62,13 @@ public class GUIHandler extends JFrame implements ActionListener {
     public static final String gameStartedSound = "gameStart";
 
     private static final Color lightBlue = new Color(176,196,222);
+    private static final Color unoRed = new Color(215, 38, 0);
+    private static final Color unoBlue = new Color(9, 86, 191);
+    private static final Color unoGreen = new Color(55, 151, 17);
+    private static final Color unoYellow = new Color(236, 212, 7);
+
     private static final Font appFont = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
-    private static final Font boldFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
+    Font invalidfont = new Font("Arial", Font.PLAIN, 24);
 
     private LinkedHashMap<String, Integer> players;
     private StringBuffer rulesString;
@@ -79,6 +85,8 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
+        ImageIcon tableBg = new ImageIcon(getClass().getResource("/assets/images/tableBg.jpg"));
+
         setIconImage(unoLogo.getImage());
 
         ImageIcon tableTop = new ImageIcon(getClass().getResource("/assets/images/tableTop.jpg"));
@@ -101,8 +109,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         enterNamePrompt = new JLabel("Please enter your name:");
         nameField = new JTextField(10);
         invalidName = new JLabel();
-        invalidName.setForeground(Color.RED);
-        Font invalidfont = new Font(invalidName.getFont().getName(), Font.PLAIN, 24);
         invalidName.setFont(invalidfont);
         invalidName.setPreferredSize(getTextFieldDimension(invalidfont, "This username contains illegal characters..."));
 
@@ -116,13 +122,13 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         playerHand = new JPanel(new FlowLayout());
         playerHand.setOpaque(false);
+        playerHand.add(invalidName);
+
         playerHandScroll = new JScrollPane(playerHand);
-        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        playerHandScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         playerHandScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         playerHandScroll.setBorder(null);
-
-        playerHand.add(invalidName);
 
         mainPanel.add(playerInfo, BorderLayout.NORTH);
         mainPanel.add(board, BorderLayout.CENTER);
@@ -153,7 +159,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         add(mainPanel);
 
-        layeredPane = getLayeredPane();
+        unoLayeredPane = getLayeredPane();
         unoButton = new JButton("Uno!");
         unoButton.addActionListener(this);
 
@@ -202,9 +208,10 @@ public class GUIHandler extends JFrame implements ActionListener {
         if (null == font || null == text) {
             throw new IllegalArgumentException("Font or text is null");
         }
+
         AffineTransform affinetransform = new AffineTransform();
         FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
-        final Rectangle2D stringBounds = font.getStringBounds("This username contains illegal characters...", frc);
+        final Rectangle2D stringBounds = font.getStringBounds(text, frc);
         return new Dimension((int)stringBounds.getWidth(), (int)stringBounds.getHeight());
     }
 
@@ -269,7 +276,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         Iterator<String> iter = players.keySet().iterator();
         int index = 0;
 
-        int myIndex = 0;
+        int myIndex = index;
         while (iter.hasNext()) {
             String playerName = iter.next();
             columnNames[index] = playerName;
@@ -281,7 +288,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         playerTable = new JTable(data, columnNames);
-        playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - 10 * 2, playerTable.getMinimumSize().height));
+        playerTable.setPreferredScrollableViewportSize(new Dimension(getWidth() - margin * 4, playerTable.getMinimumSize().height));
         playerTable.setFillsViewportHeight(true);
         playerTable.setOpaque(false);
         playerTable.getTableHeader().setReorderingAllowed(false);
@@ -291,8 +298,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerTable.getTableHeader().setFont(appFont);
         playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
             .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
-        playerTable.getColumnModel().getColumn(myIndex).setCellRenderer(new LeaderRenderer(
-            lightBlue.brighter(), Color.black));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -302,8 +307,21 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private static class LeaderRenderer extends DefaultTableCellRenderer {
-        Color bg, fg;
+    private void setTurn(int index) {
+        playerTable.getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
+
+        
+
+        playerInfo.revalidate();
+        playerInfo.repaint();
+    
+        revalidate();
+        repaint();
+    }
+
+    private class LeaderRenderer extends DefaultTableCellRenderer {
+        Color bg;
+        Color fg;
 
         public LeaderRenderer(Color bg, Color fg) {
             this.bg = bg;
@@ -321,12 +339,12 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
-    private static class PlayerRenderer extends DefaultTableCellRenderer {
+    private class PlayerRenderer extends DefaultTableCellRenderer {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
             boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, column);
-            cell.setFont(boldFont);
+            cell.setBackground(Color.GREEN.brighter());
             return cell;
         }
     }
@@ -404,11 +422,19 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
-        board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY());
+        
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY());
+                return null;
+            }
+        }.execute();
     }
 
     private void chooseColorScreen() {
         board.removeAll();
+        board.setOpaque(true);
 
         for (JButton card : hand) {
             card.removeActionListener(this);
@@ -421,22 +447,22 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         red = new JButton("Red");
-        red.setBackground(Color.RED);
+        red.setBackground(unoRed);
         red.setOpaque(true);
         red.addActionListener(this);
 
         blue = new JButton("Blue");
-        blue.setBackground(Color.CYAN);
+        blue.setBackground(unoBlue);
         blue.setOpaque(true);
         blue.addActionListener(this);
 
         green = new JButton("Green");
-        green.setBackground(Color.GREEN);
+        green.setBackground(unoGreen);
         green.setOpaque(true);
         green.addActionListener(this);
 
         yellow = new JButton("Yellow");
-        yellow.setBackground(Color.YELLOW);
+        yellow.setBackground(unoYellow);
         yellow.setOpaque(true);
         yellow.addActionListener(this);
 
@@ -458,6 +484,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
     private void returnToBoard() {
         board.removeAll();
+        setColor();
 
         red.removeActionListener(this);
         blue.removeActionListener(this);
@@ -485,14 +512,10 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private void setTurn(int index) {
-        // updateTable();
-        // playerTable.getTableHeader().getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
-    }
-
     private void enterSpectateMode(int place) {
         playerHand.removeAll();
-        layeredPane.removeAll();
+        unoLayeredPane.remove(unoButton);
+
         deck.removeActionListener(this);
 
         congratulations = new JLabel("Congratulations! Your placing: " + place);
@@ -517,6 +540,8 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void finalScreen(int place) {
+        unoLayeredPane.remove(unoButton);
+
         JLabel finalLabel1 = new JLabel("The Game is Over! Your place: " + place);
         finalLabel1.setHorizontalAlignment(JLabel.CENTER);
         finalLabel1.setForeground(Color.GREEN.darker());
@@ -545,23 +570,49 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         unoButton.setBounds(x, y, unoButtonWidth, unoButtonHeight);
 
-        layeredPane.add(unoButton, JLayeredPane.POPUP_LAYER);
+        unoLayeredPane.add(unoButton, JLayeredPane.POPUP_LAYER);
 
-        layeredPane.revalidate();
-        layeredPane.repaint();
+        unoLayeredPane.revalidate();
+        unoLayeredPane.repaint();
 
         revalidate();
         repaint();
     }
 
     private void deleteUno() {
-        layeredPane.remove(unoButton);
+        unoLayeredPane.remove(unoButton);
 
-        layeredPane.revalidate();
-        layeredPane.repaint();
+        unoLayeredPane.revalidate();
+        unoLayeredPane.repaint();
 
         revalidate();
         repaint();
+    }
+
+    private void setColor() {
+        Color color;
+
+        if (currentColor.equals(ColorCard.RED)) {
+            color = unoRed;
+        }
+
+        else if (currentColor.equals(ColorCard.BLUE)) {
+            color = unoBlue;
+        }
+
+        else if (currentColor.equals(ColorCard.GREEN)) {
+            color = unoGreen;
+        }
+        
+        else if (currentColor.equals(ColorCard.YELLOW)) {
+            color = unoYellow;
+        }
+
+        else {
+            throw new IllegalArgumentException();
+        }
+        
+        board.setBackground(color);
     }
     
     private void toggleSound() {
@@ -576,7 +627,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
-    public static void playSound(String soundType) {
+    private void playSound(String soundType) {
         if (soundOn) {
             File soundFile;
             AudioInputStream input;
@@ -643,11 +694,24 @@ public class GUIHandler extends JFrame implements ActionListener {
                     }
 
                     else if (strData.contains(Server.INVALID_USERNAME)) {
-                        invalidName.setText("This username contains illegal characters...");
+                        String message = "This username contains illegal characters...";
+                        invalidName.setForeground(Color.RED);
+                        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, message));
+                        invalidName.setText(message);
                     }
 
                     else if (strData.contains(Server.TAKEN_USERNAME)) {
-                        invalidName.setText("This username has been taken...");
+                        String message = "This username has been taken...";
+                        invalidName.setForeground(Color.RED);
+                        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, message));
+                        invalidName.setText(message);
+                    }
+
+                    else if (strData.contains(Server.GAME_ALREADY_BEGAN)) {
+                        String message = "A game is currently going on right now. Join later...";
+                        invalidName.setForeground(Color.BLUE);
+                        invalidName.setPreferredSize(getTextFieldDimension(invalidfont, message));
+                        invalidName.setText(message);
                     }
 
                     else if (strData.contains(Server.FIRST_CARD)) {
@@ -748,6 +812,22 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.END_UNO_TIME)) {
                         deleteUno();
+                    }
+
+                    else if (strData.contains(Server.SET_COLOR)) {
+                        currentColor = strData.substring(Server.SET_COLOR.length());
+                        setColor();
+                    }
+
+                    else if (strData.contains(Server.NEW_DISCARD_PILE)) {
+                        String card = strData.substring(Server.NEW_DISCARD_PILE.length());
+                        discardPile.setIcon(new ImageIcon("/assets/images/" + card + ".png"));
+
+                        board.revalidate();
+                        board.repaint();
+
+                        revalidate();
+                        repaint();
                     }
                 }
             }

@@ -1,4 +1,3 @@
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -17,11 +16,6 @@ public class AnimationPanel extends JPanel  {
     public AnimationPanel(LayoutManager layout) {
         super(layout);
 
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(bg.getWidth(),bg.getHeight());
     }
 
     private int fromX, fromY, toX, toY;
@@ -100,4 +94,3 @@ public class AnimationPanel extends JPanel  {
 //        }
     }
 }
-
