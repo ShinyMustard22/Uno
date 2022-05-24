@@ -590,7 +590,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
-    public static void playSound(String soundType) {
+    private void playSound(String soundType) {
         if (soundOn) {
             File soundFile;
             AudioInputStream input;
