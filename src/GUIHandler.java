@@ -26,7 +26,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private static int margin = 5;
 
     private JMenuBar menuBar;
-    private JMenu help;
+    private JMenu help, options;
     private JMenuItem rules, soundEffects, bgMusic;
     private JTextField nameField;
     private JLabel errorMessage1, errorMessage2;
@@ -94,7 +94,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         mainPanel = new JPanel(new BorderLayout());
 
         board = new AnimationPanel(new GridBagLayout());
-        board.setOpaque(false);
 
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(margin, margin, margin, margin);
@@ -218,11 +217,12 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         menuBar = new JMenuBar();
         help = new JMenu("Help");
+        options = new JMenu("Options");
         rules = new JMenuItem("Rules");
         rules.addActionListener(this);
 
         rulesString = new StringBuffer();
-        Path rulesPath = Paths.get("/src/assets/rules.txt");
+        Path rulesPath = Paths.get("src/assets/rules.txt");
 
         try {
             java.util.List<String> lines = Files.readAllLines(rulesPath, StandardCharsets.UTF_8);
@@ -238,13 +238,14 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         soundEffects = new JMenuItem("SFX ON");
         soundEffects.addActionListener(this);
-        help.add(soundEffects);
+        options.add(soundEffects);
 
         bgMusic = new JMenuItem("Music ON");
         bgMusic.addActionListener(this);
-        help.add(bgMusic);
+        options.add(bgMusic);
 
         menuBar.add(help);
+        menuBar.add(options);
 
         updateTable();
 
@@ -548,7 +549,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         repaint();
     }
 
-    private void finalScreen(int place) {
+    private void finalScreen(String place) {
         unoLayeredPane.remove(unoButton);
 
         JLabel finalLabel1 = new JLabel("The Game is Over! Your place: " + place);
@@ -729,6 +730,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.FIRST_CARD)) {
                         createBoard(strData.substring(Server.FIRST_CARD.length()));
+                        playSound(gameStartedSound);
                     }
 
                     else if (strData.contains(Server.INIT_PLAYER_HAND)) {
@@ -819,7 +821,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
                     else if (strData.contains(Server.END_GAME)) {
                         gameIsOver = true;
-                        int place = Integer.valueOf(strData.substring(Server.END_GAME.length()));
+                        String place = strData.substring(Server.END_GAME.length());
                         finalScreen(place);
                     }
 
@@ -856,7 +858,6 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         else if (e.getSource() == startGame) {
             write(Server.GAME_STARTED);
-            playSound(gameStartedSound);
         }
 
         else if (e.getSource() == deck) {

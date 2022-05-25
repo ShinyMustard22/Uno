@@ -200,6 +200,8 @@ public class ClientHandler implements Runnable {
                 else {
                     write(Server.TAKEN_USERNAME);
                 }
+
+                write(Server.ERROR);
                 
                 username = read();
                 username = username.substring(Server.NAME.length());
