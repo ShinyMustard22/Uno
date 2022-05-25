@@ -54,11 +54,11 @@ public class GUIHandler extends JFrame implements ActionListener {
     private File bgSoundFile;
     private AudioInputStream bgSoundInput;
     private Clip bgClip;
-    
+
     private static boolean soundOn = true;
     private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
-    private static final String errorSound = "wrong"; 
+    private static final String errorSound = "wrong";
     public static final String gameStartedSound = "gameStart";
 
     private static final Color lightBlue = new Color(176,196,222);
@@ -131,7 +131,7 @@ public class GUIHandler extends JFrame implements ActionListener {
          * Music from Tunetank.com
          * Alex MakeMusic - Everest (Copyright Free Music)
          * Download free: https://tunetank.com/track/471-everest
-        */
+         */
         try {
             bgSoundFile = new File ("src/assets/audio/bgMusic.wav");
             try {
@@ -159,7 +159,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLocationRelativeTo(null);
-    
+
         players = new LinkedHashMap<String, Integer>();
         gameIsOver = false;
 
@@ -293,7 +293,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         playerTable.setFont(appFont);
         playerTable.getTableHeader().setFont(appFont);
         playerTable.getTableHeader().getColumnModel().getColumn(myIndex)
-            .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
+                .setHeaderRenderer(new LeaderRenderer(lightBlue, Color.BLUE));
 
         playerInfo.add(new JScrollPane(playerTable), BorderLayout.CENTER);
         playerInfo.revalidate();
@@ -306,11 +306,11 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void setTurn(int index) {
         playerTable.getColumnModel().getColumn(index).setCellRenderer(new PlayerRenderer());
 
-        
+
 
         playerInfo.revalidate();
         playerInfo.repaint();
-    
+
         revalidate();
         repaint();
     }
@@ -324,10 +324,10 @@ public class GUIHandler extends JFrame implements ActionListener {
             this.fg = fg;
         }
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
-            boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
-                isSelected, hasFocus, row, column);
+                    isSelected, hasFocus, row, column);
             cell.setFont(appFont);
             cell.setBackground(bg);
             cell.setForeground(fg);
@@ -336,10 +336,10 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private class PlayerRenderer extends DefaultTableCellRenderer {
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
-            boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value,
-                isSelected, hasFocus, row, column);
+                    isSelected, hasFocus, row, column);
             cell.setBackground(Color.GREEN.brighter());
             return cell;
         }
@@ -381,18 +381,31 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void createHand(java.util.List<JButton> newCards) {
+        ArrayList<Point> fromList = new ArrayList<>();
+        ArrayList<Point> toList = new ArrayList<>();
+        ArrayList<Component> components = new ArrayList<>();
         for (JButton card : newCards) {
             playerHand.add(card);
             card.setSize(card.getIcon().getIconWidth(), card.getIcon().getIconHeight());
             card.addActionListener(this);
+            components.add(card);
+            fromList.add(new Point(deck.getX(), deck.getY()));
+            toList.add(new Point(deck.getX(), board.getHeight()));
+        }
+        revalidate();
+        playerHand.setPreferredSize(new Dimension(playerHand.getWidth(), playerHand.getHeight()));
+        for (JButton card : newCards) {
+            card.setVisible(false);
         }
 
+        board.moveCard("card_face_down", fromList, toList, components, 10, 10);
         playerHand.revalidate();
         playerHand.repaint();
 
         revalidate();
         repaint();
     }
+
 
     private void updateDiscardPile(String card) {
         discardPile.setIcon(new ImageIcon(getClass().getResource("/assets/images/" + card + ".png")));
@@ -408,9 +421,9 @@ public class GUIHandler extends JFrame implements ActionListener {
     private void removeCard(int index) {
         int x = hand.get(index).getX();
         String card = strHand.get(index);
-        playerHand.remove(hand.get(index)); 
+        playerHand.remove(hand.get(index));
 
-        strHand.remove(index); 
+        strHand.remove(index);
         hand.remove(index);
 
         playerHand.revalidate();
@@ -418,7 +431,7 @@ public class GUIHandler extends JFrame implements ActionListener {
 
         revalidate();
         repaint();
-        
+
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -439,7 +452,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch(Exception e){
-           e.printStackTrace();
+            e.printStackTrace();
         }
 
         red = new JButton("Red");
@@ -498,7 +511,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         try{
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch(Exception e){
-           e.printStackTrace();
+            e.printStackTrace();
         }
 
         board.revalidate();
@@ -561,7 +574,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     private void spawnUno() {
-        int x = (int) (Math.random() * (getWidth() - unoButtonWidth)); 
+        int x = (int) (Math.random() * (getWidth() - unoButtonWidth));
         int y = (int) (Math.random() * (getHeight() - unoButtonHeight));
 
         unoButton.setBounds(x, y, unoButtonWidth, unoButtonHeight);
@@ -599,7 +612,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         else if (currentColor.equals(ColorCard.GREEN)) {
             color = unoGreen;
         }
-        
+
         else if (currentColor.equals(ColorCard.YELLOW)) {
             color = unoYellow;
         }
@@ -607,10 +620,10 @@ public class GUIHandler extends JFrame implements ActionListener {
         else {
             throw new IllegalArgumentException();
         }
-        
+
         board.setBackground(color);
     }
-    
+
     private void toggleSound() {
         if (soundOn) {
             soundOn = false;
@@ -619,7 +632,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         else {
             soundOn = true;
             soundEffects.setText("SFX ON");
-            
+
         }
     }
 
@@ -645,7 +658,7 @@ public class GUIHandler extends JFrame implements ActionListener {
             }
         }
     }
-    
+
     public void toggleBackgroundMusic() {
         if (bgClip.isActive() && (bgClip != null)) {
             bgClip.stop();
@@ -654,11 +667,11 @@ public class GUIHandler extends JFrame implements ActionListener {
         else {
             bgClip.start();
             bgClip.loop(Clip.LOOP_CONTINUOUSLY);
-        }  
+        }
     }
 
     /**
-     * 
+     *
      * @param allStrData
      */
     public void decode(String allStrData) {
@@ -746,7 +759,7 @@ public class GUIHandler extends JFrame implements ActionListener {
                     else if (strData.contains(Server.PLAY_CARD)) {
                         int cardIndex = Integer.valueOf(strData.substring(Server.PLAY_CARD.length()));
                         removeCard(cardIndex);
-                    } 
+                    }
 
 
                     else if (strData.contains(Server.SOMEBODY_PLAYED_CARD)) {
@@ -856,11 +869,11 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
 
         else if (e.getSource() == rules) {
-             JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(this, rulesString.toString(), "Uno Rules", JOptionPane.PLAIN_MESSAGE);
         }
 
         else if (e.getSource() == soundEffects) {
-           toggleSound();
+            toggleSound();
         }
 
         else if (e.getSource() == bgMusic) {
