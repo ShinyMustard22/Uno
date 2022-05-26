@@ -19,7 +19,7 @@ public class Server {
     /**
      * IP Address of the server
      */
-    public static final String IP_ADDRESS = "10.18.93.71";
+    public static final String IP_ADDRESS = "localhost";
 
     /**
      * Command to send and recieve username
