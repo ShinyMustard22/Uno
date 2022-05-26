@@ -17,6 +17,12 @@ import java.util.*;
 import javax.sound.sampled.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
+/**
+ * Class the represents the user interface for a client.
+ * 
+ * @author Ritam Chakraborty, Srushti Chaudhari
+ * @version May 25, 2022
+ */
 public class GUIHandler extends JFrame implements ActionListener {
 
     private static final int startingWidth  = 1000;
@@ -59,7 +65,7 @@ public class GUIHandler extends JFrame implements ActionListener {
     private static final String cardFlippedSound = "cardFlipping";
     private static final String playerJoinsOrLeaves = "playerInOrOut";
     private static final String errorSound = "wrong";
-    public static final String gameStartedSound = "gameStart";
+    private static final String gameStartedSound = "gameStart";
 
     private static final Color lightBlue = new Color(176,196,222);
     private static final Color unoRed = new Color(215, 38, 0);
@@ -78,7 +84,9 @@ public class GUIHandler extends JFrame implements ActionListener {
     private boolean gameIsOver;
 
     /**
-     * @param out DataOutputStream
+     * Constructs the frame, plays the background music, and initializes object
+     * to write data.
+     * @param out output stream used to write data
      */
     public GUIHandler(DataOutputStream out) {
         super("Uno");
@@ -89,7 +97,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         // Create the Icon Image for this application
         ImageIcon unoLogo = new ImageIcon(getClass().getResource("/assets/images/uno_logo.png"));
         setIconImage(unoLogo.getImage());
-
 
         mainPanel = new JPanel(new BorderLayout());
 
@@ -126,11 +133,6 @@ public class GUIHandler extends JFrame implements ActionListener {
         mainPanel.add(board, BorderLayout.CENTER);
         mainPanel.add(playerHandScroll, BorderLayout.SOUTH);
 
-        /**
-         * Music from Tunetank.com
-         * Alex MakeMusic - Everest (Copyright Free Music)
-         * Download free: https://tunetank.com/track/471-everest
-         */
         try {
             bgSoundFile = new File ("src/assets/audio/bgMusic.wav");
             try {
@@ -320,7 +322,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         Color bg;
         Color fg;
 
-        public LeaderRenderer(Color bg, Color fg) {
+        private LeaderRenderer(Color bg, Color fg) {
             this.bg = bg;
             this.fg = fg;
         }
@@ -660,7 +662,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         }
     }
 
-    public void toggleBackgroundMusic() {
+    private void toggleBackgroundMusic() {
         if (bgClip.isActive() && (bgClip != null)) {
             bgClip.stop();
             bgMusic.setText("Music OFF");
@@ -672,8 +674,8 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     /**
-     *
-     * @param allStrData
+     * Decodes the data recieved from the server
+     * @param allStrData all the data recieved from server
      */
     public void decode(String allStrData) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -850,6 +852,10 @@ public class GUIHandler extends JFrame implements ActionListener {
     }
 
     @Override
+    /**
+     * Executes a process depending on the action that took place on the frame
+     * @param e the action even that took place
+     */
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nameField) {
             myName = nameField.getText();
