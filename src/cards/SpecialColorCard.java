@@ -19,6 +19,7 @@ public abstract class SpecialColorCard extends ColorCard {
      * Used to simulate Cards with special effects
      * @param color
      * @param effect
+     * @throws IllegalArgumentException when the effect is invlaid
      */
     public SpecialColorCard(String color, String effect) {
         super(color);

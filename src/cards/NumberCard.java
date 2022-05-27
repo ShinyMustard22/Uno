@@ -17,6 +17,7 @@ public class NumberCard extends ColorCard {
      * directly extends ColorCard but contains a new field for its number
      * @param color String color of Card
      * @param n int number of Card
+     * @throws IllegalArgumentException when number is invalid
      */
     public NumberCard(String color, int n) {
         super(color);
