@@ -9,12 +9,26 @@ public abstract class Card {
         number, drawFour, drawTwo, reverse, skip, wild
     }
 
+    /**
+     * Expresses the Card as a string
+     * @return expression of Card as a String
+     */
     public String toString() {
         return "card";
     }
 
+    /**
+     * abstract Class playable - determines if Card is playble based on previously played Card
+     * @param card previous played Card
+     * @return true if playable, false otherwise
+     */
     public abstract boolean playable(Card card);
-    
+
+    /**
+     * prevents bugs during running
+     * @param cardAsString String expression of previous Card
+     * @return Card if bug occurs
+     */
     public static Card decode(String cardAsString) {
         if (cardAsString.contains(ColorCard.RED)) {
             if (cardAsString.contains(SkipCard.EFFECT)) {
@@ -106,6 +120,11 @@ public abstract class Card {
         return null;
     }
 
+    /**
+     * Expresses a list of Cards as a String - calls each Card's toString() method to format them all
+     * @param cards list of Cards
+     * @return String representation of list of Cards
+     */
     public static String listToString(List<Card> cards) {
         StringBuffer strList = new StringBuffer();
 
@@ -120,5 +139,9 @@ public abstract class Card {
         return strList.toString();
     }
 
+    /**
+     * Gets type of Card for Client Classes
+     * @return type of Card
+     */
     public abstract Type getType();
 }
