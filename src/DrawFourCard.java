@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * A Card that forces the next Player to draw four Cards when played and skips their turn
  * Playable regardless of previous Card

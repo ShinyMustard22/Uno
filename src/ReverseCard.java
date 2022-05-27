@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * A Card that reverses the current order in which Players play
  * Playable if color or effect matches previous Card

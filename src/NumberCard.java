@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * An instance of a ColorCard with an additional number property
  * Playable if color or number matches previous card

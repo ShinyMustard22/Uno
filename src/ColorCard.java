@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * A concrete class that simulates a Card with a color in the form of a String
  * Contains method playable to determine playability of Card and equals to

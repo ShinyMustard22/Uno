@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * A Card that forces the next Player to skip their turn
  * Playable when color or effect matches previous card

@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * A class that extends ColorCard with an additional field for the effect
  * in order to simulate Cards that have special effects when played

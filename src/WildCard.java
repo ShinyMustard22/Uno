@@ -1,5 +1,3 @@
-package cards;
-
 /**
  * A Card that can be played at any time and sets color to Player's choice after played
  *
