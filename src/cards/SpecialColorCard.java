@@ -4,6 +4,13 @@ public abstract class SpecialColorCard extends ColorCard {
 
     private String effect;
 
+    /**
+     * Creates a SpecialColorCard
+     * SpecialColorCard directly extends ColorCard
+     * Used to simulate Cards with special effects
+     * @param color
+     * @param effect
+     */
     public SpecialColorCard(String color, String effect) {
         super(color);
         if (!effect.equals(DrawTwoCard.EFFECT) && !effect.equals(ReverseCard.EFFECT) && !effect.equals(SkipCard.EFFECT)) {
@@ -12,6 +19,11 @@ public abstract class SpecialColorCard extends ColorCard {
         this.effect = effect;
     }
 
+    /**
+     * Determines if SpecialColorCard is playable based on previously played Card
+     * @param card previous played Card
+     * @return true if playable, false otherwise
+     */
     public boolean playable(Card card) {
         if (card instanceof SpecialColorCard) {
             SpecialColorCard specialColorCard = (SpecialColorCard) card;
@@ -21,10 +33,20 @@ public abstract class SpecialColorCard extends ColorCard {
         return super.playable(card);
     }
 
+    /**
+     * Expresses SpecialColorCard as a String
+     * @return String representation of SpecialColorCard
+     */
     public String toString() {
         return super.toString() + "_" + effect;
     }
 
+    /**
+     * Determines if SpecialColorCard is equal to another Card
+     * Returns true  if color and effect are equal
+     * @param other Card
+     * @return
+     */
     public boolean equals(Object other) {
         if (!(other instanceof SpecialColorCard)) {
             return false;
