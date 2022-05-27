@@ -1,5 +1,13 @@
 package cards;
 
+/**
+ * A concrete class that simulates a Card with a color in the form of a String
+ * Contains method playable to determine playability of Card and equals to
+ * determine whether two ColorCards are the same
+ *
+ * @author Angela chung, Ritam Chakraborty
+ * @version May 23, 2022
+ */
 public abstract class ColorCard extends Card {
 
     public static final String RED = "red";

@@ -1,5 +1,12 @@
 package cards;
 
+/**
+ * A Card that can be played at any time and sets color to Player's choice after played
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 23, 2022
+ */
+
 public class WildCard extends Card {
 
     private String color;

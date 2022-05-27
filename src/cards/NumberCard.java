@@ -1,5 +1,13 @@
 package cards;
 
+/**
+ * An instance of a ColorCard with an additional number property
+ * Playable if color or number matches previous card
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 23, 2022
+ */
+
 public class NumberCard extends ColorCard {
 
     private int number;

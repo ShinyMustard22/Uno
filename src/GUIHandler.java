@@ -438,7 +438,7 @@ public class GUIHandler extends JFrame implements ActionListener {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY());
+                board.moveCard(card, x, board.getHeight(), discardPile.getX(), discardPile.getY(), 10, 10);
                 return null;
             }
         }.execute();

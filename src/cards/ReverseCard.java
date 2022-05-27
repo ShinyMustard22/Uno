@@ -1,4 +1,12 @@
 package cards;
+
+/**
+ * A Card that reverses the current order in which Players play
+ * Playable if color or effect matches previous Card
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 24, 2022
+ */
 public class ReverseCard extends SpecialColorCard {
 
     static final String EFFECT = "reverse";
