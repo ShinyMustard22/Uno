@@ -36,13 +36,4 @@ public class WildCard extends Card {
     public String toString() {
         return super.toString() + "_wild";
     }
-
-    /**
-     * Gets Type of WildCard for Client Classes
-     * @return Type WildCard
-     */
-    @Override
-    public Type getType() {
-        return Type.wild;
-    }
 }

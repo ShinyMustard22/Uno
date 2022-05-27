@@ -1,10 +1,28 @@
 package cards;
 
+/**
+ * A class that represents a colored card in the game of Uno.
+ * 
+ * @author Ritam Chakraborty, Angela Chung
+ * @version May 26, 2022
+ */
 public abstract class ColorCard extends Card {
 
+    /**
+     * Red color of a uno card
+     */
     public static final String RED = "red";
+    /**
+     * Blue color of a uno card
+     */
     public static final String BLUE = "blue";
+    /**
+     * Green color of a uno card
+     */
     public static final String GREEN = "green";
+    /**
+     * Yellow color of a uno card
+     */
     public static final String YELLOW = "yellow";
     
     private String color;

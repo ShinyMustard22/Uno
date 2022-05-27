@@ -1,5 +1,11 @@
 package cards;
 
+/**
+ * A class that represents a card in the game of Uno.
+ * 
+ * @author Ritam Chakraborty, Angela Chung
+ * @version May 26, 2022
+ */
 public class DrawTwoCard extends SpecialColorCard {
 
     static final String EFFECT = "draw2";
@@ -11,14 +17,5 @@ public class DrawTwoCard extends SpecialColorCard {
      */
     public DrawTwoCard(String c) {
         super(c, EFFECT);
-    }
-
-    /**
-     * Gets type of DrawTwo Card for Client Classes
-     * @return Type of drawTwo
-     */
-    @Override
-    public Type getType() {
-        return Type.drawTwo;
     }
 }

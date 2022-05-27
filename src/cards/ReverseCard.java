@@ -11,13 +11,4 @@ public class ReverseCard extends SpecialColorCard {
     public ReverseCard(String c) {
         super(c, EFFECT);
     }
-
-    /**
-     * Gets type of ReverseCard for Client Classes
-     * @return Type of ReverseCard
-     */
-    @Override
-    public Type getType() {
-        return Type.reverse;
-    }
 }

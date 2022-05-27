@@ -1,5 +1,11 @@
 package cards;
 
+/**
+ * A class that represents a draw four card in the game of Uno.
+ * 
+ * @author Ritam Chakraborty, Angela Chung
+ * @version May 26, 2022
+ */
 public class DrawFourCard extends WildCard {
 
     /**

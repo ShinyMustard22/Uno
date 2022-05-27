@@ -3,11 +3,13 @@ package cards;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * A class that represents a card in the game of Uno.
+ * 
+ * @author Ritam Chakraborty, Angela Chung
+ * @version May 26, 2022
+ */
 public abstract class Card {
-
-    public enum Type {
-        number, drawFour, drawTwo, reverse, skip, wild
-    }
 
     /**
      * Expresses the Card as a string
@@ -138,10 +140,4 @@ public abstract class Card {
 
         return strList.toString();
     }
-
-    /**
-     * Gets type of Card for Client Classes
-     * @return type of Card
-     */
-    public abstract Type getType();
 }

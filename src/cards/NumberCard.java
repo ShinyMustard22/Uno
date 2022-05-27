@@ -1,5 +1,11 @@
 package cards;
 
+/**
+ * A class that represents a card in the game of Uno.
+ * 
+ * @author Ritam Chakraborty, Angela Chung
+ * @version May 26, 2022
+ */
 public class NumberCard extends ColorCard {
 
     private int number;
@@ -24,7 +30,7 @@ public class NumberCard extends ColorCard {
      * Determines if Card is playable based on previously played Card
      * Card is playable if color or number matches
      * @param card previous played Card
-     * @return
+     * @return true if the card is playable, false otherwise
      */
     public boolean playable(Card card) {
         if (card instanceof NumberCard) {
@@ -66,15 +72,5 @@ public class NumberCard extends ColorCard {
      */
     public int getNumber() {
         return number;
-    }
-
-
-    /**
-     * Gets Type of NumberCard for Client Classes
-     * @return number of NumberCard
-     */
-    @Override
-    public Type getType() {
-        return Type.number;
     }
 }

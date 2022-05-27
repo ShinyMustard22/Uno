@@ -12,13 +12,4 @@ public class SkipCard extends SpecialColorCard {
     public SkipCard(String c){
         super(c, EFFECT);
     }
-
-    /**
-     * Gets Type of SkipCard
-     * @return Type of SkipCard
-     */
-    @Override
-    public Type getType () {
-        return Type.skip;
-    }
 }
