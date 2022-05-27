@@ -1,10 +1,12 @@
 package cards;
 
 /**
- * A class that represents a draw four card in the game of Uno.
- * 
- * @author Ritam Chakraborty, Angela Chung
- * @version May 26, 2022
+ * A Card that forces the next Player to draw four Cards when played and skips their turn
+ * Playable regardless of previous Card
+ * Sets color after played
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 23, 2022
  */
 public class DrawFourCard extends WildCard {
 

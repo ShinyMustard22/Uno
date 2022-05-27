@@ -1,10 +1,19 @@
 package cards;
 
 /**
+<<<<<<< HEAD
  * A class that represents a colored card in the game of Uno.
  * 
  * @author Ritam Chakraborty, Angela Chung
  * @version May 26, 2022
+=======
+ * A concrete class that simulates a Card with a color in the form of a String
+ * Contains method playable to determine playability of Card and equals to
+ * determine whether two ColorCards are the same
+ *
+ * @author Angela chung, Ritam Chakraborty
+ * @version May 23, 2022
+>>>>>>> e2661c49ab37c6d91eb457d9f4003ee3f2fa3bca
  */
 public abstract class ColorCard extends Card {
 

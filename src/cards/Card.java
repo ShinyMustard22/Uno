@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * A class that represents a card in the game of Uno.
- * 
- * @author Ritam Chakraborty, Angela Chung
- * @version May 26, 2022
+ * A Card class that simulates the very basic form of a Card
+ * Contains abstract methods such as playable and equals that will be used / overriden in all Child Classes
+ * Collection of types corresponding to all possible Cards
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 23, 2022
  */
+
 public abstract class Card {
 
     /**

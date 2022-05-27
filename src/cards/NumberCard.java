@@ -1,11 +1,13 @@
 package cards;
 
 /**
- * A class that represents a card in the game of Uno.
- * 
- * @author Ritam Chakraborty, Angela Chung
- * @version May 26, 2022
+ * An instance of a ColorCard with an additional number property
+ * Playable if color or number matches previous card
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 23, 2022
  */
+
 public class NumberCard extends ColorCard {
 
     private int number;

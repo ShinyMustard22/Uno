@@ -1,11 +1,13 @@
 package cards;
 
 /**
- * A class that represents a card in the game of Uno.
- * 
- * @author Ritam Chakraborty, Angela Chung
- * @version May 26, 2022
+ * A card that forces the next player to draw two cards and skips their turn
+ * Playable if color or effect matches previous card
+ *
+ * @author Angela Chung, Ritam Chakraborty
+ * @version May 23, 2022
  */
+
 public class DrawTwoCard extends SpecialColorCard {
 
     static final String EFFECT = "draw2";
