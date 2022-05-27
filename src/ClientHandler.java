@@ -18,7 +18,7 @@ import cards.WildCard;
  * @version May 23, 2022
  */
 public class ClientHandler implements Runnable {
-    private static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
+    private static LinkedList<ClientHandler> clientHandlers = new LinkedList<ClientHandler>();
     private static GameState board = new GameState();
     private static AtomicBoolean isUno = new AtomicBoolean(false);
 
@@ -160,7 +160,7 @@ public class ClientHandler implements Runnable {
 
         if (board.gameHasStarted() && clientHandlers.size() == 1) {
             board.endGame();
-            clientHandlers.get(0).write(Server.END_GAME + "-");
+            clientHandlers.getFirst().write(Server.END_GAME + "-");
             board = new GameState();
         }
 
