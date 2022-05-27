@@ -1,4 +1,5 @@
 import java.util.*;
+import cards.Card;
 
 /**
  * A class the represents a player in the game.

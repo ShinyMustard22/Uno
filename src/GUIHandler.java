@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import javax.sound.sampled.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import cards.ColorCard;
 
 /**
  * Class the represents the user interface for a client.

@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import cards.*;
 
 /**
  * A class that is able to talk to the client using input and output streams.
