@@ -7,6 +7,9 @@ import java.net.Socket;
  * and output are connected a new instance of a client handler that conducts
  * the actual operations regarding the game state and that client.
  * 
+ * This server client setup was inspired by WittCode on YouTube.
+ * Subscribe to him at: https://www.youtube.com/c/WittCode
+ * 
  * @author Ritam Chakraborty
  * @version May 23, 2022
  */
